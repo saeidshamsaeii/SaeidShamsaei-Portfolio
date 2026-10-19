@@ -1,0 +1,28 @@
+name: Portfolio source checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install (temporary: lockfile not yet committed)
+        run: npm install --no-audit --no-fund
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Build static export
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_READY: 'false'
+          NEXT_PUBLIC_SITE_URL: 'https://example.invalid'
