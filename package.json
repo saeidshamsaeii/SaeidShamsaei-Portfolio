@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3200",
     "typecheck": "tsc --noEmit",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/serve-static.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {
