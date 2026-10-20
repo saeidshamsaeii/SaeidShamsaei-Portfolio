@@ -34,7 +34,7 @@ function ProjectSection({project}:{project:(typeof projects)[number]}){
     <Link className="pf-button pf-button--color" href={'/work/'+project.id+'/'}>Explore case study <span aria-hidden="true">↗</span></Link>
    </div>
    <Link className="pf-project-art" href={'/work/'+project.id+'/'} aria-label={'Open '+project.brand+' case study'}>
-    <img src={'/assets/hires/project-'+project.id+'.webp'} alt={project.brand+' — illustrated product concept'} width="1448" height="1086" loading="lazy" decoding="async"/>
+    <img src={'/assets/hires/project-'+project.id+'.webp'} alt={project.brand+' — illustrated product concept'} width="1448" height="1086" loading="eager" decoding="async"/>
     <span className="pf-art-corner" aria-hidden="true">VIEW PROJECT ↗</span>
    </Link>
   </div>
