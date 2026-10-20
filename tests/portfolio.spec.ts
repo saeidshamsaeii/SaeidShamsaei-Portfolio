@@ -4,9 +4,10 @@ test('desktop four project chapters, source, navigation, scroll and screenshot',
 const page=await browser.newPage({viewport:{width:1440,height:900}});
 const jsErrors:string[]=[];page.on('pageerror',e=>jsErrors.push(e.message));
 await page.goto('/',{waitUntil:'domcontentloaded'});
-await expect(page.locator('.project-scene')).toHaveCount(4);
+await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
+await expect(page.locator('.motion-chapter')).toHaveCount(4);
 await expect(page.locator('h1')).toContainText('SAEID');
-for(const name of names){await expect(page.locator('#project-'+name)).toHaveCount(1);await expect(page.locator('a[href^="/work/'+name+'/"]')).toHaveCount(1);}
+for(const name of names){await expect(page.locator('#project-'+name)).toHaveCount(1);await expect(page.locator('#project-'+name+' .motion-track')).toHaveCount(1);}
 await page.screenshot({path:'artifacts/portfolio-desktop-1440.png',fullPage:true,animations:'disabled'});
 const p=page.locator('#project-petiwoo');await p.scrollIntoViewIfNeeded();await page.waitForTimeout(250);
 await page.locator('#project-gartal').scrollIntoViewIfNeeded();
@@ -19,14 +20,11 @@ test('mobile touch layout, menu, language and screenshot',async ({browser})=>{
 const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
 await page.goto('/',{waitUntil:'domcontentloaded'});
-await expect(page.locator('.project-scene')).toHaveCount(4);
+await expect(page.locator('.motion-chapter')).toHaveCount(4);
 await page.screenshot({path:'artifacts/portfolio-mobile-390.png',fullPage:true,animations:'disabled'});
 expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
-await page.locator('.menu-toggle').click();
-await expect(page.locator('#mobile-navigation')).toBeVisible();
-await page.locator('#mobile-navigation a[href="#work"]').click();
-await expect(page.locator('#mobile-navigation')).toHaveCount(0);
-await page.locator('.locale-toggle').click();
+await expect(page.locator('.motion-track')).toHaveCount(4);
+await page.locator('.motion-nav button').click();
 await expect(page.locator('html')).toHaveAttribute('lang','fa');
 await expect(page.locator('html')).toHaveAttribute('dir','rtl');
 expect(errors).toEqual([]);
@@ -51,7 +49,7 @@ await expect(page.locator('.case-capabilities>div')).toHaveCount(6);
 test('reduced-motion fallback remains navigable',async ({browser})=>{
 const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
 await page.goto('/',{waitUntil:'domcontentloaded'});
-await expect(page.locator('.project-scene')).toHaveCount(4);
+await expect(page.locator('.motion-chapter')).toHaveCount(4);
 await expect(page.locator('#contact')).toBeAttached();
 expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
 await page.close();

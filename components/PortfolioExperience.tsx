@@ -3,50 +3,59 @@ import {useEffect,useRef,useState} from 'react';
 import gsap from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import {useGSAP} from '@gsap/react';
-import {HeroArt,SceneVisual} from '@/components/SceneVisual';
 import {projects,publicContact,txt,type Locale} from '@/data/portfolio';
+import {SceneVisual} from '@/components/SceneVisual';
 
 gsap.registerPlugin(ScrollTrigger,useGSAP);
-export default function PortfolioExperience(){
-const root=useRef<HTMLDivElement>(null);
-const [lang,setLang]=useState<Locale>('en');
-const [active,setActive]=useState(0);
-const [menu,setMenu]=useState(false);
-const l=(fa:string,en:string)=>lang==='fa'?fa:en;
-useEffect(()=>{const url=new URL(window.location.href);setLang(url.searchParams.get('lang')==='fa'?'fa':'en');},[]);
-useEffect(()=>{document.documentElement.lang=lang;document.documentElement.dir=lang==='fa'?'rtl':'ltr';},[lang]);
-const changeLanguage=()=>{const next=lang==='en'?'fa':'en';setLang(next);const u=new URL(window.location.href);u.searchParams.set('lang',next);window.history.replaceState(null,'',u.pathname+u.search+u.hash);};
-useGSAP(()=>{
-const scope=root.current;if(!scope)return;
-const mm=gsap.matchMedia();
-mm.add('(min-width: 920px) and (prefers-reduced-motion: no-preference)',()=>{
-const triggerList:ScrollTrigger[]=[];
-gsap.utils.toArray<HTMLElement>('.project-scene').forEach((scene,i)=>{
-const art=scene.querySelector('.art-scene');
-if(art){
-gsap.fromTo(art,{scale:.9,y:90,rotate:-1.4,opacity:.65},{scale:1.045,y:-38,rotate:0,opacity:1,ease:'none',scrollTrigger:{trigger:scene,start:'top bottom',end:'bottom top',scrub:1.1}});
+function SSMark({className=''}:{className?:string}){return <svg className={'ss-mark '+className} viewBox="0 0 120 120" fill="none" aria-label="SS brand monogram" role="img"><defs><linearGradient id="ss-gold" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse"><stop stopColor="#FFF1B9"/><stop offset=".45" stopColor="#BA8749"/><stop offset="1" stopColor="#E8C382"/></linearGradient></defs><path d="M90 20H49c-24 0-32 30-9 39l33 13c18 7 7 27-10 27H23" stroke="url(#ss-gold)" strokeWidth="11" strokeLinecap="square"/><path d="M97 40H60c-18 0-29 23-8 32l20 8c16 8 4 22-15 22H28" stroke="url(#ss-gold)" strokeWidth="6" strokeLinecap="square"/></svg>}
+const detailNames=[['PROBLEM','مسئله'],['ARCHITECTURE','معماری'],['CAPABILITIES','قابلیت‌ها'],['OUTCOME','وضعیت و شواهد']] as const;
+function ProjectJourney({project,lang}:{project:(typeof projects)[number],lang:Locale}){
+ const scrollRef=useRef<HTMLDivElement>(null);
+ const [position,setPosition]=useState(0);
+ const [touchX,setTouchX]=useState<number|null>(null);
+ const step=(direction:number)=>{const node=scrollRef.current;if(node){node.scrollBy({left:direction*node.clientWidth*.86,behavior:'smooth'});}};
+ const cards=[
+ {number:'01',label:lang==='fa'?'مسئله':'THE CHALLENGE',body:txt(lang,project.problem)},
+ {number:'02',label:lang==='fa'?'تصمیم معماری':'SYSTEM ARCHITECTURE',body:txt(lang,project.solution)},
+ {number:'03',label:lang==='fa'?'قابلیت‌های کلیدی':'CAPABILITIES',body:project.architecture.map(x=>txt(lang,x)).join(' • ')},
+ {number:'04',label:lang==='fa'?'شواهد و وضعیت':'DOCUMENTED STATUS',body:txt(lang,project.outcome)}
+ ];
+ return <section id={'project-'+project.id} className={'motion-chapter chapter-'+project.id} aria-label={project.brand+' case study'}>
+ <div className="motion-chapter-inner"><div className="motion-copy"><p className="motion-label">{project.index} / 04 <span>{txt(lang,project.kicker)}</span></p><h2>{project.brand}</h2><h3>{txt(lang,project.title)}</h3><p>{txt(lang,project.intro)}</p><div className="motion-tags">{project.features.slice(0,3).map((x,i)=><span key={i}>{txt(lang,x)}</span>)}</div><div className="motion-instruction"><span>↔</span>{lang==='fa'?'برای دیدن کیس‌استادی به چپ و راست حرکت کنید':'SCROLL SIDEWAYS TO EXPLORE THE CASE STUDY'}</div></div>
+ <div className="motion-visual"><SceneVisual id={project.id}/></div></div>
+ <div className="motion-drawer"><div className="motion-track" ref={scrollRef} tabIndex={0} aria-label={project.brand+' horizontal case study'} onScroll={e=>{const el=e.currentTarget;setPosition(el.scrollWidth===el.clientWidth?0:Math.round(100*el.scrollLeft/(el.scrollWidth-el.clientWidth)));}}
+ onWheel={e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY)){e.currentTarget.scrollLeft+=e.deltaX;}}}
+ onTouchStart={e=>setTouchX(e.touches[0].clientX)} onTouchEnd={()=>setTouchX(null)}
+ onKeyDown={e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();step(e.key==='ArrowRight'?1:-1);}}}>
+ <article className="motion-frame motion-cover"><div><small>THE PROJECT / {project.index}</small><h4>{txt(lang,project.tagline)}</h4><p>{txt(lang,project.intro)}</p></div><div className="motion-miniart"><SceneVisual id={project.id} compact/></div></article>
+ {cards.map(x=><article className="motion-frame motion-detail" key={x.number}><span className="motion-frame-number">{x.number} / 04</span><div><small>{x.label}</small><h4>{x.label}</h4><p>{x.body}</p></div></article>)}
+ </div><div className="motion-progress"><button onClick={()=>step(-1)} aria-label="Previous case study frame">←</button><div className="motion-progress-track"><span style={{width:Math.max(4,position)+'%'}}/></div><button onClick={()=>step(1)} aria-label="Next case study frame">→</button><span>{Math.min(5,Math.round(position/25)+1)} / 05</span></div></div>
+ </section>;
 }
-triggerList.push(ScrollTrigger.create({trigger:scene,start:'top center',end:'bottom center',onEnter:()=>setActive(i),onEnterBack:()=>setActive(i)}));
-});
-gsap.to('.hero-glass-front',{y:-70,rotate:2,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:1}});
-gsap.utils.toArray<HTMLElement>('[data-rise]').forEach(el=>gsap.fromTo(el,{opacity:0,y:45},{opacity:1,y:0,duration:.9,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 86%',once:true}}));
-return ()=>triggerList.forEach(t=>t.kill());
-});
-return ()=>mm.revert();
-},{scope:root});
-return <div className="site" ref={root} data-lang={lang}>
-<a className="skip-link" href="#content">{l('رفتن به محتوا','Skip to content')}</a>
-<header className="nav-wrap"><div className="nav-inner"><a href="#top" className="wordmark" aria-label="Saeid Shamsaei home"><span className="wordmark-symbol">S<span>／</span></span><span>SAEID<br/>SHAMSAEI</span></a>
-<nav className="nav-desktop" aria-label="Main navigation"><a href="#work">{l('پروژه‌ها','Work')}</a><a href="#about">{l('درباره من','About')}</a><a href="#approach">{l('رویکرد','Approach')}</a><a href="#contact">{l('ارتباط','Contact')}</a></nav>
-<div className="nav-actions"><button type="button" className="locale-toggle" onClick={changeLanguage} aria-label="Change language">{lang==='en'?'FA':'EN'} <span>↗</span></button><a href={'mailto:'+publicContact.email} className="nav-cta">{l('شروع گفتگو','LET’S TALK')} ↗</a><button type="button" className="menu-toggle" aria-expanded={menu} aria-controls="mobile-navigation" onClick={()=>setMenu(!menu)}><span>{menu?'×':'☰'}</span><span className="sr-only">Menu</span></button></div></div>
-{menu&&<nav id="mobile-navigation" className="nav-mobile" aria-label="Mobile navigation">{[['#work',l('پروژه‌ها','Work')],['#about',l('درباره من','About')],['#approach',l('رویکرد','Approach')],['#contact',l('ارتباط','Contact')]].map(([href,title])=><a key={href} href={href} onClick={()=>setMenu(false)}>{title} ↗</a>)}</nav>}</header>
-<main id="content">
-<section className="hero" id="top"><div className="hero-inner"><div className="hero-copy"><p className="eyebrow hero-eyebrow"><span className="eyebrow-line"/> SOFTWARE ARCHITECT / CREATIVE ENGINEERING</p><h1><span>SAEID</span><em>SHAMSAEI<span className="hero-period">.</span></em></h1><p className="hero-subtitle">{l('از ایده تا محصول؛ معماری سیستم‌های مقیاس‌پذیر، تجربه‌های دیجیتال و پلتفرم‌های واقعی.','Designing digital systems that make complex ideas feel remarkably simple.')}</p><div className="hero-buttons"><a href="#work" className="button button-gold">{l('دیدن پروژه‌ها','EXPLORE MY WORK')}<span>↘</span></a><a href="#about" className="button-ghost">{l('درباره من','THE PERSON BEHIND THE WORK')} ↗</a></div></div><HeroArt/></div><div className="hero-baseline"><span>INDEPENDENT SOFTWARE ARCHITECT / 2026</span><span>{l('برای کشف پروژه‌ها اسکرول کنید','SCROLL TO DISCOVER')} ↓</span></div></section>
-<section className="intro" id="about"><div className="intro-index"><span>01 / THE PRACTICE</span><span>SAEID SHAMSAEI ©</span></div><div className="intro-grid"><div><p className="eyebrow dark">{l('نگاه من','WHAT DRIVES THE WORK')}</p><h2 data-rise>{l('ایده‌ها را به','From idea to')}<br/><em>{l('سیستم‌های ماندگار تبدیل می‌کنم.','lasting systems.')}</em></h2></div><div className="intro-description"><p data-rise>{l('من سعید شمسایی هستم؛ معمار نرم‌افزار و توسعه‌دهنده محصول. تجربه من ترکیبی از معماری پلتفرم‌های سازمانی، مهندسی سامانه‌های هوشمند و طراحی محصولات تخصصی است.','I’m Saeid Shamsaei, a software architect and product engineer. My work moves between enterprise platforms, AI-enabled engineering systems and distinctive domain-specific products.')}</p><div className="intro-keywords"><span>ENTERPRISE SAAS</span><span>AI SYSTEMS</span><span>HEALTHTECH</span><span>PRODUCT DESIGN</span></div></div></div><div className="intro-rule"><span>STRATEGY</span><span>ARCHITECTURE</span><span>ENGINEERING</span><span>EXPERIENCE</span></div></section>
-<section className="work-intro" id="work"><span className="eyebrow">02 / THE PORTFOLIO</span><div className="work-intro-grid"><h2>{l('محصول‌ها،','Selected')}<br/><em>{l('یکی‌یکی روایت می‌شوند.','projects.')}</em></h2><p>{l('چهار مسئله واقعی، چهار زبان بصری متفاوت. هر فصل معماری، تصمیم‌ها و مسیر محصول را نشان می‌دهد.','Four different domains. Four distinct visual worlds. Scroll through the product thinking, architecture and evidence behind each project.')}</p></div><div className="work-rail"><span>01 — 04</span><span>SCROLL-DRIVEN CASE STUDIES</span></div></section>
-{projects.map((p,i)=><section key={p.id} id={'project-'+p.id} className={'project-scene scene-'+p.id} data-project={p.id}><div className="project-pin"><div className="project-background-number">{p.index}</div><div className="project-layout"><div className="project-copy"><div className="project-index">{p.index} <span className="project-index-line"/> {txt(lang,p.kicker)}</div><h2>{p.brand}</h2><h3>{txt(lang,p.title)}</h3><p className="project-tagline">{txt(lang,p.tagline)}</p><p className="project-description">{txt(lang,p.intro)}</p><div className="project-categories">{p.features.map((f,j)=><span key={j}>{txt(lang,f)}</span>)}</div><a className="project-link" href={'/work/'+p.id+'/?lang='+lang}>{l('بررسی کیس‌استادی','EXPLORE CASE STUDY')} <span>↗</span></a></div><div className="project-artwork"><SceneVisual id={p.id}/></div></div><div className="project-foot"><span>SAEID / SELECTED WORK / {p.index}</span><div className="project-pagination" aria-label="Project navigation">{projects.map((project,j)=><a key={project.id} href={'#project-'+project.id} className={active===j?'active':''} aria-label={'Go to '+project.brand}><span/></a>)}</div><span>{p.brand.toUpperCase()} / 2026</span></div></div></section>)}
-<section className="approach" id="approach"><div className="approach-meta">03 / HOW I WORK <span>BEYOND THE SURFACE</span></div><div className="approach-body"><div><p className="eyebrow">{l('پشت هر پروژه','THE ENGINEERING MINDSET')}</p><h2>{l('پیچیدگی را','Complexity,')}<br/><em>{l('قابل فهم می‌کنم.','made clear.')}</em></h2></div><p>{l('محصول خوب فقط یک ظاهر زیبا نیست. مسئله، داده، امنیت، مرزهای سیستم و تجربه کاربر باید در یک معماری منسجم قرار بگیرند.','Great software is more than an interface. Domain boundaries, reliable data, security and human experience need to work as one considered system.')}</p></div><div className="approach-steps">{[['01','DISCOVER','Understand the problem'],['02','ARCHITECT','Design clear boundaries'],['03','BUILD','Engineer the experience'],['04','EVOLVE','Test, learn, improve']].map(x=><div key={x[0]}><span>{x[0]}</span><strong>{x[1]}</strong><p>{x[2]}</p><b>↗</b></div>)}</div></section>
-<section className="contact" id="contact"><p className="eyebrow">04 / START A CONVERSATION</p><h2>{l('چیز بزرگی','LET’S BUILD')}<br/><em>{l('بسازیم.','WHAT’S NEXT.')}</em></h2><p>{l('اگر یک مسئله واقعی، پروژه پیچیده یا ایده تازه دارید، خوشحال می‌شوم گفتگو کنیم.','Have a difficult problem, an ambitious product or a new opportunity? I’d love to hear about it.')}</p><a href={'mailto:'+publicContact.email} className="contact-primary">{l('ایمیل بزنید','START A CONVERSATION')} ↗</a><div className="contact-address"><a href={'mailto:'+publicContact.email}>{publicContact.email}</a><div><a href={publicContact.github} target="_blank" rel="noopener noreferrer">GITHUB ↗</a><a href={publicContact.linkedin} target="_blank" rel="noopener noreferrer">LINKEDIN ↗</a></div></div></section>
-</main><footer className="site-footer"><span>© 2026 SAEID SHAMSAEI</span><span>PRODUCTS. SYSTEMS. IMPACT.</span><a href="#top">{l('بازگشت به بالا','BACK TO TOP')} ↑</a></footer>
-</div>;
+export default function PortfolioExperience(){
+ const root=useRef<HTMLDivElement>(null);
+ const [lang,setLang]=useState<Locale>('en');
+ const [loading,setLoading]=useState(true);
+ const [progress,setProgress]=useState(5);
+ const [active,setActive]=useState(0);
+ useEffect(()=>{const url=new URL(window.location.href);setLang(url.searchParams.get('lang')==='fa'?'fa':'en');},[]);
+ useEffect(()=>{document.documentElement.lang=lang;document.documentElement.dir=lang==='fa'?'rtl':'ltr';},[lang]);
+ useEffect(()=>{let cancelled=false;let completed=false;const started=performance.now();const images=Array.from(document.querySelectorAll<HTMLImageElement>('img'));const ready=Promise.all([document.fonts.ready,...images.map(i=>i.complete?Promise.resolve():new Promise(r=>{i.addEventListener('load',r,{once:true});i.addEventListener('error',r,{once:true});}))]);const heartbeat=window.setInterval(()=>setProgress(p=>Math.min(91,p+6)),95);
+ const close=()=>{if(cancelled||completed)return;completed=true;window.clearInterval(heartbeat);setProgress(100);window.setTimeout(()=>{if(!cancelled)setLoading(false);},250)};
+ ready.then(()=>{const remaining=Math.max(0,1200-(performance.now()-started));window.setTimeout(close,remaining);});const safety=window.setTimeout(close,4000);
+ return()=>{cancelled=true;window.clearInterval(heartbeat);window.clearTimeout(safety);};},[]);
+ useGSAP(()=>{const scope=root.current;if(!scope||loading)return;const mm=gsap.matchMedia();mm.add('(min-width: 960px) and (prefers-reduced-motion: no-preference)',()=>{const triggers=gsap.utils.toArray<HTMLElement>('.motion-chapter').map((el,i)=>ScrollTrigger.create({trigger:el,start:'top 50%',end:'bottom 50%',onEnter:()=>setActive(i),onEnterBack:()=>setActive(i)}));
+ gsap.utils.toArray<HTMLElement>('.motion-visual').forEach(el=>gsap.fromTo(el,{y:50,scale:.96},{y:-30,scale:1.04,ease:'none',scrollTrigger:{trigger:el.closest('.motion-chapter')!,start:'top bottom',end:'bottom top',scrub:1}}));return()=>triggers.forEach(t=>t.kill());});
+ return()=>mm.revert();},{scope:root,dependencies:[loading]});
+ const changeLang=()=>{const next=lang==='en'?'fa':'en';setLang(next);const url=new URL(window.location.href);url.searchParams.set('lang',next);window.history.replaceState(null,'',url.pathname+url.search+url.hash);};
+ return <div className="motion-site" ref={root} data-language={lang}>
+ {loading&&<div className="ss-preloader" role="status" aria-live="polite"><div className="ss-preloader-top"><span>LOADING EXPERIENCE</span><span>{String(progress).padStart(2,'0')} / 100</span></div><SSMark className="ss-loading-logo"/><div className="ss-loading-copy"><span>FROM SYSTEMS TO IMPACT</span><small>{lang==='fa'?'طراحی سیستم‌هایی که ماندگارند':'DESIGNING DIGITAL SYSTEMS THAT ENDURE'}</small></div><div className="ss-loading-bar"><span style={{width:progress+'%'}}/></div></div>}
+ <header className="motion-nav"><a href="#top" aria-label="Home"><SSMark/><strong>SAEID<br/>SHAMSAEI</strong></a><span>ARCHITECT / BUILD / EVOLVE</span><button type="button" onClick={changeLang}>{lang==='fa'?'EN':'FA'} ↗</button></header>
+ <main>
+ <section className="motion-hero" id="top"><div className="motion-hero-copy"><span>SOFTWARE ARCHITECT / PRODUCT ENGINEER</span><h1>SAEID<br/><em>SHAMSAEI.</em></h1><p>{lang==='fa'?'مهندسی محصول‌های دیجیتال و سیستم‌های پیچیده، با تمرکز بر تجربه و پایداری.':'Designing digital systems that make complex ideas feel remarkably simple.'}</p><small>SCROLL ↓ / SELECTED PROJECTS</small></div><div className="motion-portrait" aria-label="Portrait placement pending an owner-supplied verified personal photograph"><div className="portrait-placeholder"><SSMark/><span>PORTRAIT / OWNER PHOTO PENDING</span></div></div></section>
+ <section className="motion-section-divider"><span>SELECTED PROJECTS</span><span>FOUR JOURNEYS. ONE PHILOSOPHY.</span></section>
+ {projects.map(p=><ProjectJourney key={p.id} project={p} lang={lang}/>)}
+ <section className="motion-end" id="contact"><span>IDEAS / SYSTEMS / PEOPLE / IMPACT</span><h2>{lang==='fa'?'بیایید آینده را بسازیم.':"LET'S BUILD\nWHAT'S NEXT."}</h2><p>{lang==='fa'?'برای همکاری و گفتگو از ایمیل استفاده کنید.':'Ambitious product? Interesting challenge? Start a conversation.'}</p><a href={'mailto:'+publicContact.email}>{publicContact.email} ↗</a><div className="motion-social"><a href={publicContact.github} target="_blank" rel="noreferrer">GITHUB ↗</a><a href={publicContact.linkedin} target="_blank" rel="noreferrer">LINKEDIN ↗</a></div></section>
+ </main><footer className="motion-footer"><SSMark/><span>© 2026 SAEID SHAMSAEI</span><span>DESIGNING DIGITAL SYSTEMS THAT ENDURE.</span></footer>
+ </div>;
 }
