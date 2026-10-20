@@ -64,3 +64,21 @@ await expect(page.locator('#contact')).toBeAttached();
 expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
 await page.close();
 });
+
+test('vertical desktop scroll reveals the horizontal story before the next project',async ({browser})=>{
+ const page=await browser.newPage({viewport:{width:1440,height:900}});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
+ const chapter=page.locator('#project-gartal');
+ await chapter.scrollIntoViewIfNeeded();
+ await page.waitForTimeout(650);
+ const track=chapter.locator('.motion-track');
+ const initial=await track.evaluate(el=>el.scrollLeft);
+ await page.mouse.move(800,580);
+ await page.mouse.wheel(0,950);
+ await page.waitForTimeout(1800);
+ const progressed=await track.evaluate(el=>el.scrollLeft);
+ expect(progressed).toBeGreaterThan(initial+50);
+ await expect(chapter).toBeVisible();
+ await page.close();
+});
