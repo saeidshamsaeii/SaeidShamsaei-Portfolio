@@ -120,3 +120,44 @@
  .ss-loading-copy span{font-size:12px;letter-spacing:.24em}
 }
 @media(prefers-reduced-motion:reduce){.cinematic-art-image,.ss-loading-logo{transition:none;animation:none!important;transform:none}.motion-track{scroll-behavior:auto}}
+
+
+/* Portfolio chapter pacing: vertical wheel progress reveals each horizontal case-study before the next chapter. */
+.cinematic-header-links a{transition:color .2s ease}
+.cinematic-header-links a:hover,.cinematic-header-links a:focus-visible{color:#f5d69e}
+.motion-about,.motion-approach{padding:clamp(64px,8vw,138px) clamp(22px,6vw,108px);border-top:1px solid #dbb77835;display:grid;grid-template-columns:minmax(160px,23%) 1fr;gap:5vw}
+.motion-about{background:linear-gradient(135deg,#10151a,#080b0f)}
+.motion-approach{background:linear-gradient(120deg,#111a1e,#080b0f 65%)}
+.motion-editorial-number{color:#d9b87c;font-size:11px;letter-spacing:.18em;font-weight:700}
+.motion-editorial-copy h2{font-size:clamp(38px,6vw,94px);line-height:1.08;letter-spacing:-.065em;white-space:pre-line;margin:0 0 36px}
+.motion-editorial-copy p{max-width:820px;color:#c5c3bb;font-size:clamp(17px,1.65vw,23px);line-height:1.75}
+.motion-principles>div{display:grid;grid-template-columns:54px 1fr 32px;gap:18px;align-items:center;padding:25px 5px;border-top:1px solid #ffffff30}
+.motion-principles>div:last-child{border-bottom:1px solid #ffffff30}
+.motion-principles span{font-size:12px;color:#d9b87c}
+.motion-principles strong{font-size:clamp(15px,2.15vw,28px);letter-spacing:-.025em;font-weight:600}
+.motion-principles span:last-child{font-size:22px;text-align:right}
+@media(max-width:960px){
+ .motion-about,.motion-approach{display:block;padding:70px 24px}
+ .motion-editorial-number{margin-bottom:36px}
+ .motion-editorial-copy h2{font-size:clamp(38px,9vw,62px)}
+ .motion-principles>div{grid-template-columns:34px 1fr 20px;gap:10px;padding:21px 0}
+}
+@media (min-width:961px) and (min-height:700px) and (prefers-reduced-motion:no-preference){
+ .motion-chapter{height:100svh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .motion-chapter-inner{flex:0 0 62%;height:62%;min-height:0;padding:12px clamp(22px,4.3vw,82px) 0}
+ .motion-copy h2{font-size:clamp(48px,5vw,87px);margin:13px 0 8px}
+ .motion-copy h3{font-size:clamp(24px,2.15vw,36px);margin-bottom:10px}
+ .motion-copy>p:not(.motion-label){font-size:clamp(13px,1.12vw,17px);line-height:1.43}
+ .motion-tags{margin-top:13px}
+ .motion-instruction{margin-top:16px}
+ .motion-visual{height:100%;max-height:100%;overflow:hidden}
+ .motion-drawer{flex:1;min-height:0;display:flex;flex-direction:column;padding:7px clamp(22px,4.3vw,82px) 15px}
+ .motion-track{height:100%;flex:1;min-height:0;overflow-x:hidden;overflow-y:hidden;scroll-behavior:auto;scroll-snap-type:none;touch-action:auto}
+ .motion-frame{height:100%;min-height:0;flex:0 0 min(550px,63vw);padding:16px 21px;overflow:hidden}
+ .motion-frame h4{font-size:clamp(19px,1.8vw,28px);line-height:1.12;margin:6px 0}
+ .motion-frame p{font-size:clamp(12px,.98vw,14px);line-height:1.45;max-height:128px;overflow-y:auto;user-select:text}
+ .motion-miniart{display:none}
+ .cinematic-thumbnails{display:none}
+ .motion-progress{flex:0 0 39px;margin-top:8px}
+ .motion-progress button{padding:6px 14px}
+}
