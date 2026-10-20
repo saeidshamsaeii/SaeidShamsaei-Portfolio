@@ -66,7 +66,7 @@ test('vertical scroll drives horizontal story for each project on desktop',async
   await expect.poll(()=>segment.locator('.sx-story-rail').evaluate(e=>e.scrollLeft)).toBeGreaterThan(middle.max*.95);
  }
  const first=page.locator('#project-gartal'),second=page.locator('#project-factory');
- expect(await first.evaluate(e=>e.compareDocumentPosition(document.querySelector('#project-factory')) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTruthy();
+ expect(await first.evaluate(e=>e.compareDocumentPosition(document.querySelector('#project-factory')!) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTruthy();
  await second.scrollIntoViewIfNeeded();
  await expect(second).toBeVisible();
 });
