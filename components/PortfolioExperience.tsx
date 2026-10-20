@@ -1,133 +1,230 @@
+'use client';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
-import {projects,publicContact} from '@/data/portfolio';
+import {projects,publicContact,type Project} from '@/data/portfolio';
 
-const information={
- gartal:{kind:'FLAGSHIP PLATFORM',short:'One foundation. Multiple businesses.',theme:'gold',intro:'A flexible foundation for business software, commerce and operations — built to support multiple products without repeating the core.',cards:['Shared enterprise foundation','Tenant-aware system architecture','Composable business workflows','Documented platform design']},
- factory:{kind:'AI ENGINEERING SYSTEM',short:'From idea to governed delivery.',theme:'blue',intro:'AI-assisted engineering workflows with controlled permissions, repository orchestration, CI evidence and accountable delivery.',cards:['Reviewable engineering workflows','Exact-commit CI validation','Controlled orchestration','Clear permission boundaries']},
- digirezhim:{kind:'HEALTHTECH PLATFORM',short:'Better clinical workflows.',theme:'mint',intro:'Physician-oriented clinical nutrition workflows with structured patient context, review pathways and personalized planning.',cards:['Structured patient information','Clinical decision pathways','Nutrition planning','Longitudinal follow-up']},
- petiwoo:{kind:'VERTICAL COMMERCE',short:'Thoughtful technology for pet care.',theme:'peach',intro:'A pet retail and veterinary concept bringing domain-specific commerce and service workflows onto a shared platform.',cards:['Pet commerce experiences','Inventory and suppliers','Veterinary workflows','Customer-centered design']}
-} as const;
+const focuses=[
+ {title:'Software architecture',detail:'Systems designed to evolve'},
+ {title:'AI & automation',detail:'Useful, controlled intelligence'},
+ {title:'Product experience',detail:'Clear interfaces for real people'},
+ {title:'Engineering quality',detail:'Measured, reviewable delivery'}
+];
+const themes:{[key in Project['id']]:{sector:string;accent:string;tagline:string}}={
+ gartal:{sector:'ENTERPRISE PLATFORM',accent:'gold',tagline:'One foundation. Multiple businesses.'},
+ factory:{sector:'AI ENGINEERING',accent:'blue',tagline:'From repository to governed delivery.'},
+ digirezhim:{sector:'HEALTHTECH',accent:'mint',tagline:'Physician knowledge. Structured decisions.'},
+ petiwoo:{sector:'VERTICAL COMMERCE',accent:'peach',tagline:'Thoughtful technology for pet care.'}
+};
 
 function Brand({footer=false}:{footer?:boolean}){
- return <Link className={'pf-brand'+(footer?' pf-brand--footer':'')} href="/" aria-label="Saeid Shamsaei — home">
-  <img src="/assets/hires/logo.webp" alt="" width="48" height="48" decoding="async"/>
+ return <Link className={'sx-brand'+(footer?' sx-brand--footer':'')} href="/" aria-label="Saeid Shamsaei — home">
+  <img src="/assets/hires/logo.webp" width={44} height={44} alt="" decoding="async"/>
   <span>SAEID <strong>SHAMSAEI</strong>{footer&&<small>Product architecture & engineering</small>}</span>
  </Link>;
 }
 
-function ProjectSection({project}:{project:(typeof projects)[number]}){
- const detail=information[project.id];
- const cells=[
-  {label:'THE CHALLENGE',text:project.problem.en},
-  {label:'SYSTEM ARCHITECTURE',text:project.solution.en},
-  {label:'CAPABILITIES',text:project.features.slice(0,3).map(x=>x.en).join(' · ')},
-  {label:'DOCUMENTED STATUS',text:project.outcome.en}
- ];
- return <article id={'project-'+project.id} className={'pf-project pf-project--'+detail.theme} aria-labelledby={'title-'+project.id}>
-  <div className="pf-project-main">
-   <div className="pf-project-copy">
-    <p className="pf-eyebrow"><span>{project.index} / 04</span> {detail.kind}</p>
-    <h3 id={'title-'+project.id}>{project.id==='factory'?<>AI <em>Factory</em></>:project.brand}</h3>
-    <h4>{detail.short}</h4>
-    <p className="pf-project-desc">{detail.intro}</p>
-    <div className="pf-project-tags">{project.features.slice(0,3).map(item=><span key={item.en}>{item.en}</span>)}</div>
-    <Link className="pf-button pf-button--color" href={'/work/'+project.id+'/'}>Explore case study <span aria-hidden="true">↗</span></Link>
+const phases=['OVERVIEW','THE CHALLENGE','THE ARCHITECTURE','CAPABILITIES','EVIDENCE & NEXT'];
+function ProjectChapter({project,index}:{project:Project;index:number}){
+ const sectionRef=useRef<HTMLElement>(null);
+ const stickyRef=useRef<HTMLDivElement>(null);
+ const railRef=useRef<HTMLDivElement>(null);
+ const [active,setActive]=useState(0);
+ const state=useRef({start:0,distance:1,width:1,reduced:false});
+ const touch=useRef<{x:number;y:number}|null>(null);
+ const meta=themes[project.id];
+ const count=phases.length;
+
+ useEffect(()=>{
+  const section=sectionRef.current,sticky=stickyRef.current,rail=railRef.current;
+  if(!section||!sticky||!rail)return;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  let handle=0;
+  const measure=()=>{
+   state.current.reduced=reduced.matches;
+   if(reduced.matches){section.style.height='auto';return;}
+   const width=Math.max(1,rail.scrollWidth-rail.clientWidth);
+   const distance=Math.max(820,Math.round(width*(window.innerWidth<768?.94:.7)),Math.round((count-1)*window.innerHeight*(window.innerWidth<768?.56:.48)));
+   state.current={start:0,distance,width,reduced:false};
+   section.style.height=(sticky.getBoundingClientRect().height+distance)+'px';
+   state.current.start=section.getBoundingClientRect().top+window.scrollY;
+   move();
+  };
+  const move=()=>{
+   if(state.current.reduced)return;
+   const {start,distance,width}=state.current;
+   const fraction=Math.max(0,Math.min(1,(window.scrollY-start)/distance));
+   rail.scrollLeft=fraction*width;
+   setActive(current=>{const n=Math.min(count-1,Math.round(fraction*(count-1)));return n===current?current:n;});
+  };
+  const onScroll=()=>{if(handle)return;handle=requestAnimationFrame(()=>{handle=0;move();});};
+  const onResize=()=>{if(handle)cancelAnimationFrame(handle);handle=requestAnimationFrame(()=>{handle=0;measure();});};
+  const observer=new ResizeObserver(onResize);observer.observe(sticky);
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onResize);
+  const mq=()=>onResize();reduced.addEventListener('change',mq);
+  const ready=document.fonts.ready.then(()=>{if(section.isConnected)measure();});
+  measure();
+  return()=>{void ready;observer.disconnect();window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onResize);reduced.removeEventListener('change',mq);if(handle)cancelAnimationFrame(handle);section.style.height='';};
+ },[count]);
+
+ const goTo=useCallback((n:number)=>{
+  const rail=railRef.current;
+  if(!rail)return;
+  const bounded=Math.max(0,Math.min(count-1,n));
+  if(state.current.reduced){rail.scrollTo({left:bounded*rail.clientWidth,behavior:'smooth'});setActive(bounded);return;}
+  const {start,distance}=state.current;
+  window.scrollTo({top:start+distance*(bounded/(count-1)),behavior:'smooth'});
+ },[count]);
+ const nextProject=projects[index+1];
+ return <section className={'sx-chapter sx-theme-'+meta.accent} id={'project-'+project.id} ref={sectionRef}
+  aria-label={project.brand+' scroll-driven case study'} data-active-slide={String(active)}>
+  <div className="sx-chapter-sticky" ref={stickyRef}>
+   <div className="sx-chapter-top">
+    <div><span className="sx-chapter-index">{project.index} / 04</span><span className="sx-chapter-name">{project.brand}</span><span className="sx-chapter-category">{meta.sector}</span></div>
+    <div className="sx-chapter-progress" aria-label={String(active+1)+' of '+count+' case study slides'}>
+     <span>{String(active+1).padStart(2,'0')} / 0{count}</span>
+     <div className="sx-progress-bar"><i style={{width:((active+1)/count*100)+'%'}}/></div>
+    </div>
    </div>
-   <Link className="pf-project-art" href={'/work/'+project.id+'/'} aria-label={'Open '+project.brand+' case study'}>
-    <img src={'/assets/hires/project-'+project.id+'.webp'} alt={project.brand+' — illustrated product concept'} width="1448" height="1086" loading="eager" decoding="async"/>
-    <span className="pf-art-corner" aria-hidden="true">VIEW PROJECT ↗</span>
-   </Link>
+   <div className="sx-viewport">
+    <div className="sx-story-rail" ref={railRef}
+     onTouchStart={e=>{touch.current={x:e.touches[0].clientX,y:e.touches[0].clientY};}}
+     onTouchEnd={e=>{const start=touch.current;touch.current=null;if(!start)return;
+      const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;
+      if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2)goTo(active+(dx<0?1:-1));
+     }}
+     aria-label={project.brand+' horizontal case study frames'} tabIndex={0}
+     onKeyDown={e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();goTo(active+(e.key==='ArrowRight'?1:-1));}}}>
+     <article className="sx-slide sx-slide--overview" aria-label="Project overview">
+      <div className="sx-slide-copy">
+       <p className="sx-kicker">{project.index} / {meta.sector}</p>
+       <h2>{project.id==='factory'?<>AI <em>Factory</em></>:project.brand}</h2>
+       <h3>{meta.tagline}</h3>
+       <p>{project.intro.en}</p>
+       <div className="sx-stack">{project.features.slice(0,3).map(f=><span key={f.en}>{f.en}</span>)}</div>
+       <Link className="sx-action" href={'/work/'+project.id+'/'}>Open the full case study <span aria-hidden="true">↗</span></Link>
+      </div>
+      <div className="sx-slide-art"><img src={'/assets/hires/project-'+project.id+'.webp'} alt={project.brand+' illustrated product interface'} width={1448} height={1086} loading="eager" decoding="async"/></div>
+     </article>
+     <article className="sx-slide sx-slide--detail" aria-label="The challenge">
+      <div className="sx-slide-narrative"><p className="sx-kicker">01 / THE CHALLENGE</p>
+       <h2>What needed to <em>change?</em></h2><p>{project.problem.en}</p>
+       <div className="sx-slide-footnote">DESIGNING A BETTER FOUNDATION</div>
+      </div>
+      <div className="sx-diagram sx-diagram--challenge" aria-hidden="true">
+       <div className="sx-diagram-orb"><span>?</span></div>
+       <strong>COMPLEXITY → CLARITY</strong>
+       <div className="sx-diagram-lines"><i/><i/><i/><i/></div>
+       <small>DEFINE THE REAL PROBLEM</small>
+      </div>
+     </article>
+     <article className="sx-slide sx-slide--detail" aria-label="System architecture">
+      <div className="sx-slide-narrative"><p className="sx-kicker">02 / SYSTEM ARCHITECTURE</p>
+       <h2>Built for <em>what comes next.</em></h2><p>{project.solution.en}</p>
+       <Link className="sx-text-link" href={'/work/'+project.id+'/'}>Read the architecture breakdown ↗</Link>
+      </div>
+      <div className="sx-diagram sx-diagram--architecture"><span className="sx-diagram-title">ARCHITECTURE MAP</span>
+       <div className="sx-architecture-list">{project.architecture.map((item,i)=>
+        <div key={item.en}><span>{String(i+1).padStart(2,'0')}</span><strong>{item.en}</strong></div>)}</div>
+      </div>
+     </article>
+     <article className="sx-slide sx-slide--detail" aria-label="Capabilities">
+      <div className="sx-slide-narrative"><p className="sx-kicker">03 / CAPABILITIES</p>
+       <h2>Every part has <em>a purpose.</em></h2>
+       <p>Purpose-built capabilities shaped around the domain, with a focus on coherence, adaptability and user experience.</p>
+      </div>
+      <div className="sx-diagram sx-diagram--capabilities"><span className="sx-diagram-title">CORE CAPABILITIES</span>
+       <div className="sx-capability-list">{project.features.map((item,i)=><div key={item.en}><span>0{i+1}</span><strong>{item.en}</strong><i aria-hidden="true">↗</i></div>)}</div>
+      </div>
+     </article>
+     <article className="sx-slide sx-slide--detail sx-slide--end" aria-label="Documented evidence and next project">
+      <div className="sx-slide-narrative"><p className="sx-kicker">04 / DOCUMENTED STATUS</p>
+       <h2>Ideas supported <em>by evidence.</em></h2><p>{project.outcome.en}</p>
+       <small className="sx-evidence-note">Visualizations are conceptual; operating metrics are not asserted.</small>
+       <Link className="sx-action" href={'/work/'+project.id+'/'}>Explore full case study ↗</Link>
+      </div>
+      <div className="sx-diagram sx-diagram--next">
+       <span className="sx-diagram-title">UP NEXT</span>
+       <strong>{nextProject?nextProject.brand:'LET’S BUILD TOGETHER'}</strong>
+       <p>{nextProject?'Keep scrolling down to enter the next project.':'Continue down for the approach and contact details.'}</p>
+       <a href={nextProject?'#project-'+nextProject.id:'#approach'}>Continue ↓</a>
+      </div>
+     </article>
+    </div>
+   </div>
+   <div className="sx-chapter-bottom">
+    <div className="sx-slide-dots" aria-label={project.brand+' case study navigation'}>
+     {phases.map((phase,i)=><button key={phase} type="button" className={i===active?'is-active':''}
+      aria-label={'Show '+phase.toLowerCase()} aria-current={i===active?'step':undefined} onClick={()=>goTo(i)}><span/></button>)}
+    </div>
+    <span className="sx-scroll-hint">{active===count-1?'SCROLL DOWN FOR THE NEXT PROJECT':'SCROLL DOWN → STORY MOVES SIDEWAYS'}</span>
+    <div className="sx-chapter-buttons"><button type="button" onClick={()=>goTo(active-1)} disabled={active===0} aria-label={'Previous '+project.brand+' slide'}>←</button>
+    <button type="button" onClick={()=>goTo(active+1)} disabled={active===count-1} aria-label={'Next '+project.brand+' slide'}>→</button></div>
+   </div>
   </div>
-  <div className="pf-project-notes">
-   {cells.map((cell,i)=><div className="pf-note" key={cell.label}>
-    <span className="pf-note-icon" aria-hidden="true">{['◇','⌘','✦','↗'][i]}</span>
-    <h5>{cell.label}</h5>
-    <p>{cell.text}</p>
-   </div>)}
-  </div>
- </article>;
+ </section>;
 }
 
 export default function PortfolioExperience(){
- return <div className="pf-site">
+ return <div className="sx-site">
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
-  <header className="pf-header">
-   <div className="pf-header-inner">
-    <Brand/>
-    <nav className="pf-nav" aria-label="Primary navigation">
-     <a href="#top">Home</a><a href="#selected-projects">Projects</a>
-     <a href="#about">About</a><a href="#approach">Approach</a><a href="#contact">Contact</a>
-    </nav>
-    <a className="pf-header-contact" href={'mailto:'+publicContact.email}>Let’s Talk <span aria-hidden="true">↗</span></a>
-   </div>
+  <header className="sx-header">
+   <Brand/>
+   <nav aria-label="Primary navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#approach">Approach</a><a href="#contact">Contact</a></nav>
+   <a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a>
   </header>
-
   <main>
-   <section className="pf-hero" id="top" aria-labelledby="pf-hero-title">
-    <div className="pf-hero-glow" aria-hidden="true"/>
-    <div className="pf-hero-inner">
-     <div className="pf-hero-copy">
-      <p className="pf-eyebrow pf-hero-eyebrow">BUILDER <span>✦</span> PRODUCT ENGINEER <span>✦</span> PROBLEM SOLVER</p>
-      <h1 id="pf-hero-title">SAEID <span>SHAMSAEI.</span></h1>
-      <p className="pf-hero-lead">I design and build digital products that turn complex ideas into clear, scalable systems.</p>
-      <p className="pf-hero-sub">Product thinking, software architecture and thoughtful execution — from the first idea to the working system.</p>
-      <div className="pf-hero-actions">
-       <a href="#selected-projects" className="pf-button pf-button--gold">View My Projects <span aria-hidden="true">↗</span></a>
-       <a href={'mailto:'+publicContact.email} className="pf-button pf-button--outline">Get in Touch <span aria-hidden="true">✉</span></a>
-      </div>
-      <div className="pf-hero-facts" aria-label="Areas of focus">
-       <div><strong>04</strong><small>Selected Projects</small></div>
-       <div><strong>AI</strong><small>Automation & Systems</small></div>
-       <div><strong>UX</strong><small>People-first Products</small></div>
-      </div>
+   <section className="sx-work-hero" id="top" aria-labelledby="sx-work-title">
+    <div className="sx-work-shade"/>
+    <div className="sx-work-copy">
+     <p className="sx-kicker">WELCOME TO THE WORKSPACE / 01</p>
+     <h1 id="sx-work-title">BUILDING<br/><em>WHAT’S NEXT.</em></h1>
+     <p>From engineering workspaces to products people rely on. Architecture, intelligent workflows and experiences built with intention.</p>
+     <div className="sx-hero-actions"><a href="#about" className="sx-action">Meet the builder <span aria-hidden="true">↓</span></a>
+      <a href="#selected-projects" className="sx-outline">Explore projects ↗</a></div>
+    </div>
+    <span className="sx-hero-side" aria-hidden="true">CODE / DESIGN / DELIVER</span>
+    <div className="sx-hero-bottom"><span>DEVELOPMENT ENVIRONMENT</span><span>01 / 02 &nbsp; ↓ SCROLL TO EXPLORE</span></div>
+   </section>
+
+   <section className="sx-profile" id="about" aria-labelledby="sx-profile-title">
+    <div className="sx-profile-inner">
+     <div className="sx-profile-photo"><div className="sx-profile-orbit" aria-hidden="true"/><div className="sx-profile-orbit sx-profile-orbit--two" aria-hidden="true"/>
+      <img src="/assets/hires/portrait.webp" alt="Saeid Shamsaei — personal portrait" width={1122} height={1402} fetchPriority="high" decoding="async"/>
+      <span className="sx-profile-caption">THE PERSON BEHIND THE SYSTEMS</span>
      </div>
-     <div className="pf-hero-visual" aria-label="Editorial portrait of Saeid Shamsaei">
-      <div className="pf-hero-halo" aria-hidden="true"/>
-      <div className="pf-hero-halo pf-hero-halo--small" aria-hidden="true"/>
-      <span className="pf-hero-vertical" aria-hidden="true">IDEAS&nbsp; · &nbsp; SYSTEMS&nbsp; · &nbsp; IMPACT</span>
-      <img className="pf-portrait" src="/assets/hires/portrait.webp" alt="Saeid Shamsaei" width="1122" height="1402" fetchPriority="high" decoding="async"/>
-      <span className="pf-portrait-base" aria-hidden="true"/>
+     <div className="sx-profile-copy">
+      <p className="sx-kicker">02 / THE BUILDER</p>
+      <h2 id="sx-profile-title">SAEID<br/><em>SHAMSAEI.</em></h2>
+      <p className="sx-profile-role">Software Architect · Product Engineer · Systems Builder</p>
+      <p className="sx-profile-intro">I connect systems thinking, product design and engineering to turn complicated ideas into solutions that are clear, scalable and useful.</p>
+      <p className="sx-profile-interests-title">WHAT I ENJOY BUILDING</p>
+      <div className="sx-focus-list">{focuses.map((focus,i)=><div key={focus.title}><span>0{i+1}</span>
+       <div><strong>{focus.title}</strong><small>{focus.detail}</small></div><span aria-hidden="true">↗</span></div>)}</div>
+      <div className="sx-profile-actions"><a href="#selected-projects" className="sx-action">Explore my work ↘</a>
+       <a href={publicContact.github} target="_blank" rel="noreferrer" className="sx-outline">GitHub ↗</a></div>
      </div>
     </div>
    </section>
 
-   <section className="pf-projects" id="selected-projects" aria-labelledby="pf-work-title">
-    <div className="pf-section-heading">
-     <div><span className="pf-eyebrow">01 / SELECTED WORK</span><h2 id="pf-work-title">Systems built with <em>purpose.</em></h2></div>
-     <p>Four different domains. One approach: simplify complexity, design for change and make every part work together.</p>
-    </div>
-    <div className="pf-project-list">{projects.map(project=><ProjectSection project={project} key={project.id}/>)}</div>
-    <p className="pf-project-disclosure">Project artwork is conceptual visualization. Product statistics shown inside artwork are illustrative and are not verified operating metrics.</p>
-   </section>
+   <div className="sx-work-intro" id="selected-projects"><div><span className="sx-kicker">03 / SELECTED WORK</span><h2>FOUR SYSTEMS.<br/><em>FOUR STORIES.</em></h2></div>
+    <p>Scroll down to travel horizontally through each case study. When a story ends, keep scrolling to enter the next project.</p>
+    <span className="sx-work-arrow" aria-hidden="true">↓</span>
+   </div>
+   {projects.map((project,index)=><ProjectChapter key={project.id} project={project} index={index}/>)}
 
-   <section className="pf-about" id="about" aria-labelledby="pf-about-title">
-    <p className="pf-eyebrow">02 / ABOUT</p>
-    <div><h2 id="pf-about-title">COMPLEX IDEAS.<br/><span>ENDURING SYSTEMS.</span></h2>
-     <p>I connect architecture, product thinking and design to build systems that are useful today and adaptable tomorrow. My work spans enterprise platforms, AI-enabled engineering, clinical workflows and focused digital commerce.</p></div>
+   <section className="sx-principles-section" id="approach">
+    <div><p className="sx-kicker">04 / HOW I WORK</p><h2>Build with<br/><em>intention.</em></h2></div>
+    <div className="sx-principles">{['PROBLEM BEFORE TOOLING','ARCHITECTURE FOR CHANGE','EXPERIENCE WITHOUT FRICTION','VERIFIABLE QUALITY'].map((t,i)=><div key={t}><span>{String(i+1).padStart(2,'0')}</span><strong>{t}</strong><i aria-hidden="true">↗</i></div>)}</div>
    </section>
-
-   <section className="pf-approach" id="approach" aria-labelledby="pf-approach-title">
-    <div><p className="pf-eyebrow">03 / THE APPROACH</p><h2 id="pf-approach-title">Build with intention.</h2></div>
-    <div className="pf-principles">
-     <div><span>01</span><strong>PROBLEM BEFORE TOOLING</strong><span aria-hidden="true">↗</span></div>
-     <div><span>02</span><strong>ARCHITECTURE FOR CHANGE</strong><span aria-hidden="true">↗</span></div>
-     <div><span>03</span><strong>DESIGN WITHOUT FRICTION</strong><span aria-hidden="true">↗</span></div>
-     <div><span>04</span><strong>VERIFIABLE QUALITY</strong><span aria-hidden="true">↗</span></div>
-    </div>
-   </section>
-
-   <section className="pf-contact" id="contact" aria-labelledby="pf-contact-title">
-    <div className="pf-contact-sky" aria-hidden="true"><i/><i/><i/></div>
-    <p className="pf-eyebrow">04 / LET’S BUILD TOGETHER</p>
-    <div className="pf-contact-layout"><div><h2 id="pf-contact-title">COMPLEX IDEAS.<br/><span>REAL IMPACT.</span></h2>
-     <p>Have an ambitious product, a challenging system or a new partnership in mind? Let’s make it tangible.</p>
-     <div className="pf-hero-actions"><a className="pf-button pf-button--gold" href={'mailto:'+publicContact.email}>Start a Conversation <span aria-hidden="true">↗</span></a>
-      <a className="pf-button pf-button--outline" href="#selected-projects">View My Projects <span aria-hidden="true">↑</span></a></div>
-    </div><div className="pf-contact-art" aria-hidden="true"><div className="pf-contact-ring"/><span>BUILD<br/>WHAT<br/>MATTERS.</span></div></div>
+   <section className="sx-contact" id="contact">
+    <p className="sx-kicker">05 / LET’S BUILD TOGETHER</p>
+    <div><div><h2>COMPLEX IDEAS.<br/><em>REAL IMPACT.</em></h2><p>Have an ambitious product or challenging system in mind? Let’s make it tangible.</p>
+     <a href={'mailto:'+publicContact.email} className="sx-action">Start a conversation ↗</a></div>
+     <div className="sx-contact-symbol" aria-hidden="true"><span>SS</span></div></div>
    </section>
   </main>
-  <footer className="pf-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#selected-projects">Projects</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
-   <div className="pf-footer-links"><a href={publicContact.github} rel="noreferrer" target="_blank">GitHub ↗</a><a href={publicContact.linkedin} rel="noreferrer" target="_blank">LinkedIn ↗</a><a href={'mailto:'+publicContact.email}>Email ↗</a></div>
-  </footer>
+  <footer className="sx-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#contact">Contact</a></nav>
+   <div><a href={publicContact.github} rel="noreferrer" target="_blank">GitHub ↗</a><a href={publicContact.linkedin} rel="noreferrer" target="_blank">LinkedIn ↗</a></div></footer>
  </div>;
 }

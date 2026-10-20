@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Illustrated software engineering workspace with code editor and terminal">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090d14"/><stop offset=".52" stop-color="#101b24"/><stop offset="1" stop-color="#07090e"/></linearGradient>
+ <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#2d2520"/><stop offset=".8" stop-color="#0e0e12"/></linearGradient>
+ <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1e26"/><stop offset="1" stop-color="#070d13"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe0aa"/><stop offset="1" stop-color="#bd7f39"/></linearGradient>
+ <radialGradient id="light"><stop stop-color="#4bc5d1" stop-opacity=".26"/><stop offset="1" stop-color="#4bc5d1" stop-opacity="0"/></radialGradient>
+ <radialGradient id="amber"><stop stop-color="#eeaf5a" stop-opacity=".24"/><stop offset="1" stop-color="#eeaf5a" stop-opacity="0"/></radialGradient>
+ <filter id="shadow" x="-40%" y="-50%" width="180%" height="200%"><feGaussianBlur stdDeviation="25"/></filter>
+ <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#91aab5" stroke-opacity=".09"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<rect width="1600" height="900" fill="url(#grid)" opacity=".75"/>
+<ellipse cx="1130" cy="370" rx="730" ry="570" fill="url(#light)"/>
+<ellipse cx="1380" cy="690" rx="460" ry="390" fill="url(#amber)"/>
+<path d="M430 0L1600 0L960 900" fill="none" stroke="#c9985a" stroke-opacity=".12" stroke-width="2"/>
+<path d="M690 0L1520 900" fill="none" stroke="#c9985a" stroke-opacity=".08" stroke-width="2"/>
+<!-- understated premium desk workstation -->
+<path d="M600 705L1600 696V900H480Z" fill="url(#desk)" opacity=".95"/>
+<path d="M550 704L1600 689" stroke="#d4af73" stroke-opacity=".24" stroke-width="5"/>
+<!-- monitor shadow -->
+<rect x="755" y="100" width="760" height="560" rx="28" fill="#000" opacity=".68" filter="url(#shadow)"/>
+<rect x="722" y="80" width="793" height="568" rx="24" fill="#181e26" stroke="#7e8d94" stroke-opacity=".6" stroke-width="5"/>
+<rect x="739" y="98" width="759" height="527" rx="14" fill="url(#screen)" stroke="#2f4350" stroke-width="2"/>
+<!-- IDE tabs -->
+<rect x="739" y="98" width="759" height="47" rx="14" fill="#111821"/>
+<path d="M739 145H1498" stroke="#34414d"/>
+<circle cx="765" cy="122" r="6" fill="#e68c78"/><circle cx="788" cy="122" r="6" fill="#f2c174"/><circle cx="811" cy="122" r="6" fill="#70a88e"/>
+<rect x="845" y="106" width="142" height="33" rx="7" fill="#263640"/>
+<text x="858" y="126" font-family="monospace" font-size="14" fill="#cfe0d7">workspace.tsx</text>
+<text x="1013" y="126" font-family="monospace" font-size="14" fill="#8fa5b0">architecture.ts</text>
+<text x="1370" y="126" font-family="monospace" font-size="12" fill="#e5bf86">● BUILD</text>
+<!-- explorer sidebar -->
+<rect x="739" y="145" width="190" height="480" fill="#101923"/>
+<text x="763" y="176" font-family="monospace" font-size="13" fill="#d3b67e" letter-spacing="2">EXPLORER</text>
+<g font-family="monospace" font-size="14" fill="#89aab1">
+<text x="762" y="216">▾ src/</text><text x="777" y="246">⌁ app/</text>
+<text x="777" y="278" fill="#f4d7a1">◇ portfolio.tsx</text>
+<text x="777" y="310">⌁ systems/</text><text x="777" y="342">⌁ agents/</text><text x="777" y="374">⌁ workflows/</text>
+<text x="762" y="429">▾ tests/</text><text x="777" y="461">✓ e2e.spec.ts</text>
+<text x="762" y="510">◇ package.json</text><text x="762" y="541">◇ README.md</text>
+</g>
+<!-- coding area -->
+<g font-family="monospace" font-size="17">
+<text x="955" y="187" fill="#67808c">01</text><text x="1014" y="187" fill="#c5a0e6">export</text><text x="1087" y="187" fill="#77c5c7"> function</text><text x="1170" y="187" fill="#f6dcab"> buildSystems</text><text x="1320" y="187" fill="#d3e0e9">() {</text>
+<text x="955" y="223" fill="#67808c">02</text><text x="1035" y="223" fill="#89aab4">const</text><text x="1095" y="223" fill="#c5e4cf"> vision</text><text x="1172" y="223" fill="#d3e0e9"> = {</text>
+<text x="955" y="259" fill="#67808c">03</text><text x="1068" y="259" fill="#e7c792">architecture:</text><text x="1216" y="259" fill="#9ad3b9">'scalable',</text>
+<text x="955" y="295" fill="#67808c">04</text><text x="1068" y="295" fill="#e7c792">experience:</text><text x="1200" y="295" fill="#9ad3b9">'human',</text>
+<text x="955" y="331" fill="#67808c">05</text><text x="1068" y="331" fill="#e7c792">quality:</text><text x="1160" y="331" fill="#9ad3b9">'verified',</text>
+<text x="955" y="367" fill="#67808c">06</text><text x="1035" y="367" fill="#d3e0e9">};</text>
+<text x="955" y="403" fill="#67808c">07</text><text x="1035" y="403" fill="#c5a0e6">return</text><text x="1115" y="403" fill="#77c5c7"> orchestrate</text><text x="1260" y="403" fill="#d3e0e9">(vision);</text>
+<text x="955" y="439" fill="#67808c">08</text><text x="1014" y="439" fill="#d3e0e9">}</text>
+</g>
+<!-- terminal -->
+<rect x="942" y="475" width="538" height="137" rx="8" fill="#071118" stroke="#33545a"/>
+<text x="958" y="498" fill="#d8bd8e" font-size="12" font-family="monospace" letter-spacing="2">TERMINAL</text>
+<path d="M942 511H1480" stroke="#375059"/>
+<text x="958" y="537" fill="#99bdac" font-size="15" font-family="monospace">➜  npm run build</text>
+<text x="958" y="567" fill="#9edabb" font-size="15" font-family="monospace">✓ architecture validated</text>
+<text x="958" y="595" fill="#9edabb" font-size="15" font-family="monospace">✓ experience ready</text>
+<rect x="1076" y="646" width="94" height="77" rx="8" fill="#11151c"/>
+<path d="M1036 718H1210L1270 741H974Z" fill="#32363c"/>
+<!-- supplemental device and coffee / desk items -->
+<g transform="translate(594 505)">
+<rect x="0" y="0" width="152" height="203" rx="14" fill="#151b25" stroke="#8d8d86" stroke-opacity=".7" stroke-width="4"/>
+<rect x="10" y="16" width="132" height="173" rx="7" fill="#0c1d27"/>
+<text x="22" y="48" font-family="monospace" font-size="12" fill="#e8bc78">LIVE SYSTEMS</text>
+<path d="M28 140L51 112L70 122L99 85L126 95" fill="none" stroke="#69d9b8" stroke-width="4" stroke-linecap="round"/>
+<rect x="22" y="158" width="95" height="4" rx="2" fill="#8caaac"/>
+<rect x="22" y="170" width="62" height="4" rx="2" fill="#57787d"/>
+</g>
+<ellipse cx="1432" cy="756" rx="79" ry="19" fill="#000" opacity=".5"/>
+<ellipse cx="1432" cy="717" rx="60" ry="45" fill="#2e3031" stroke="#5b5150" stroke-width="4"/>
+<ellipse cx="1432" cy="705" rx="48" ry="27" fill="#0b1115"/><ellipse cx="1432" cy="701" rx="35" ry="18" fill="#5d4432"/>
+<path d="M1490 713Q1540 701 1528 739Q1520 753 1492 740" fill="none" stroke="#5b5150" stroke-width="10"/>
+<!-- atmospheric highlights -->
+<path d="M690 742L1600 735" stroke="url(#gold)" stroke-opacity=".36" stroke-width="2"/>
+<text x="1010" y="841" font-family="sans-serif" font-weight="700" font-size="13" letter-spacing="7" fill="#d0b289" opacity=".73">DESIGN · BUILD · SHIP · IMPROVE</text>
+</svg>
