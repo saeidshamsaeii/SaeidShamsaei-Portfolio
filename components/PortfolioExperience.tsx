@@ -39,6 +39,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
   if(!section||!sticky||!rail)return;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let handle=0;
+  let snapTimer:number|undefined;
   const measure=()=>{
    state.current.reduced=reduced.matches;
    if(reduced.matches){section.style.height='auto';return;}
@@ -56,7 +57,27 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
    rail.scrollLeft=fraction*width;
    setActive(current=>{const n=Math.min(count-1,Math.round(fraction*(count-1)));return n===current?current:n;});
   };
-  const onScroll=()=>{if(handle)return;handle=requestAnimationFrame(()=>{handle=0;move();});};
+  const onScroll=()=>{
+   if(!state.current.reduced){
+    // A paused wheel / vertical touch gesture settles on one complete case
+    // frame. Never snap outside the active chapter or past its boundaries.
+    window.clearTimeout(snapTimer);
+    const {start,distance}=state.current;
+    if(window.scrollY>start+4&&window.scrollY<start+distance-4){
+     snapTimer=window.setTimeout(()=>{
+      if(state.current.reduced)return;
+      const ratio=(window.scrollY-state.current.start)/state.current.distance;
+      if(ratio<=0||ratio>=1)return;
+      const nearest=Math.round(ratio*(count-1))/(count-1);
+      if(Math.abs(ratio-nearest)>.015){
+       window.scrollTo({top:state.current.start+nearest*state.current.distance,behavior:'smooth'});
+      }
+     },260);
+    }
+   }
+   if(handle)return;
+   handle=requestAnimationFrame(()=>{handle=0;move();});
+  };
   const onResize=()=>{if(handle)cancelAnimationFrame(handle);handle=requestAnimationFrame(()=>{handle=0;measure();});};
   const observer=new ResizeObserver(onResize);observer.observe(sticky);
   window.addEventListener('scroll',onScroll,{passive:true});
@@ -64,7 +85,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
   const mq=()=>onResize();reduced.addEventListener('change',mq);
   const ready=document.fonts.ready.then(()=>{if(section.isConnected)measure();});
   measure();
-  return()=>{void ready;observer.disconnect();window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onResize);reduced.removeEventListener('change',mq);if(handle)cancelAnimationFrame(handle);section.style.height='';};
+  return()=>{void ready;observer.disconnect();window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onResize);reduced.removeEventListener('change',mq);if(handle)cancelAnimationFrame(handle);window.clearTimeout(snapTimer);section.style.height='';};
  },[count]);
 
  const goTo=useCallback((n:number)=>{

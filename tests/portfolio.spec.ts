@@ -71,6 +71,19 @@ test('vertical scroll drives horizontal story for each project on desktop',async
  await expect(second).toBeVisible();
 });
 
+test('paused wheel scrolling snaps to a complete case-study frame',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const segment=page.locator('#project-gartal');
+ await expect.poll(()=>segment.evaluate(e=>e.getBoundingClientRect().height)).toBeGreaterThan(1000);
+ const {max}=await goToProgress(page,'gartal',.59);
+ await expect.poll(async()=>{
+  const left=await segment.locator('.sx-story-rail').evaluate(e=>e.scrollLeft);
+  return Math.abs(left/max-.5);
+ },{timeout:6000,intervals:[150,200,300]}).toBeLessThan(.022);
+ await page.screenshot({path:'artifacts/desktop-case-study-snapped.png',animations:'disabled'});
+});
+
 test('touch-size/mobile vertical scrolling progresses horizontally, then next project',async({browser})=>{
  for(const width of [360,390,768]){
   const page=await browser.newPage({viewport:{width,height:844},isMobile:width<500,hasTouch:width<500});
