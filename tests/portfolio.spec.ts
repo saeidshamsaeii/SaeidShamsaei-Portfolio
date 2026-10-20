@@ -50,8 +50,35 @@ test('no image/card overlaps or horizontal page overflow on responsive sizes',as
 test('navigation and links resolve without invented video actions',async({page})=>{
  await page.goto('/');
  for(const anchor of ['#selected-projects','#about','#approach','#contact']){
-  const a=page.locator('a[href="'+anchor+'"]').first();await expect(a).toHaveCount(1);
-  await a.click();await expect(page.locator(anchor)).toBeAttached();
+  const a=page.locator('a[href="'+anchor+'"]').first();
+  await expect(a).toHaveCount(1);
+  await a.evaluate((el:HTMLAnchorElement)=>el.click());
+  await expect(page).toHaveURL(new RegExp(anchor.replace('#','\\#')+'
+ }
+ await expect(page.locator('a[href*="mailto:"]').first()).toBeAttached();
+ expect(await page.locator('body').innerText()).not.toContain('Watch Video');
+});
+test('all four detailed project routes load with genuine concept art',async({page})=>{
+ for(const slug of names){
+  await page.goto('/work/'+slug+'/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('h1')).toContainText(slug==='factory'?'AI Development Factory':slug==='gartal'?'GARTAL':slug==='digirezhim'?'DigiRezhim':'Petiwoo');
+  await expect(page.locator('.case-section')).toHaveCount(2);
+  await expect(page.locator('.case-capabilities>div')).toHaveCount(6);
+  await expect(page.locator('.case-hero-art')).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ }
+});
+test('reduced motion and keyboard-accessible project links',async({browser})=>{
+ const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ await page.goto('/');
+ await expect(page.locator('.pf-project')).toHaveCount(4);
+ await expect(page.locator('#contact')).toBeAttached();
+ await expect(page.locator('a[href="/work/gartal/"]').first()).toBeAttached();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ await page.close();
+});
+));
+  await expect(page.locator(anchor)).toBeAttached();
  }
  await expect(page.locator('a[href*="mailto:"]').first()).toBeAttached();
  expect(await page.locator('body').innerText()).not.toContain('Watch Video');
