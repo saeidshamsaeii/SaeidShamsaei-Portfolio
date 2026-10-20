@@ -1,28 +1,37 @@
-name: Portfolio source checks
+name: Portfolio build and export
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  source:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
-      - name: Node
+      - name: Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install (temporary: lockfile not yet committed)
+      - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: TypeScript
+      - name: TypeScript verification
         run: npm run typecheck
-      - name: Build static export
+      - name: Build export
         run: npm run build
         env:
           NEXT_PUBLIC_SITE_READY: 'false'
           NEXT_PUBLIC_SITE_URL: 'https://example.invalid'
+      - name: Upload verified static export
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: saeid-portfolio-static-export
+          path: out/
+          if-no-files-found: error
+          retention-days: 7

@@ -1,18 +1,15 @@
-import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import type {Metadata} from 'next';
-const cases={
-gartal:{name:'GARTAL',tag:'MULTI-TENANT ENTERPRISE SAAS',head:'A reusable core for multiple businesses.',lead:'GARTAL is a multi-runtime enterprise platform designed to share identity, tenant lifecycle, business capabilities and release contracts across vertical products.',problem:'Independent applications often duplicate admin, authentication, deployment and business logic. GARTAL instead organizes these as centrally governed platform capabilities.',architecture:['Core Server / ERP / API / synchronization','Core Admin / administrative runtime','Storefront / tenant-facing commerce runtime','Super Admin / tenant lifecycle and licensing','Versioned industry packs: Petiwoo retail and veterinary'],security:'The documented security model uses explicit tenant context, scoped data access, RBAC, validation and audit events. It is a design contract, not a claim that every control has completed a penetration test.',stack:'Laravel / PHP, NestJS / Node.js, TypeScript, TypeORM, PostgreSQL, MySQL/MariaDB, React / Vite / Tailwind',status:'The source case study describes final testing and production-readiness validation; independently verified live deployment evidence is not provided here.',source:'Owner-supplied GARTAL LinkedIn Case Study PDF (7 pages) and v2 PDF (8 pages).'},
-digirezhim:{name:'DigiRezhim',tag:'CLINICAL NUTRITION / HEALTHTECH',head:'From physician knowledge to structured workflows.',lead:'A clinical nutrition management model organizing physician-developed research, patient information and decision pathways into a structured digital platform.',problem:'Scattered documents, spreadsheet models and manually repeated decisions make consistent nutrition care difficult to scale and audit.',architecture:['Physician panel and patient registry','Patient history: conditions, labs, medications and previous diets','Configurable segmentation across demographics and care scenarios','Clinical decision logic and nutrition plan builder','Longitudinal tracking, records and reports'],security:'The PDF includes a secure data layer as a proposed capability. It does not establish an independent healthcare compliance audit, measured outcomes or deployed security certification.',stack:'Clinical domain models, patient records, configurable rules, reporting and workflow orchestration; implementation technology is not independently verified in the supplied PDF.',status:'Source presentation describes a product concept and feature architecture. Do not interpret diagrams as verified production UI screenshots.',source:'Owner-supplied DigiRezhim feature PDF (8 illustrated pages).'}
-} as const;
-type Slug=keyof typeof cases;
-export function generateStaticParams(){return (Object.keys(cases) as Slug[]).map(slug=>({slug}));}
+import CaseStudy from '@/components/CaseStudy';
+import {projects,type ProjectId} from '@/data/portfolio';
+export const dynamicParams=false;
+export function generateStaticParams(){return projects.map(p=>({slug:p.id}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{
- const {slug}=await params;if(!(slug in cases))return {title:'Case file not found'};
- return {title:cases[slug as Slug].name+' — Case Study',robots:{index:false,follow:false}};
+const {slug}=await params;const p=projects.find(x=>x.id===slug);
+if(!p)return {title:'Not found'};
+return {title:p.brand+' — Case Study',description:p.intro.en,robots:{index:process.env.NEXT_PUBLIC_SITE_READY==='true',follow:true}};
 }
 export default async function CasePage({params}:{params:Promise<{slug:string}>}){
- const {slug}=await params;if(!(slug in cases))notFound();
- const c=cases[slug as Slug];
- return <main className="case-page"><nav><Link href="/">← SAEID SHAMSAEI</Link><span>DOCUMENTED WORK / {c.tag}</span></nav><header><p>CASE FILE / {slug==='gartal'?'01':'02'}</p><h1>{c.name}<br/><em>{c.head}</em></h1><div>{c.lead}</div></header><div className="case-bands"><section><span>01 / PROBLEM</span><h2>What needed to change</h2><p>{c.problem}</p></section><section><span>02 / SYSTEM DESIGN</span><h2>Architectural decisions</h2><ol>{c.architecture.map(x=><li key={x}>{x}</li>)}</ol></section><section><span>03 / TRUST BOUNDARY</span><h2>Security & evidence</h2><p>{c.security}</p></section><section><span>04 / IMPLEMENTATION CONTEXT</span><h2>Technology & delivery</h2><p>{c.stack}</p><p>{c.status}</p></section><section><span>05 / SOURCE PROVENANCE</span><h2>Where this information comes from</h2><p>{c.source}</p><p>Original images from the owner-supplied PDF are prepared for a subsequent evidence-backed media commit. They are deliberately not replaced with fictional application screenshots.</p></section></div><footer><Link href="/">← RETURN TO PORTFOLIO</Link><a href="mailto:saeidshamsaeii00@gmail.com">START A CONVERSATION ↗</a></footer></main>;
+const {slug}=await params;if(!projects.some(p=>p.id===slug))notFound();
+return <CaseStudy id={slug as ProjectId}/>;
 }

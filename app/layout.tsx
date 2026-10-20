@@ -1,13 +1,14 @@
-import type { Metadata, Viewport } from 'next';
+import type {Metadata,Viewport} from 'next';
 import './globals.css';
-const live=process.env.NEXT_PUBLIC_SITE_READY==='true';
+const ready=process.env.NEXT_PUBLIC_SITE_READY==='true';
+const siteUrl=process.env.NEXT_PUBLIC_SITE_URL||'https://example.invalid';
 export const metadata:Metadata={
- title:{default:'Saeid Shamsaei | Systems & Software Architecture',template:'%s | Saeid Shamsaei'},
- description:'Saeid Shamsaei — enterprise SaaS architecture, software systems and source-backed project case studies.',
- robots:{index:live,follow:live}, metadataBase:new URL(process.env.NEXT_PUBLIC_SITE_URL||'https://example.invalid'),
- openGraph:{title:'Saeid Shamsaei — Software, thoughtfully engineered.',type:'website'}
+ title:{default:'Saeid Shamsaei — Software Architect & Product Engineer',template:'%s | Saeid Shamsaei'},
+ description:'Selected work by Saeid Shamsaei: GARTAL enterprise SaaS, AI Development Factory, DigiRezhim clinical nutrition and Petiwoo.',
+ metadataBase:new URL(siteUrl),
+ alternates:{canonical:'/'},
+ openGraph:{title:'Saeid Shamsaei — Software Architecture & Selected Work',description:'Systems. Products. Experiences.',type:'website',url:siteUrl},
+ robots:{index:ready,follow:ready},
 };
-export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:'#101413'};
-export default function RootLayout({children}:{children:React.ReactNode}){
- return <html lang="fa" dir="rtl"><body>{children}</body></html>;
-}
+export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:'#0d0e10'};
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en" dir="ltr"><body>{children}</body></html>;}
