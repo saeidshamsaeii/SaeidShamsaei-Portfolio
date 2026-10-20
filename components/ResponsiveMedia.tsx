@@ -4,7 +4,7 @@ import type {ProjectId} from '@/data/portfolio';
 import {SceneVisual} from '@/components/SceneVisual';
 
 type AssetId='portrait'|'logo'|`project-${ProjectId}`;
-type Variant={width:number;webp:string;avif:string};
+type Variant={width:number;webp:string;avif?:string};
 type Asset={width:number;height:number;variants:Variant[]};
 type Manifest=Partial<Record<AssetId,Asset>>;
 
@@ -26,7 +26,7 @@ function useHighRes(id:AssetId){
  return asset;
 }
 function sourceSet(asset:Asset,format:'webp'|'avif'){
- return asset.variants.map(x=>`${x[format]} ${x.width}w`).join(', ');
+ return asset.variants.filter(x=>x[format]).map(x=>`${x[format]} ${x.width}w`).join(', ');
 }
 export function ResponsivePicture({id,fallback,alt,className,width,height,sizes,loading='lazy',fetchPriority}:{
  id:'portrait'|'logo';fallback:string;alt:string;className?:string;width:number;height:number;
@@ -34,7 +34,7 @@ export function ResponsivePicture({id,fallback,alt,className,width,height,sizes,
 }){
  const high=useHighRes(id);
  return <picture>
-  {high&&<source type="image/avif" srcSet={sourceSet(high,'avif')} sizes={sizes}/>}
+  {high&&high.variants.some(x=>x.avif)&&<source type="image/avif" srcSet={sourceSet(high,'avif')} sizes={sizes}/>}
   {high&&<source type="image/webp" srcSet={sourceSet(high,'webp')} sizes={sizes}/>}
   <img className={className} src={fallback} width={width} height={height} alt={alt} sizes={high?sizes:undefined}
    loading={loading} decoding="async" fetchPriority={fetchPriority}/>

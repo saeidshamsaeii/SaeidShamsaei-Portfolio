@@ -1,1 +1,62 @@
-{}
+{
+  "portrait": {
+    "width": 1122,
+    "height": 1402,
+    "variants": [
+      {
+        "width": 1122,
+        "webp": "/assets/hires/portrait.webp"
+      }
+    ]
+  },
+  "logo": {
+    "width": 1254,
+    "height": 1254,
+    "variants": [
+      {
+        "width": 1254,
+        "webp": "/assets/hires/logo.webp"
+      }
+    ]
+  },
+  "project-gartal": {
+    "width": 1448,
+    "height": 1086,
+    "variants": [
+      {
+        "width": 1448,
+        "webp": "/assets/hires/project-gartal.webp"
+      }
+    ]
+  },
+  "project-factory": {
+    "width": 1448,
+    "height": 1086,
+    "variants": [
+      {
+        "width": 1448,
+        "webp": "/assets/hires/project-factory.webp"
+      }
+    ]
+  },
+  "project-digirezhim": {
+    "width": 1448,
+    "height": 1086,
+    "variants": [
+      {
+        "width": 1448,
+        "webp": "/assets/hires/project-digirezhim.webp"
+      }
+    ]
+  },
+  "project-petiwoo": {
+    "width": 1448,
+    "height": 1086,
+    "variants": [
+      {
+        "width": 1448,
+        "webp": "/assets/hires/project-petiwoo.webp"
+      }
+    ]
+  }
+}

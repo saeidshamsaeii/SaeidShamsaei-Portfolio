@@ -7,11 +7,12 @@ await page.goto('/',{waitUntil:'domcontentloaded'});
 await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
 await expect(page.locator('.motion-chapter')).toHaveCount(4);
 await expect(page.locator('h1')).toContainText('SAEID');
-for(const asset of ['/assets/portrait.webp','/assets/ss-gold.webp','/assets/hires/manifest.json']){const response=await page.request.get(asset);expect(response.status(),asset).toBe(200);expect((await response.body()).length).toBeGreaterThan(asset.endsWith('.json')?0:1000);}
+for(const asset of ['/assets/hires/portrait.webp','/assets/hires/logo.webp','/assets/hires/manifest.json',...names.map(n=>'/assets/hires/project-'+n+'.webp')]){const response=await page.request.get(asset);expect(response.status(),asset).toBe(200);expect((await response.body()).length).toBeGreaterThan(asset.endsWith('.json')?100:100000);}
 await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
+await expect(page.locator('.cinematic-master-image').first()).toBeVisible({timeout:15000});
 for(const name of names){await expect(page.locator('#project-'+name+' .motion-visual .cinematic-vector-art .art-scene')).toHaveCount(1);}
 expect(await page.locator('#project-gartal .motion-visual .cinematic-vector-art').evaluate(el=>getComputedStyle(el).backgroundImage)).toBe('none');
-expect(await page.locator('.cinematic-portrait-image').evaluate((i:HTMLImageElement)=>i.naturalWidth)).toBeGreaterThan(100);
+expect(await page.locator('.cinematic-portrait-image').evaluate((i:HTMLImageElement)=>i.naturalWidth)).toBeGreaterThan(1000);
 const rail=page.locator('#project-gartal .motion-track');
 const oldX=await rail.evaluate(el=>el.scrollLeft);
 await rail.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
@@ -26,7 +27,7 @@ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>inne
 expect(overflow).toBe(false);expect(jsErrors).toEqual([]);
 await page.close();
 });
-test('mobile touch layout, menu, language and screenshot',async ({browser})=>{
+test('mobile touch layout, English-only navigation and screenshot',async ({browser})=>{
 const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
 await page.goto('/',{waitUntil:'domcontentloaded'});
@@ -36,9 +37,10 @@ await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
 await page.screenshot({path:'artifacts/portfolio-mobile-390.png',fullPage:true,animations:'disabled'});
 expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
 await expect(page.locator('.motion-track')).toHaveCount(4);
-await page.locator('.motion-nav button').click();
-await expect(page.locator('html')).toHaveAttribute('lang','fa');
-await expect(page.locator('html')).toHaveAttribute('dir','rtl');
+await expect(page.locator('html')).toHaveAttribute('lang','en');
+await expect(page.locator('html')).toHaveAttribute('dir','ltr');
+await expect(page.locator('.motion-nav button')).toHaveCount(0);
+expect(await page.locator('body').innerText()).not.toMatch(/[\u0600-\u06ff]/);
 expect(errors).toEqual([]);
 await page.close();
 });
