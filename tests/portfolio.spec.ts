@@ -1,90 +1,77 @@
 import {test,expect} from '@playwright/test';
-const names=['gartal','factory','digirezhim','petiwoo'];
-test('desktop four project chapters, source, navigation, scroll and screenshot',async ({browser})=>{
-const page=await browser.newPage({viewport:{width:1440,height:900}});
-const jsErrors:string[]=[];page.on('pageerror',e=>jsErrors.push(e.message));
-await page.goto('/',{waitUntil:'domcontentloaded'});
-await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
-await expect(page.locator('.motion-chapter')).toHaveCount(4);
-await expect(page.locator('h1')).toContainText('SAEID');
-for(const asset of ['/assets/hires/portrait.webp','/assets/hires/logo.webp','/assets/hires/manifest.json',...names.map(n=>'/assets/hires/project-'+n+'.webp')]){const response=await page.request.get(asset);expect(response.status(),asset).toBe(200);expect((await response.body()).length).toBeGreaterThan(asset.endsWith('.json')?100:100000);}
-await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
-await expect(page.locator('.cinematic-master-image').first()).toBeVisible({timeout:15000});
-for(const name of names){await expect(page.locator('#project-'+name+' .motion-visual .cinematic-vector-art .art-scene')).toHaveCount(1);}
-expect(await page.locator('#project-gartal .motion-visual .cinematic-vector-art').evaluate(el=>getComputedStyle(el).backgroundImage)).toBe('none');
-expect(await page.locator('.cinematic-portrait-image').evaluate((i:HTMLImageElement)=>i.currentSrc.includes('/assets/hires/portrait.webp'))).toBe(true);
-const fullPortraitWidth=await page.evaluate(async()=>{const i=new Image();i.src='/assets/hires/portrait.webp';await i.decode();return i.naturalWidth;});
-expect(fullPortraitWidth).toBe(1122);
-const rail=page.locator('#project-gartal .motion-track');
-const oldX=await rail.evaluate(el=>el.scrollLeft);
-await rail.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
-await expect.poll(async()=>rail.evaluate(el=>el.scrollLeft)).toBeGreaterThan(oldX);
-expect(await page.locator('.motion-drawer a').count()).toBe(0);
-for(const name of names){await expect(page.locator('#project-'+name)).toHaveCount(1);await expect(page.locator('#project-'+name+' .motion-track')).toHaveCount(1);}
-await page.screenshot({path:'artifacts/portfolio-desktop-1440.png',fullPage:true,animations:'disabled'});
-const p=page.locator('#project-petiwoo');await p.scrollIntoViewIfNeeded();await page.waitForTimeout(250);
-await page.locator('#project-gartal').scrollIntoViewIfNeeded();
-await expect(page.locator('#project-gartal')).toBeVisible();
-const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
-expect(overflow).toBe(false);expect(jsErrors).toEqual([]);
-await page.close();
-});
-test('mobile touch layout, English-only navigation and screenshot',async ({browser})=>{
-const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-await page.goto('/',{waitUntil:'domcontentloaded'});
-await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
-await expect(page.locator('.motion-chapter')).toHaveCount(4);
-await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
-await page.screenshot({path:'artifacts/portfolio-mobile-390.png',fullPage:true,animations:'disabled'});
-expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
-await expect(page.locator('.motion-track')).toHaveCount(4);
-await expect(page.locator('html')).toHaveAttribute('lang','en');
-await expect(page.locator('html')).toHaveAttribute('dir','ltr');
-await expect(page.locator('.motion-nav button')).toHaveCount(0);
-expect(await page.locator('body').innerText()).not.toMatch(/[\u0600-\u06ff]/);
-expect(errors).toEqual([]);
-await page.close();
-});
-test('360 and 768 responsive widths',async ({browser})=>{
-for(const width of [360,768]){
-const page=await browser.newPage({viewport:{width,height:780}});
-await page.goto('/',{waitUntil:'domcontentloaded'});
-expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
-await page.close();
-}
-});
-test('all four real case-study routes',async ({page})=>{
-for(const slug of names){
-await page.goto('/work/'+slug+'/',{waitUntil:'domcontentloaded'});
-await expect(page.locator('h1')).toContainText(slug==='factory'?'AI Development Factory':slug==='digirezhim'?'DigiRezhim':slug==='petiwoo'?'Petiwoo':'GARTAL');
-await expect(page.locator('.case-section')).toHaveCount(2);
-await expect(page.locator('.case-capabilities>div')).toHaveCount(6);
-}
-});
-test('reduced-motion fallback remains navigable',async ({browser})=>{
-const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
-await page.goto('/',{waitUntil:'domcontentloaded'});
-await expect(page.locator('.motion-chapter')).toHaveCount(4);
-await expect(page.locator('#contact')).toBeAttached();
-expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
-await page.close();
-});
-
-test('vertical desktop scroll reveals the horizontal story before the next project',async ({browser})=>{
- const page=await browser.newPage({viewport:{width:1440,height:900}});
+const names=['gartal','factory','digirezhim','petiwoo'] as const;
+const widths=[360,390,768,1024,1440,1920];
+test('complete English-only premium page and every image loads',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
- const chapter=page.locator('#project-gartal');
- await chapter.scrollIntoViewIfNeeded();
- await page.waitForTimeout(650);
- const track=chapter.locator('.motion-track');
- const initial=await track.evaluate(el=>el.scrollLeft);
- await page.mouse.move(800,580);
- await page.mouse.wheel(0,950);
- await page.waitForTimeout(1800);
- const progressed=await track.evaluate(el=>el.scrollLeft);
- expect(progressed).toBeGreaterThan(initial+50);
- await expect(chapter).toBeVisible();
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(page.locator('html')).toHaveAttribute('dir','ltr');
+ await expect(page.locator('h1')).toContainText('SAEID');
+ await expect(page.locator('.pf-project')).toHaveCount(4);
+ await expect(page.locator('.motion-chapter')).toHaveCount(0);
+ await expect(page.locator('.ss-preloader')).toHaveCount(0);
+ expect(await page.locator('body').innerText()).not.toMatch(/[\u0600-\u06ff]/);
+ for(const name of names){
+  await expect(page.locator('#project-'+name+' .pf-project-art img')).toHaveCount(1);
+  const image=page.locator('#project-'+name+' .pf-project-art img');
+  await image.scrollIntoViewIfNeeded();
+  expect(await image.evaluate(async(i:HTMLImageElement)=>{await i.decode();return i.naturalWidth})).toBe(1448);
+  await expect(page.locator('#project-'+name+' .pf-note')).toHaveCount(4);
+  await expect(page.locator('#project-'+name+' a[href="/work/'+name+'/"]').first()).toBeVisible();
+ }
+ const portrait=page.locator('.pf-portrait');
+ expect(await portrait.evaluate(async(i:HTMLImageElement)=>{await i.decode();return i.naturalWidth})).toBe(1122);
+ const media=['portrait','logo',...names.map(n=>'project-'+n)];
+ for(const item of media){const url='/assets/hires/'+item+'.webp';const response=await page.request.get(url);expect(response.status(),url).toBe(200);}
+ expect(errors).toEqual([]);
+ await page.screenshot({path:'artifacts/portfolio-desktop-1440.png',fullPage:true,animations:'disabled'});
+});
+test('no image/card overlaps or horizontal page overflow on responsive sizes',async({browser})=>{
+ for(const width of widths){
+  const page=await browser.newPage({viewport:{width,height:900}});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),String(width)).toBe(true);
+  for(const name of names){
+   const copy=await page.locator('#project-'+name+' .pf-project-copy').boundingBox();
+   const visual=await page.locator('#project-'+name+' .pf-project-art').boundingBox();
+   const notes=await page.locator('#project-'+name+' .pf-project-notes').boundingBox();
+   expect(copy&&visual&&notes,'missing layout box').toBeTruthy();
+   const overlap=(a:{x:number;y:number;width:number;height:number},b:typeof a)=>
+    Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x)>3 &&
+    Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y)>3;
+   expect(overlap(copy!,visual!),name+' copy overlaps art at '+width).toBe(false);
+   expect(overlap(notes!,visual!),name+' notes overlap art at '+width).toBe(false);
+  }
+  if(width===390)await page.screenshot({path:'artifacts/portfolio-mobile-390.png',fullPage:true,animations:'disabled'});
+  await page.close();
+ }
+});
+test('navigation and links resolve without invented video actions',async({page})=>{
+ await page.goto('/');
+ for(const anchor of ['#selected-projects','#about','#approach','#contact']){
+  const a=page.locator('a[href="'+anchor+'"]').first();await expect(a).toHaveCount(1);
+  await a.click();await expect(page.locator(anchor)).toBeAttached();
+ }
+ await expect(page.locator('a[href*="mailto:"]').first()).toBeAttached();
+ expect(await page.locator('body').innerText()).not.toContain('Watch Video');
+});
+test('all four detailed project routes load with genuine concept art',async({page})=>{
+ for(const slug of names){
+  await page.goto('/work/'+slug+'/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('h1')).toContainText(slug==='factory'?'AI Development Factory':slug==='gartal'?'GARTAL':slug==='digirezhim'?'DigiRezhim':'Petiwoo');
+  await expect(page.locator('.case-section')).toHaveCount(2);
+  await expect(page.locator('.case-capabilities>div')).toHaveCount(6);
+  await expect(page.locator('.case-hero-art')).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ }
+});
+test('reduced motion and keyboard-accessible project links',async({browser})=>{
+ const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ await page.goto('/');
+ await expect(page.locator('.pf-project')).toHaveCount(4);
+ await expect(page.locator('#contact')).toBeAttached();
+ await expect(page.locator('a[href="/work/gartal/"]').first()).toBeAttached();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
  await page.close();
 });

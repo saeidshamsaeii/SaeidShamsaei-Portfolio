@@ -1,92 +1,133 @@
-'use client';
-import {useEffect,useRef,useState} from 'react';
-import gsap from 'gsap';
-import {ScrollTrigger} from 'gsap/ScrollTrigger';
-import {useGSAP} from '@gsap/react';
-import {projects,publicContact,txt,type Locale} from '@/data/portfolio';
-import {ResponsivePicture,ProjectArtwork} from '@/components/ResponsiveMedia';
+import Link from 'next/link';
+import {projects,publicContact} from '@/data/portfolio';
 
-gsap.registerPlugin(ScrollTrigger,useGSAP);
-function SSMark({className=''}:{className?:string}){return <ResponsivePicture id="logo" className={'ss-mark '+className} fallback="/assets/hires/logo.webp" alt="SS — Saeid Shamsaei" width={1254} height={1254} sizes="(max-width: 520px) 96px, 128px" loading="eager"/>}
-function ProjectJourney({project,lang}:{project:(typeof projects)[number],lang:Locale}){
- const scrollRef=useRef<HTMLDivElement>(null);
- const [position,setPosition]=useState(0);
- const chapterRef=useRef<HTMLElement>(null);
- const pinned=useRef<ScrollTrigger|null>(null);
- const dragging=useRef<{x:number;left:number}|null>(null);
- useGSAP(()=>{
-  const mm=gsap.matchMedia();
-  mm.add('(min-width: 961px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)',()=>{
-   const section=chapterRef.current,track=scrollRef.current;
-   if(!section||!track)return;
-   let previous=-1;
-   const trigger=ScrollTrigger.create({
-    trigger:section,start:'top top',
-    end:()=>'+='+Math.max(750,Math.round((track.scrollWidth-track.clientWidth)*1.25)),
-    pin:true,pinSpacing:true,scrub:1,invalidateOnRefresh:true,anticipatePin:1,
-    onUpdate:self=>{
-     const range=Math.max(0,track.scrollWidth-track.clientWidth);
-     track.scrollLeft=range*self.progress;
-     const next=Math.round(self.progress*100);
-     if(next!==previous){previous=next;setPosition(next);}
-    }
-   });
-   pinned.current=trigger;
-   return()=>{pinned.current=null;trigger.kill();};
-  });
-  return()=>mm.revert();
- },{scope:chapterRef});
- const step=(direction:number)=>{
-  const track=scrollRef.current;if(!track)return;
-  const max=Math.max(0,track.scrollWidth-track.clientWidth);
-  const target=Math.max(0,Math.min(max,track.scrollLeft+direction*track.clientWidth*.85));
-  const trigger=pinned.current;
-  if(trigger&&trigger.isActive&&max>0){
-   window.scrollTo({top:trigger.start+(target/max)*(trigger.end-trigger.start),behavior:'smooth'});
-  }else{track.scrollTo({left:target,behavior:'smooth'});}
- };
- const cards=[
- {number:'01',label:'THE CHALLENGE',body:txt(lang,project.problem)},
- {number:'02',label:'SYSTEM ARCHITECTURE',body:txt(lang,project.solution)},
- {number:'03',label:'CAPABILITIES',body:project.architecture.map(x=>txt(lang,x)).join(' • ')},
- {number:'04',label:'DOCUMENTED STATUS',body:txt(lang,project.outcome)}
- ];
- return <section id={'project-'+project.id} ref={chapterRef} className={'motion-chapter chapter-'+project.id} aria-label={project.brand+' case study'}>
- <div className="motion-chapter-inner"><div className="motion-copy"><p className="motion-label">{project.index} / 04 <span>{txt(lang,project.kicker)}</span></p><h2>{project.brand}</h2><h3>{txt(lang,project.title)}</h3><p>{txt(lang,project.intro)}</p><div className="motion-tags">{project.features.slice(0,3).map((x,i)=><span key={i}>{txt(lang,x)}</span>)}</div><div className="motion-instruction"><span>↔</span>{'SCROLL SIDEWAYS TO EXPLORE THE CASE STUDY'}</div></div>
- <div className="motion-visual"><div className={'cinematic-project-art cinematic-'+project.id} role="img" aria-label={project.brand+' concept artwork'}><span className="cinematic-art-number">{project.index}</span><ProjectArtwork id={project.id}/></div></div></div>
- <div className="motion-drawer"><div className="motion-track" ref={scrollRef} tabIndex={0} aria-label={project.brand+' horizontal case study'} onScroll={e=>{const el=e.currentTarget;setPosition(el.scrollWidth===el.clientWidth?0:Math.round(100*el.scrollLeft/(el.scrollWidth-el.clientWidth)));}}
- onWheel={e=>{if(pinned.current?.isActive)return;if(e.shiftKey&&e.deltaY){e.currentTarget.scrollLeft+=e.deltaY;}else if(Math.abs(e.deltaX)>Math.abs(e.deltaY)){e.currentTarget.scrollLeft+=e.deltaX;}}}
- onPointerDown={e=>{if(e.pointerType==='mouse'&&!pinned.current?.isActive){dragging.current={x:e.clientX,left:e.currentTarget.scrollLeft};e.currentTarget.setPointerCapture(e.pointerId);}}} onPointerMove={e=>{if(dragging.current){e.currentTarget.scrollLeft=dragging.current.left+(dragging.current.x-e.clientX);}}} onPointerUp={()=>{dragging.current=null;}} onPointerCancel={()=>{dragging.current=null;}}
- onKeyDown={e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();step(e.key==='ArrowRight'?1:-1);}}}>
- <article className="motion-frame motion-cover"><div><small>THE PROJECT / {project.index}</small><h4>{txt(lang,project.tagline)}</h4><p>{txt(lang,project.intro)}</p></div><div className={'motion-miniart cinematic-'+project.id}><ProjectArtwork id={project.id}/></div></article>
- {cards.map(x=><article className={'motion-frame motion-detail cinematic-'+project.id} key={x.number}><span className="motion-frame-number">{x.number} / 04</span><div><small>{x.label}</small><h4>{x.label}</h4><p>{x.body}</p></div></article>)}
- </div><div className="cinematic-thumbnails" aria-hidden="true">{['OVERVIEW','ARCHITECTURE','WORKFLOWS','EVIDENCE'].map((word,i)=><div className={'cinematic-thumbnail cinematic-'+project.id} key={word}><span>0{i+1}</span><strong>{word}</strong></div>)}</div><div className="motion-progress"><button onClick={()=>step(-1)} aria-label="Previous case study frame">←</button><div className="motion-progress-track"><span style={{width:Math.max(4,position)+'%'}}/></div><button onClick={()=>step(1)} aria-label="Next case study frame">→</button><span>{Math.min(5,Math.round(position/25)+1)} / 05</span></div></div>
- </section>;
+const information={
+ gartal:{kind:'FLAGSHIP PLATFORM',short:'One foundation. Multiple businesses.',theme:'gold',intro:'A flexible foundation for business software, commerce and operations — built to support multiple products without repeating the core.',cards:['Shared enterprise foundation','Tenant-aware system architecture','Composable business workflows','Documented platform design']},
+ factory:{kind:'AI ENGINEERING SYSTEM',short:'From idea to governed delivery.',theme:'blue',intro:'AI-assisted engineering workflows with controlled permissions, repository orchestration, CI evidence and accountable delivery.',cards:['Reviewable engineering workflows','Exact-commit CI validation','Controlled orchestration','Clear permission boundaries']},
+ digirezhim:{kind:'HEALTHTECH PLATFORM',short:'Better clinical workflows.',theme:'mint',intro:'Physician-oriented clinical nutrition workflows with structured patient context, review pathways and personalized planning.',cards:['Structured patient information','Clinical decision pathways','Nutrition planning','Longitudinal follow-up']},
+ petiwoo:{kind:'VERTICAL COMMERCE',short:'Thoughtful technology for pet care.',theme:'peach',intro:'A pet retail and veterinary concept bringing domain-specific commerce and service workflows onto a shared platform.',cards:['Pet commerce experiences','Inventory and suppliers','Veterinary workflows','Customer-centered design']}
+} as const;
+
+function Brand({footer=false}:{footer?:boolean}){
+ return <Link className={'pf-brand'+(footer?' pf-brand--footer':'')} href="/" aria-label="Saeid Shamsaei — home">
+  <img src="/assets/hires/logo.webp" alt="" width="48" height="48" decoding="async"/>
+  <span>SAEID <strong>SHAMSAEI</strong>{footer&&<small>Product architecture & engineering</small>}</span>
+ </Link>;
 }
+
+function ProjectSection({project}:{project:(typeof projects)[number]}){
+ const detail=information[project.id];
+ const cells=[
+  {label:'THE CHALLENGE',text:project.problem.en},
+  {label:'SYSTEM ARCHITECTURE',text:project.solution.en},
+  {label:'CAPABILITIES',text:project.features.slice(0,3).map(x=>x.en).join(' · ')},
+  {label:'DOCUMENTED STATUS',text:project.outcome.en}
+ ];
+ return <article id={'project-'+project.id} className={'pf-project pf-project--'+detail.theme} aria-labelledby={'title-'+project.id}>
+  <div className="pf-project-main">
+   <div className="pf-project-copy">
+    <p className="pf-eyebrow"><span>{project.index} / 04</span> {detail.kind}</p>
+    <h3 id={'title-'+project.id}>{project.id==='factory'?<>AI <em>Factory</em></>:project.brand}</h3>
+    <h4>{detail.short}</h4>
+    <p className="pf-project-desc">{detail.intro}</p>
+    <div className="pf-project-tags">{project.features.slice(0,3).map(item=><span key={item.en}>{item.en}</span>)}</div>
+    <Link className="pf-button pf-button--color" href={'/work/'+project.id+'/'}>Explore case study <span aria-hidden="true">↗</span></Link>
+   </div>
+   <Link className="pf-project-art" href={'/work/'+project.id+'/'} aria-label={'Open '+project.brand+' case study'}>
+    <img src={'/assets/hires/project-'+project.id+'.webp'} alt={project.brand+' — illustrated product concept'} width="1448" height="1086" loading="lazy" decoding="async"/>
+    <span className="pf-art-corner" aria-hidden="true">VIEW PROJECT ↗</span>
+   </Link>
+  </div>
+  <div className="pf-project-notes">
+   {cells.map((cell,i)=><div className="pf-note" key={cell.label}>
+    <span className="pf-note-icon" aria-hidden="true">{['◇','⌘','✦','↗'][i]}</span>
+    <h5>{cell.label}</h5>
+    <p>{cell.text}</p>
+   </div>)}
+  </div>
+ </article>;
+}
+
 export default function PortfolioExperience(){
- const root=useRef<HTMLDivElement>(null);
- const lang:Locale='en';
- const [loading,setLoading]=useState(true);
- const [progress,setProgress]=useState(5);
+ return <div className="pf-site">
+  <a className="skip-link" href="#selected-projects">Skip to projects</a>
+  <header className="pf-header">
+   <div className="pf-header-inner">
+    <Brand/>
+    <nav className="pf-nav" aria-label="Primary navigation">
+     <a href="#top">Home</a><a href="#selected-projects">Projects</a>
+     <a href="#about">About</a><a href="#approach">Approach</a><a href="#contact">Contact</a>
+    </nav>
+    <a className="pf-header-contact" href={'mailto:'+publicContact.email}>Let’s Talk <span aria-hidden="true">↗</span></a>
+   </div>
+  </header>
 
+  <main>
+   <section className="pf-hero" id="top" aria-labelledby="pf-hero-title">
+    <div className="pf-hero-glow" aria-hidden="true"/>
+    <div className="pf-hero-inner">
+     <div className="pf-hero-copy">
+      <p className="pf-eyebrow pf-hero-eyebrow">BUILDER <span>✦</span> PRODUCT ENGINEER <span>✦</span> PROBLEM SOLVER</p>
+      <h1 id="pf-hero-title">SAEID <span>SHAMSAEI.</span></h1>
+      <p className="pf-hero-lead">I design and build digital products that turn complex ideas into clear, scalable systems.</p>
+      <p className="pf-hero-sub">Product thinking, software architecture and thoughtful execution — from the first idea to the working system.</p>
+      <div className="pf-hero-actions">
+       <a href="#selected-projects" className="pf-button pf-button--gold">View My Projects <span aria-hidden="true">↗</span></a>
+       <a href={'mailto:'+publicContact.email} className="pf-button pf-button--outline">Get in Touch <span aria-hidden="true">✉</span></a>
+      </div>
+      <div className="pf-hero-facts" aria-label="Areas of focus">
+       <div><strong>04</strong><small>Selected Projects</small></div>
+       <div><strong>AI</strong><small>Automation & Systems</small></div>
+       <div><strong>UX</strong><small>People-first Products</small></div>
+      </div>
+     </div>
+     <div className="pf-hero-visual" aria-label="Editorial portrait of Saeid Shamsaei">
+      <div className="pf-hero-halo" aria-hidden="true"/>
+      <div className="pf-hero-halo pf-hero-halo--small" aria-hidden="true"/>
+      <span className="pf-hero-vertical" aria-hidden="true">IDEAS&nbsp; · &nbsp; SYSTEMS&nbsp; · &nbsp; IMPACT</span>
+      <img className="pf-portrait" src="/assets/hires/portrait.webp" alt="Saeid Shamsaei" width="1122" height="1402" fetchPriority="high" decoding="async"/>
+      <span className="pf-portrait-base" aria-hidden="true"/>
+     </div>
+    </div>
+   </section>
 
- useEffect(()=>{let cancelled=false;let completed=false;const started=performance.now();const images=['/assets/hires/portrait.webp','/assets/hires/logo.webp','/assets/hires/project-gartal.webp','/assets/hires/project-factory.webp','/assets/hires/project-digirezhim.webp','/assets/hires/project-petiwoo.webp'].map(src=>new Promise<void>(resolve=>{const img=new Image();img.onload=()=>resolve();img.onerror=()=>resolve();img.src=src;if(img.complete)resolve();}));const ready=Promise.all([document.fonts.ready,...images]);const heartbeat=window.setInterval(()=>setProgress(p=>Math.min(91,p+6)),95);
- const close=()=>{if(cancelled||completed)return;completed=true;window.clearInterval(heartbeat);setProgress(100);window.setTimeout(()=>{if(!cancelled)setLoading(false);},250)};
- ready.then(()=>{const remaining=Math.max(0,1500-(performance.now()-started));window.setTimeout(close,remaining);});const safety=window.setTimeout(close,20000);
- return()=>{cancelled=true;window.clearInterval(heartbeat);window.clearTimeout(safety);};},[]);
- useGSAP(()=>{if(!loading)ScrollTrigger.refresh();},{scope:root,dependencies:[loading]});
+   <section className="pf-projects" id="selected-projects" aria-labelledby="pf-work-title">
+    <div className="pf-section-heading">
+     <div><span className="pf-eyebrow">01 / SELECTED WORK</span><h2 id="pf-work-title">Systems built with <em>purpose.</em></h2></div>
+     <p>Four different domains. One approach: simplify complexity, design for change and make every part work together.</p>
+    </div>
+    <div className="pf-project-list">{projects.map(project=><ProjectSection project={project} key={project.id}/>)}</div>
+    <p className="pf-project-disclosure">Project artwork is conceptual visualization. Product statistics shown inside artwork are illustrative and are not verified operating metrics.</p>
+   </section>
 
- return <div className="motion-site" ref={root} data-language={lang}>
- {loading&&<div className="ss-preloader" role="status" aria-live="polite"><div className="ss-preloader-top"><span>LOADING EXPERIENCE</span><span>{String(progress).padStart(2,'0')} / 100</span></div><SSMark className="ss-loading-logo"/><div className="ss-loading-orbits" aria-hidden="true"></div><div className="ss-loading-copy"><span>FROM SYSTEMS TO IMPACT</span><small>{'DESIGNING DIGITAL SYSTEMS THAT ENDURE'}</small></div><div className="ss-loading-bar"><span style={{width:progress+'%'}}/></div></div>}
- <a className="skip-link" href="#selected-projects">{'Skip to selected projects'}</a>
- <header className="motion-nav"><a href="#top" aria-label="Home"><SSMark/><strong>SAEID<br/>SHAMSAEI</strong></a><nav className="cinematic-header-links" aria-label="Site sections"><a href="#selected-projects">{'WORK'}</a><a href="#about">{'ABOUT'}</a><a href="#approach">{'APPROACH'}</a><a href="#contact">{'CONTACT'}</a></nav></header>
- <main>
- <section className="motion-hero" id="top"><div className="motion-hero-copy"><span>SOFTWARE ARCHITECT / PRODUCT ENGINEER</span><h1>SAEID<br/><em>SHAMSAEI.</em></h1><p>{'Designing digital systems that make complex ideas feel remarkably simple.'}</p><div className="cinematic-hero-keywords"><span>ARCHITECT</span><i/> <span>BUILD</span><i/> <span>SOLVE</span><i/> <span>SCALE</span></div><small>SCROLL ↓ / SELECTED PROJECTS</small></div><div className="motion-portrait"><ResponsivePicture id="portrait" className="cinematic-portrait-image" fallback="/assets/hires/portrait.webp" alt="Saeid Shamsaei, editorial portrait" width={1122} height={1402} sizes="(max-width: 960px) 100vw, 54vw" loading="eager" fetchPriority="high"/><span className="cinematic-halo"/><div className="cinematic-sidewords"><span>SYSTEMS</span><span>IDEAS</span><span>PEOPLE</span><span>IMPACT</span></div><div className="cinematic-portrait-mark"><SSMark/></div></div></section>
- <section className="motion-section-divider" id="selected-projects"><span>✦ &nbsp; {'SELECTED PROJECTS'}</span><span>FOUR JOURNEYS. ONE PHILOSOPHY.</span></section>
- {projects.map(p=><ProjectJourney key={p.id} project={p} lang={lang}/>)}
- <section className="motion-about" id="about"><div className="motion-editorial-number">01 / {'ABOUT THE PRACTICE'}</div><div className="motion-editorial-copy"><h2>{'COMPLEX IDEAS.\\nENDURING SYSTEMS.'}</h2><p>{'I’m Saeid Shamsaei, a software architect and product engineer connecting enterprise platforms, AI-enabled workflows and thoughtful interfaces into coherent products.'}</p></div></section>
- <section className="motion-approach" id="approach"><div className="motion-editorial-number">02 / {'MY APPROACH'}</div><div className="motion-principles">{[{n:'01',en:'PROBLEM BEFORE TOOLING'},{n:'02',en:'ARCHITECTURE FOR CHANGE'},{n:'03',en:'EXPERIENCE WITHOUT FRICTION'},{n:'04',en:'VERIFIABLE QUALITY'}].map(item=><div key={item.n}><span>{item.n}</span><strong>{item.en}</strong><span aria-hidden="true">↗</span></div>)}</div></section>
- <section className="motion-end" id="contact"><span>IDEAS / SYSTEMS / PEOPLE / IMPACT</span><h2>{"LET'S BUILD\nWHAT'S NEXT."}</h2><div className="cinematic-end-logo" aria-hidden="true"><span className="cinematic-end-wordmark">SS</span></div><p>{'Ambitious product? Interesting challenge? Start a conversation.'}</p><a href={'mailto:'+publicContact.email}>{publicContact.email} ↗</a><div className="motion-social"><a href={publicContact.github} target="_blank" rel="noreferrer">GITHUB ↗</a><a href={publicContact.linkedin} target="_blank" rel="noreferrer">LINKEDIN ↗</a></div></section>
- </main><footer className="motion-footer"><SSMark/><span>© 2026 SAEID SHAMSAEI</span><span>DESIGNING DIGITAL SYSTEMS THAT ENDURE.</span></footer>
+   <section className="pf-about" id="about" aria-labelledby="pf-about-title">
+    <p className="pf-eyebrow">02 / ABOUT</p>
+    <div><h2 id="pf-about-title">COMPLEX IDEAS.<br/><span>ENDURING SYSTEMS.</span></h2>
+     <p>I connect architecture, product thinking and design to build systems that are useful today and adaptable tomorrow. My work spans enterprise platforms, AI-enabled engineering, clinical workflows and focused digital commerce.</p></div>
+   </section>
+
+   <section className="pf-approach" id="approach" aria-labelledby="pf-approach-title">
+    <div><p className="pf-eyebrow">03 / THE APPROACH</p><h2 id="pf-approach-title">Build with intention.</h2></div>
+    <div className="pf-principles">
+     <div><span>01</span><strong>PROBLEM BEFORE TOOLING</strong><span aria-hidden="true">↗</span></div>
+     <div><span>02</span><strong>ARCHITECTURE FOR CHANGE</strong><span aria-hidden="true">↗</span></div>
+     <div><span>03</span><strong>DESIGN WITHOUT FRICTION</strong><span aria-hidden="true">↗</span></div>
+     <div><span>04</span><strong>VERIFIABLE QUALITY</strong><span aria-hidden="true">↗</span></div>
+    </div>
+   </section>
+
+   <section className="pf-contact" id="contact" aria-labelledby="pf-contact-title">
+    <div className="pf-contact-sky" aria-hidden="true"><i/><i/><i/></div>
+    <p className="pf-eyebrow">04 / LET’S BUILD TOGETHER</p>
+    <div className="pf-contact-layout"><div><h2 id="pf-contact-title">COMPLEX IDEAS.<br/><span>REAL IMPACT.</span></h2>
+     <p>Have an ambitious product, a challenging system or a new partnership in mind? Let’s make it tangible.</p>
+     <div className="pf-hero-actions"><a className="pf-button pf-button--gold" href={'mailto:'+publicContact.email}>Start a Conversation <span aria-hidden="true">↗</span></a>
+      <a className="pf-button pf-button--outline" href="#selected-projects">View My Projects <span aria-hidden="true">↑</span></a></div>
+    </div><div className="pf-contact-art" aria-hidden="true"><div className="pf-contact-ring"/><span>BUILD<br/>WHAT<br/>MATTERS.</span></div></div>
+   </section>
+  </main>
+  <footer className="pf-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#selected-projects">Projects</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+   <div className="pf-footer-links"><a href={publicContact.github} rel="noreferrer" target="_blank">GitHub ↗</a><a href={publicContact.linkedin} rel="noreferrer" target="_blank">LinkedIn ↗</a><a href={'mailto:'+publicContact.email}>Email ↗</a></div>
+  </footer>
  </div>;
 }
