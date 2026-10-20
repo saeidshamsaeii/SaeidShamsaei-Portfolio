@@ -9,6 +9,8 @@ await expect(page.locator('.motion-chapter')).toHaveCount(4);
 await expect(page.locator('h1')).toContainText('SAEID');
 for(const asset of ['/assets/portrait.webp','/assets/ss-gold.webp','/assets/projects.webp']){const response=await page.request.get(asset);expect(response.status(),asset).toBe(200);expect((await response.body()).length).toBeGreaterThan(1000);}
 await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
+for(const name of names){await expect(page.locator('#project-'+name+' .cinematic-vector-art .art-scene')).toHaveCount(1);}
+expect(await page.locator('#project-gartal .cinematic-art-image').evaluate(el=>getComputedStyle(el).backgroundImage)).toBe('none');
 expect(await page.locator('.cinematic-portrait-image').evaluate((i:HTMLImageElement)=>i.naturalWidth)).toBeGreaterThan(100);
 const rail=page.locator('#project-gartal .motion-track');
 const oldX=await rail.evaluate(el=>el.scrollLeft);

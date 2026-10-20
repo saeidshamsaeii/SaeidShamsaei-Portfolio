@@ -7,7 +7,9 @@
     "typecheck": "tsc --noEmit",
     "build": "next build",
     "start": "node scripts/serve-static.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "images:audit": "node scripts/media-pipeline.mjs --audit",
+    "images:build": "node scripts/media-pipeline.mjs --build"
   },
   "dependencies": {
     "next": "^16.0.0",
@@ -21,6 +23,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@playwright/test": "^1.56.0"
+    "@playwright/test": "^1.56.0",
+    "sharp": "^0.34.4"
   }
 }

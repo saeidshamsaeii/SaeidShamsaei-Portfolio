@@ -5,3 +5,6 @@ out/
 .env.production
 *.tsbuildinfo
 .DS_Store
+
+# Keep full-resolution private originals outside the public repository.
+media-originals/

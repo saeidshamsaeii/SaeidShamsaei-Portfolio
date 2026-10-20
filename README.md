@@ -60,3 +60,23 @@ The home now uses the owner's approved screenshot direction: full-dark editorial
 The Windows checkout is `C:\\Projects\\SaeidShamsaei-Portfolio`; development and static preview both use **localhost:3200**. GitHub commits do **not** automatically update a Windows clone. In a clean working tree, run `git pull --ff-only origin main` on the laptop, or separately authorize Portfolio in the local synchronization service. Repository updates here do not grant permissions on the laptop.
 
 **Outstanding before public release:** confirm hosting and domain, validate the portrait and public contact/profile details, configure DNS/TLS, set `NEXT_PUBLIC_SITE_URL` to the real HTTPS domain, and explicitly approve enabling indexing via `NEXT_PUBLIC_SITE_READY=true`. No public deployment is claimed by these commits.
+
+
+## High-resolution media workflow (source-quality gate)
+
+The original checked-in files are **very low resolution**: `portrait.webp` 325×285, `ss-gold.webp` 128×128 and `projects.webp` 300×600. They cannot honestly become original 8K photos by scaling. The old stretched 300px project sprite was removed from the homepage; the original CSS/SVG architectural compositions now render vector-sharp regardless of screen resolution. The small portrait and original SS identity remain available as fallbacks, pending genuine owner-supplied masters. A decorative huge footer logo now uses scalable typography.
+
+To add actual professional masters, keep them outside the public repository under `media-originals/`, named `portrait.jpg`, `logo.svg`, and/or `project-gartal.png`, `project-factory.png`, `project-digirezhim.png`, `project-petiwoo.png` (supported: PNG, JPEG, WebP, AVIF, TIFF, SVG). Ensure source provenance and public-use rights. **Do not commit `media-originals/`**: it is gitignored. The existing public portfolio contains only a reduced, owner-provided derivative of the portrait. When no master is present, the UI retains a working fallback.
+
+```powershell
+cd C:\Projects\SaeidShamsaei-Portfolio
+npm.cmd install --no-audit --no-fund
+npm.cmd run images:audit
+npm.cmd run images:build
+npm.cmd run build
+npm.cmd start
+```
+
+`images:build` checks native dimensions, rejects raster candidates under 1600px (logo under 512px), never upscales raster sources, and writes per-media 480–3840px responsive WebP/AVIF files plus `public/assets/hires/manifest.json`. Explicit `--include-8k` via `node scripts/media-pipeline.mjs --build --include-8k` adds up to 7680px **only if original pixels exist**. The client reads the manifest and selects density-appropriate `picture` sources, while vector project visuals remain a fallback. Original masters are not copied to `public/`; derivatives strip source EXIF. The generated manifest and chosen reviewed optimized derivatives must be committed to GitHub for other devices to receive them via LocalSync. To avoid accidental dirty checkout or large-site regressions, generation is an explicit owner operation, not an implicit `npm run dev` or `npm run build` step.
+
+Audit media weight and view QA screenshots before merging large images; 8K download should never be forced on mobile. Until genuine source masters are supplied, do not claim this site has original 8K photographs.
