@@ -7,6 +7,14 @@ await page.goto('/',{waitUntil:'domcontentloaded'});
 await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
 await expect(page.locator('.motion-chapter')).toHaveCount(4);
 await expect(page.locator('h1')).toContainText('SAEID');
+for(const asset of ['/assets/portrait.webp','/assets/ss-gold.webp','/assets/projects.webp']){const response=await page.request.get(asset);expect(response.status(),asset).toBe(200);expect((await response.body()).length).toBeGreaterThan(1000);}
+await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
+expect(await page.locator('.cinematic-portrait-image').evaluate((i:HTMLImageElement)=>i.naturalWidth)).toBeGreaterThan(100);
+const rail=page.locator('#project-gartal .motion-track');
+const oldX=await rail.evaluate(el=>el.scrollLeft);
+await rail.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
+await expect.poll(async()=>rail.evaluate(el=>el.scrollLeft)).toBeGreaterThan(oldX);
+expect(await page.locator('.motion-drawer a').count()).toBe(0);
 for(const name of names){await expect(page.locator('#project-'+name)).toHaveCount(1);await expect(page.locator('#project-'+name+' .motion-track')).toHaveCount(1);}
 await page.screenshot({path:'artifacts/portfolio-desktop-1440.png',fullPage:true,animations:'disabled'});
 const p=page.locator('#project-petiwoo');await p.scrollIntoViewIfNeeded();await page.waitForTimeout(250);
@@ -20,7 +28,9 @@ test('mobile touch layout, menu, language and screenshot',async ({browser})=>{
 const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
 await page.goto('/',{waitUntil:'domcontentloaded'});
+await expect(page.locator('.ss-preloader')).toHaveCount(0,{timeout:10000});
 await expect(page.locator('.motion-chapter')).toHaveCount(4);
+await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
 await page.screenshot({path:'artifacts/portfolio-mobile-390.png',fullPage:true,animations:'disabled'});
 expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
 await expect(page.locator('.motion-track')).toHaveCount(4);

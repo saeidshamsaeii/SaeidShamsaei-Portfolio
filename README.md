@@ -47,3 +47,8 @@ Site is compatible with GitHub Pages, Cloudflare Pages, Netlify, or any host ser
 3. Automated evidence: source/CI must be reported separately from browser/mobile QA and owner acceptance.
 4. Original PDFs and experimental generated imagery are **not committed into this public repo**; verify permissions before sharing them.
 5. Check viewport widths 360, 390, 768, 1280, 1440; rapid reverse scroll, keyboard/anchors, touch, reduced motion, layout shifts, and actual page captures.
+
+
+## Approved SS cinematic design (2026-10-20)
+
+The home now uses the owner's approved screenshot direction: full-dark editorial storytelling, double-S gold logo, a half-body editorial portrait based on the supplied personal photo, and optimized project visual studies for GARTAL, AI Development Factory, DigiRezhim and Petiwoo. The source renders are reinterpretive artwork, not verified product screenshots. The assets are committed in `public/assets/` and served locally (not from temporary ChatGPT links). Vertical document scroll moves among projects; each project's inline `motion-track` supports horizontal trackpad/Shift+wheel, touch swipe, mouse drag, focusable keyboard left/right controls, and optional visual navigation arrows. No click-through is required to read the case content. Intro preloader waits for required media and fonts with a time-bounded fallback; no misleading guarantee that every possible browser resource is fully cached. Respect reduced-motion preferences, preserve semantic project narratives and direct case URLs for deep links. Desktop/mobile Playwright E2E and exact-SHA CI must pass before treating this iteration as release-ready.
