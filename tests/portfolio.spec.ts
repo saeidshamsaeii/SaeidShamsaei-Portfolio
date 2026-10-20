@@ -12,7 +12,9 @@ await expect(page.locator('.cinematic-portrait-image')).toBeVisible();
 await expect(page.locator('.cinematic-master-image').first()).toBeVisible({timeout:15000});
 for(const name of names){await expect(page.locator('#project-'+name+' .motion-visual .cinematic-vector-art .art-scene')).toHaveCount(1);}
 expect(await page.locator('#project-gartal .motion-visual .cinematic-vector-art').evaluate(el=>getComputedStyle(el).backgroundImage)).toBe('none');
-expect(await page.locator('.cinematic-portrait-image').evaluate((i:HTMLImageElement)=>i.naturalWidth)).toBeGreaterThan(1000);
+expect(await page.locator('.cinematic-portrait-image').evaluate((i:HTMLImageElement)=>i.currentSrc.includes('/assets/hires/portrait.webp'))).toBe(true);
+const fullPortraitWidth=await page.evaluate(async()=>{const i=new Image();i.src='/assets/hires/portrait.webp';await i.decode();return i.naturalWidth;});
+expect(fullPortraitWidth).toBe(1122);
 const rail=page.locator('#project-gartal .motion-track');
 const oldX=await rail.evaluate(el=>el.scrollLeft);
 await rail.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
