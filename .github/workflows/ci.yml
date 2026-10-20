@@ -27,6 +27,20 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_READY: 'false'
           NEXT_PUBLIC_SITE_URL: 'https://example.invalid'
+      - name: Install Chromium for real browser QA
+        run: npx playwright install --with-deps chromium
+      - name: Browser QA (mobile, desktop, case routes)
+        run: npm run test:e2e
+      - name: Upload visual QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: saeid-portfolio-browser-qa
+          path: |
+            artifacts/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 7
       - name: Upload verified static export
         if: success()
         uses: actions/upload-artifact@v4

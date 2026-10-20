@@ -1,12 +1,13 @@
 {
   "name": "saeidshamsaei-portfolio",
-  "version": "0.8.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "typecheck": "tsc --noEmit",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "^16.0.0",
@@ -19,6 +20,7 @@
     "typescript": "^5.9.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0"
+    "@types/react-dom": "^19.0.0",
+    "@playwright/test": "^1.56.0"
   }
 }
