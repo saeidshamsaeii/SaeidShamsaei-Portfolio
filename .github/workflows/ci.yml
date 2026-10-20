@@ -22,6 +22,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: TypeScript verification
         run: npm run typecheck
+      - name: Source image resolution audit
+        run: npm run images:audit
       - name: Build export
         run: npm run build
         env:
