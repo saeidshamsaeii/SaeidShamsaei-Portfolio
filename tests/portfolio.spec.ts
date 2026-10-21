@@ -102,8 +102,20 @@ test('scroll camera movement honors reduced motion',async({browser})=>{
   const page=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:mode});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   await page.evaluate(()=>window.scrollTo({top:350,behavior:'instant'}));
-  await expect.poll(()=>page.locator('#top').evaluate(e=>e instanceof HTMLElement?e.style.getPropertyValue('--sx-scroll'):''),{timeout:3000})
-   .toBe(mode==='reduce'?'0':'0.438');
+  await expect.poll(async()=>{
+   return await page.locator('#top').evaluate(element=>{
+    const hero=element as HTMLElement;
+    const actual=Number(hero.style.getPropertyValue('--sx-scroll'));
+    const fraction=Math.min(1,Math.max(0,-hero.getBoundingClientRect().top/Math.max(1,window.innerHeight)));
+    const expected=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:fraction;
+    return Math.abs(actual-expected);
+   });
+  },{timeout:3000}).toBeLessThan(.005);
+  if(mode==='no-preference'){
+   const progress=await page.locator('#top').evaluate(e=>Number((e as HTMLElement).style.getPropertyValue('--sx-scroll')));
+   expect(progress).toBeGreaterThan(0);
+   expect(progress).toBeLessThan(1);
+  }
   await page.close();
  }
 });
