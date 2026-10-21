@@ -210,3 +210,26 @@
  .sx-site .sx-chapter-bottom{backdrop-filter:none;}
  .sx-site .sx-contact-link{transform:none!important;transition:none!important;}
 }
+/* Art-directed mobile case-study images: retain full readable UI screenshot while
+   a very low-contrast echo fills the letterbox. This uses the SAME local image. */
+@media(max-width:760px){
+ #project-gartal{--sx-case-image:url('/assets/hires/project-gartal.webp');}
+ #project-factory{--sx-case-image:url('/assets/hires/project-factory.webp');}
+ #project-digirezhim{--sx-case-image:url('/assets/hires/project-digirezhim.webp');}
+ #project-petiwoo{--sx-case-image:url('/assets/hires/project-petiwoo.webp');}
+ .sx-site .sx-slide-art{position:relative;isolation:isolate;background:#0a0c0f;}
+ .sx-site .sx-slide-art::before{
+  content:'';position:absolute;inset:-14px;z-index:0;
+  background-image:var(--sx-case-image);background-size:cover;background-position:center;
+  filter:blur(26px) brightness(.45) saturate(.72);
+  opacity:.55;pointer-events:none;
+ }
+ .sx-site .sx-slide-art img{position:relative;z-index:1;filter:drop-shadow(0 10px 14px #000a);}
+ .sx-site .sx-scroll-hint{font-size:9px;letter-spacing:.08em;white-space:nowrap;max-width:none;}
+}
+@media(max-width:440px){
+ .sx-site .sx-scroll-hint{font-size:8px;letter-spacing:.03em;}
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-site .sx-slide-art::before{filter:none;opacity:.12;}
+}

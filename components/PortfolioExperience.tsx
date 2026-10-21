@@ -209,7 +209,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
      {phases.map((phase,i)=><button key={phase} type="button" className={i===active?'is-active':''}
       aria-label={'Show '+phase.toLowerCase()} aria-current={i===active?'step':undefined} onClick={()=>goTo(i)}><span/></button>)}
     </div>
-    <span className="sx-scroll-hint">{active===count-1?'SCROLL DOWN FOR THE NEXT PROJECT':'SCROLL DOWN → STORY MOVES SIDEWAYS'}</span>
+    <span className="sx-scroll-hint">{active===count-1?'NEXT PROJECT ↓':'SCROLL ↓ / STORY →'}</span>
     <div className="sx-chapter-buttons"><button type="button" onClick={()=>goTo(active-1)} disabled={active===0} aria-label={'Previous '+project.brand+' slide'}>←</button>
     <button type="button" onClick={()=>goTo(active+1)} disabled={active===count-1} aria-label={'Next '+project.brand+' slide'}>→</button></div>
    </div>

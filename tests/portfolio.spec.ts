@@ -273,7 +273,10 @@ test('vertical scroll drives horizontal story for each project on desktop',async
   expect(middle.max).toBeGreaterThan(1200);
   await expect.poll(()=>segment.locator('.sx-story-rail').evaluate(e=>e.scrollLeft),{timeout:5500}).toBeGreaterThan(middle.max*.40);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
-  if(name==='gartal')await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/desktop-case-study-horizontal.png',animations:'disabled'});
+  if(name==='gartal'){
+   await expect(page.locator('.sx-intro')).toHaveCount(0);
+   await page.screenshot({path:'artifacts/desktop-case-study-horizontal.png',animations:'disabled'});
+  }
   await goToProgress(page,name,1);
   await expect.poll(()=>segment.locator('.sx-story-rail').evaluate(e=>e.scrollLeft)).toBeGreaterThan(middle.max*.95);
  }
@@ -309,7 +312,10 @@ test('touch-size/mobile vertical scrolling progresses horizontally, then next pr
    expect(middle.max).toBeGreaterThan(300);
    await expect.poll(()=>chapter.locator('.sx-story-rail').evaluate(e=>e.scrollLeft),{timeout:6000}).toBeGreaterThan(middle.max*.4);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
-   if(width===390&&name==='factory')await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/mobile-horizontal-case-study.png',animations:'disabled'});
+   if(width===390&&name==='factory'){
+    await expect(page.locator('.sx-intro')).toHaveCount(0);
+    await page.screenshot({path:'artifacts/mobile-horizontal-case-study.png',animations:'disabled'});
+   }
    await goToProgress(page,name,1);
   }
   if(width===390){
