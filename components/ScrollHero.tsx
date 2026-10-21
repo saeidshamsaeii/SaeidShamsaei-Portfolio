@@ -1,60 +1,66 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 
-const stages=[
- {step:'01',verb:'Understand.',detail:'Translate an ambitious idea into a clear problem worth solving.',note:'PROBLEM BEFORE TOOLING'},
- {step:'02',verb:'Architect.',detail:'Make the right boundaries, workflows and decisions visible.',note:'SYSTEMS BUILT TO EVOLVE'},
- {step:'03',verb:'Deliver.',detail:'Connect craft with testable, maintainable software.',note:'EVIDENCE BEFORE CLAIMS'}
+/**
+ * First viewport is a portrait-led editorial cover. A short natural vertical
+ * scroll changes the accompanying message without hijacking touch/wheel input.
+ */
+const beats=[
+ {step:'01',word:'DESIGN',lead:'Design with purpose.',detail:'Clear interfaces and intentional decisions.'},
+ {step:'02',word:'BUILD',lead:'Architect for change.',detail:'Products and systems with room to grow.'},
+ {step:'03',word:'SHIP',lead:'Deliver with evidence.',detail:'Useful results and verifiable engineering.'}
 ] as const;
-
-/** Scroll-based narrative; the hero remains a normal document section and never traps wheel/touch input. */
 export function ScrollHero(){
  const host=useRef<HTMLElement>(null);
  const [active,setActive]=useState(0);
  useEffect(()=>{
   const root=host.current;
   if(!root)return;
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  let requestId=0;
-  const sync=()=>{
-   requestId=0;
-   if(reduced.matches){root.style.setProperty('--sx-v3-progress','0');setActive(0);root.dataset.scene='0';return;}
+  const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  let raf=0;
+  const measure=()=>{
+   raf=0;
+   if(motion.matches){root.style.setProperty('--sx-v3-progress','0');root.dataset.scene='0';setActive(0);return;}
    const rect=root.getBoundingClientRect();
-   const travel=Math.max(1,rect.height-window.innerHeight);
-   const fraction=Math.min(1,Math.max(0,-rect.top/travel));
-   root.style.setProperty('--sx-v3-progress',fraction.toFixed(3));
-   const index=fraction<.32?0:fraction<.69?1:2;
+   const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,rect.height-window.innerHeight)));
+   const index=Math.min(2,Math.floor(progress*2.99));
+   root.style.setProperty('--sx-v3-progress',progress.toFixed(4));
    root.dataset.scene=String(index);
-   setActive(prev=>prev===index?prev:index);
+   setActive(previous=>previous===index?previous:index);
   };
-  const onScroll=()=>{if(!requestId)requestId=requestAnimationFrame(sync);};
-  sync();
-  window.addEventListener('scroll',onScroll,{passive:true});
-  window.addEventListener('resize',onScroll);
-  reduced.addEventListener('change',onScroll);
-  return()=>{window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onScroll);reduced.removeEventListener('change',onScroll);if(requestId)cancelAnimationFrame(requestId);};
+  const handler=()=>{if(!raf)raf=requestAnimationFrame(measure);};
+  measure();
+  window.addEventListener('scroll',handler,{passive:true});
+  window.addEventListener('resize',handler);
+  motion.addEventListener('change',handler);
+  return()=>{window.removeEventListener('scroll',handler);window.removeEventListener('resize',handler);motion.removeEventListener('change',handler);if(raf)cancelAnimationFrame(raf);};
  },[]);
- return <section ref={host} className="sx-work-hero sx-editorial-frame sx-v3-hero" id="top" aria-labelledby="sx-work-title" data-scene="0">
-  <div className="sx-v3-hero-stage">
-   <div className="sx-work-art" aria-hidden="true"><span className="sx-art-coordinates">EDITORIAL / PRODUCT SYSTEMS</span></div>
-   <div className="sx-work-copy">
-    <p className="sx-kicker">SAEID SHAMSAEI <span className="sx-kicker-divider">/</span> PRODUCT &amp; SOFTWARE ENGINEERING</p>
-    <h1 id="sx-work-title">BEYOND<br/><em>THE</em><br/>INTERFACE<span className="sx-title-stop">.</span></h1>
-    <p>I design software architectures and digital products that make complexity feel effortless.</p>
-    <div className="sx-hero-actions"><a href="#about" className="sx-action">Meet the architect <span aria-hidden="true">↘</span></a></div>
-   </div>
-   <div className="sx-hero-blueprint sx-v3-hero-blueprint" aria-label="A three-part design engineering journey">
-    <div className="sx-blueprint-heading"><span>THE WAY I WORK</span><span>0{active+1} / 03</span></div>
-    <div className="sx-blueprint-steps">
-     {stages.map((stage,i)=><div className={'sx-blueprint-step'+(active===i?' sx-is-current':'')} key={stage.step} data-active={active===i?'true':'false'}>
-      <span className="sx-blueprint-index">{stage.step}</span>
-      <div><strong>{stage.verb}</strong><small>{active===i?stage.detail:stage.note}</small></div>
-      <span aria-hidden="true" className="sx-blueprint-sign">{active===i?'↗':'·'}</span>
-     </div>)}
+ return <section ref={host} className="sx-work-hero sx-v3-hero sx-v4-hero" id="top" aria-labelledby="sx-work-title" data-scene="0">
+  <div className="sx-v3-hero-stage sx-v4-hero-stage">
+   <div className="sx-v4-hero-content">
+    <div className="sx-work-copy">
+     <p className="sx-kicker">SAEID SHAMSAEI <span aria-hidden="true">/</span> SOFTWARE ENGINEER & PRODUCT BUILDER</p>
+     <h1 id="sx-work-title">BEYOND<br/><em>THE INTERFACE.</em></h1>
+     <p>I design software architecture and digital products that turn complex ideas into useful experiences.</p>
+     <div className="sx-hero-actions"><a href="#selected-projects" className="sx-action">Explore selected work <span aria-hidden="true">↘</span></a></div>
     </div>
-    <div className="sx-blueprint-base"><span>{stages[active].note}</span><span className="sx-blueprint-progress" aria-hidden="true"><i/></span></div>
+    <div className="sx-hero-blueprint sx-v4-hero-beats" aria-label="Design, build and deliver: an animated scroll narrative">
+     <div className="sx-blueprint-heading"><span>MY APPROACH</span><span>0{active+1} / 03</span></div>
+     <div className="sx-blueprint-steps">
+      {beats.map((beat,index)=><div key={beat.step} className={'sx-blueprint-step'+(active===index?' sx-is-current':'')} data-active={active===index?'true':'false'}>
+       <span className="sx-blueprint-index">{beat.step}</span><div><strong>{beat.word}</strong><small>{active===index?beat.detail:beat.lead}</small></div>
+       <span className="sx-blueprint-sign" aria-hidden="true">↗</span>
+      </div>)}
+     </div>
+     <div className="sx-blueprint-base"><span>{beats[active].lead}</span><span className="sx-blueprint-progress" aria-hidden="true"><i/></span></div>
+    </div>
    </div>
-   <div className="sx-hero-bottom"><span>ARCHITECTURE · QUALITY · EXPERIENCE</span><span>SCROLL TO UNFOLD ↓</span></div>
+   <div className="sx-v4-hero-persona">
+    <span className="sx-v4-portrait-arc" aria-hidden="true"/>
+    <img src="/assets/hires/portrait.webp" width={1122} height={1402} loading="eager" fetchPriority="high" decoding="async" alt="Saeid Shamsaei, software engineer and product builder"/>
+    <span className="sx-v4-hero-signature">CODE / EXPERIENCE / PURPOSE</span>
+   </div>
+   <div className="sx-hero-bottom"><span>DESIGN · BUILD · EVOLVE</span><span>SCROLL TO EXPLORE ↓</span></div>
   </div>
  </section>;
 }

@@ -2,7 +2,7 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import {ScrollHero} from '@/components/ScrollHero';
-import {SourceProductPreview} from '@/components/SourceProductPreview';
+
 import {projects,publicContact,type Project} from '@/data/portfolio';
 
 const focuses=[
@@ -155,10 +155,13 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
        <h2>{project.id==='factory'?<>AI <em>Factory</em></>:project.brand}</h2>
        <h3>{meta.tagline}</h3>
        <p>{project.intro.en}</p>
-       <div className="sx-stack">{project.features.slice(0,3).map(f=><span key={f.en}>{f.en}</span>)}</div>
+       <div className="sx-stack">{project.features.slice(0,2).map(f=><span key={f.en}>{f.en}</span>)}</div>
        <Link className="sx-action" href={'/work/'+project.id+'/'}>Open the full case study <span aria-hidden="true">↗</span></Link>
       </div>
-      <div className="sx-slide-art sx-slide-art--source"><SourceProductPreview id={project.id}/></div>
+      <div className="sx-slide-art sx-v4-project-art">
+       <img src={'/assets/hires/project-'+project.id+'.webp'} width={1448} height={1086} loading="eager" decoding="async" alt={project.brand+' concept visualization of the software product'}/>
+       <span className="sx-v4-art-label">PROJECT VISUALIZATION <span aria-hidden="true">↗</span></span>
+      </div>
      </article>
      <article className="sx-slide sx-slide--detail" aria-label="The challenge">
       <div className="sx-slide-narrative"><p className="sx-kicker">01 / THE CHALLENGE</p>
@@ -194,7 +197,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
      <article className="sx-slide sx-slide--detail sx-slide--end" aria-label="Documented evidence and next project">
       <div className="sx-slide-narrative"><p className="sx-kicker">04 / DOCUMENTED STATUS</p>
        <h2>Beyond the <em>concept.</em></h2><p>{project.outcome.en}</p>
-       <small className="sx-evidence-note">Source-informed views are interactive studies, not authenticated production screenshots or live metrics.</small>
+       <small className="sx-evidence-note">Project images are conceptual visualizations, not verified live screenshots or operating metrics.</small>
        <Link className="sx-action" href={'/work/'+project.id+'/'}>Explore full case study ↗</Link>
       </div>
       <div className="sx-diagram sx-diagram--next">
@@ -249,9 +252,12 @@ export default function PortfolioExperience(){
   return()=>{if(frame)cancelAnimationFrame(frame);window.removeEventListener('scroll',request);window.removeEventListener('resize',request);reduced.removeEventListener('change',request);};
  },[]);
  useEffect(()=>{
-  const sections=[document.querySelector('#about'),document.querySelector('#contact')].filter((el):el is Element=>Boolean(el));
+  const sections=Array.from(document.querySelectorAll('#about,#contact,[data-v4-reveal]'));
   if(!sections.length||!('IntersectionObserver' in window))return;
-  const io=new IntersectionObserver(entries=>entries.forEach(entry=>entry.target.classList.toggle('sx-in-view',entry.isIntersecting)),{threshold:.12});
+  const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
+   entry.target.classList.toggle('sx-in-view',entry.isIntersecting);
+   if(entry.isIntersecting)entry.target.classList.add('sx-v4-seen');
+  }),{threshold:.08,rootMargin:'0px 0px -3% 0px'});
   sections.forEach(element=>io.observe(element));
   return()=>io.disconnect();
  },[]);
@@ -272,12 +278,12 @@ export default function PortfolioExperience(){
       <img src="/assets/hires/portrait.webp" alt="Saeid Shamsaei — personal portrait" width={1122} height={1402} loading="eager" fetchPriority="high" decoding="async"/>
      </div>
      <div className="sx-profile-copy">
-      <p className="sx-kicker">THE PERSON BEHIND THE WORK</p>
-      <h2 id="sx-profile-title">SAEID<br/><em>SHAMSAEI.</em></h2>
+      <p className="sx-kicker">02 / ABOUT ME · SAEID SHAMSAEI</p>
+      <h2 id="sx-profile-title">BUILDING<br/><em>WITH INTENT.</em></h2>
       <p className="sx-profile-role">Software Architect · Product Engineer</p>
-      <p className="sx-profile-intro">From defining the problem to verifying delivery, I lead ambitious software products through clear architecture and thoughtful decisions.</p>
+      <p className="sx-profile-intro">I build useful digital products and robust systems — combining thoughtful design with engineering that lasts.</p>
       <p className="sx-profile-interests-title">WHAT DRIVES MY WORK</p>
-      <div className="sx-focus-list">{focuses.map((focus,i)=><div key={focus.title}>
+      <div className="sx-focus-list">{focuses.slice(0,3).map((focus,i)=><div key={focus.title}>
        <span>0{i+1}</span><div><strong>{focus.title}</strong><small>{focus.detail}</small></div>
       </div>)}</div>
       <div className="sx-profile-actions"><a href="#selected-projects" className="sx-action">Selected work ↘</a></div>
@@ -293,7 +299,7 @@ export default function PortfolioExperience(){
 
    <section className="sx-principles-section sx-editorial-frame" id="approach">
     <div><p className="sx-kicker">04 / HOW I WORK</p><h2>Build with<br/><em>intention.</em></h2></div>
-    <div className="sx-principles">{['PROBLEM BEFORE TOOLING','ARCHITECTURE FOR CHANGE','EXPERIENCE WITHOUT FRICTION','VERIFIABLE QUALITY'].map((t,i)=><div key={t}><span>{String(i+1).padStart(2,'0')}</span><strong>{t}</strong><i aria-hidden="true">↗</i></div>)}</div>
+    <div className="sx-principles">{['PROBLEM BEFORE TOOLING','ARCHITECTURE FOR CHANGE','EXPERIENCE WITHOUT FRICTION','VERIFIABLE QUALITY'].map((t,i)=><div key={t} data-v4-reveal><span>{String(i+1).padStart(2,'0')}</span><strong>{t}</strong><i aria-hidden="true">↗</i></div>)}</div>
    </section>
    <section className="sx-contact sx-editorial-frame" id="contact" aria-labelledby="sx-contact-title">
     <p className="sx-kicker">05 / START A CONVERSATION</p>

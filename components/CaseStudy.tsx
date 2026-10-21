@@ -14,18 +14,22 @@ export default function CaseStudy({id}:{id:ProjectId}){
     <h2>{txt(english,p.title)}</h2><p>{txt(english,p.intro)}</p>
     <div className="case-hero-meta">{p.stack.slice(0,4).map(x=><span key={x}>{x}</span>)}</div>
    </div>
-   <div className="case-hero-art cinematic-case-art"><SourceProductPreview id={p.id}/></div>
+   <div className="case-hero-art cinematic-case-art sx-v4-case-hero-art">
+    <img src={'/assets/hires/project-'+p.id+'.webp'} width={1448} height={1086} loading="eager" decoding="async" alt={p.brand+' conceptual project showcase'}/>
+    <small>CONCEPTUAL PRODUCT VISUALIZATION · NOT A LIVE CAPTURE</small>
+   </div>
   </header>
   <div className="case-editorial">
    <div className="case-section"><span>01 / THE CHALLENGE</span><h2>The challenge.</h2><p>{txt(english,p.problem)}</p></div>
    <div className="case-section"><span>02 / THE APPROACH</span><h2>The architectural answer.</h2><p>{txt(english,p.solution)}</p></div>
   </div>
+  <section className="sx-v4-case-source"><div className="sx-v4-case-source-label"><span>INTERACTIVE SOURCE STUDY</span><p>A source-informed interface map, not a running product screenshot.</p></div><SourceProductPreview id={p.id}/></section>
   <section className="case-systems"><div className="case-systems-head"><span>03 / SYSTEM ANATOMY</span><h2>Inside the system.</h2><p>Documented capabilities and domain boundaries</p></div>
    <div className="case-capabilities">{p.architecture.map((item,i)=><div key={i}><span>{String(i+1).padStart(2,'0')}</span><h3>{txt(english,item)}</h3><b>↗</b></div>)}</div>
   </section>
   <section className="case-evidence"><span>04 / EVIDENCE & DELIVERY</span><div><h2>Built with context, not inflated claims.</h2><p>{txt(english,p.outcome)}</p>
    <small>Source context: {p.source}</small>
-   <p className="evidence-disclaimer">This interactive product anatomy is derived from checked-in application sources; it is not a screenshot of a running or production system.</p>
+   <p className="evidence-disclaimer">The hero is a conceptual visual; the interactive interface study is based on checked-in source code. Neither represents verified production metrics.</p>
   </div></section>
   <section className="case-next"><div><span>05 / NEXT PROJECT</span><h2>{next.brand}</h2></div><Link href={'/work/'+next.id+'/'}>NEXT CASE STUDY ↗</Link></section>
   <footer className="case-footer"><Link href="/">← BACK TO PORTFOLIO</Link><a href={'mailto:'+publicContact.email}>LET’S TALK ↗</a></footer>
