@@ -45,7 +45,8 @@ test('first developer workspace, second personal profile, then four projects',as
  expect(errors).toEqual([]);
  await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/desktop-workspace.png',animations:'disabled'});
  await page.locator('#about').scrollIntoViewIfNeeded();
- await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/desktop-about.png',animations:'disabled'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0);
+   await page.locator('#about .sx-profile-photo img').evaluate(async(img:HTMLImageElement)=>{await img.decode();}); await page.screenshot({path:'artifacts/desktop-about.png',animations:'disabled'});
 });
 
 test('editorial workspace has one primary action and uncluttered composition',async({page})=>{
@@ -67,7 +68,8 @@ test('editorial workspace has one primary action and uncluttered composition',as
  expect(rect?.height).toBeLessThan(2000);
  await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-workspace-1440.png',animations:'disabled'});
  await page.locator('#about').scrollIntoViewIfNeeded();
- await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-about-1440.png',animations:'disabled'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0);
+   await page.locator('#about .sx-profile-photo img').evaluate(async(img:HTMLImageElement)=>{await img.decode();}); await page.screenshot({path:'artifacts/editorial-about-1440.png',animations:'disabled'});
 });
 test('hero and personal introduction are responsive single-screen frames',async({browser})=>{
  for(const [width,height] of [[360,800],[390,844],[768,1024],[1024,768],[1440,900]]){
@@ -94,7 +96,8 @@ test('hero and personal introduction are responsive single-screen frames',async(
    await page.locator('#top').scrollIntoViewIfNeeded();
    await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-workspace-mobile.png',animations:'disabled'});
    await page.locator('#about').scrollIntoViewIfNeeded();
-   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-about-mobile.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0);
+   await page.locator('#about .sx-profile-photo img').evaluate(async(img:HTMLImageElement)=>{await img.decode();}); await page.screenshot({path:'artifacts/editorial-about-mobile.png',animations:'disabled'});
   }
   await page.close();
  }
@@ -205,6 +208,34 @@ test('real contact links and mobile layout do not collide',async({browser})=>{
    await page.locator('#contact').scrollIntoViewIfNeeded();
    await page.screenshot({path:'artifacts/contact-'+width+'.png',animations:'disabled'});
   }
+  await page.close();
+ }
+});
+
+test('mobile portrait is decoded, sized and actually visible before visual acceptance',async({browser})=>{
+ for(const [width,height] of [[360,640],[390,844],[430,932],[768,1024]]){
+  const page=await browser.newPage({viewport:{width,height}});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('.sx-intro')).toHaveCount(0);
+  await page.locator('#about').scrollIntoViewIfNeeded();
+  const image=page.locator('#about .sx-profile-photo img');
+  const info=await image.evaluate(async (img:HTMLImageElement)=>{
+   await img.decode();
+   const r=img.getBoundingClientRect();
+   const parent=img.parentElement!.getBoundingClientRect();
+   const styles=getComputedStyle(img);
+   return {naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,width:r.width,height:r.height,
+    parentWidth:parent.width,parentHeight:parent.height,opacity:styles.opacity,display:styles.display};
+  });
+  expect(info.naturalWidth).toBe(1122);
+  expect(info.naturalHeight).toBe(1402);
+  expect(info.width,'portrait width '+width).toBeGreaterThan(110);
+  expect(info.height,'portrait height '+width).toBeGreaterThan(135);
+  expect(info.opacity,'portrait opacity '+width).toBe('1');
+  expect(info.display).not.toBe('none');
+  expect(info.width).toBeLessThanOrEqual(info.parentWidth+2);
+  expect(info.height).toBeLessThanOrEqual(info.parentHeight+2);
+  if(width===390)await page.screenshot({path:'artifacts/v3-mobile-portrait-confirmed.png',animations:'disabled'});
   await page.close();
  }
 });
@@ -364,7 +395,8 @@ test('touch-size/mobile vertical scrolling progresses horizontally, then next pr
    await page.locator('#top').scrollIntoViewIfNeeded();
    await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/mobile-workspace.png',animations:'disabled'});
    await page.locator('#about').scrollIntoViewIfNeeded();
-   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/mobile-about.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0);
+   await page.locator('#about .sx-profile-photo img').evaluate(async(img:HTMLImageElement)=>{await img.decode();}); await page.screenshot({path:'artifacts/mobile-about.png',animations:'disabled'});
   }
   await page.close();
  }

@@ -269,7 +269,7 @@ export default function PortfolioExperience(){
    <section className="sx-profile sx-editorial-frame" id="about" aria-labelledby="sx-profile-title">
     <div className="sx-profile-inner">
      <div className="sx-profile-photo">
-      <img src="/assets/hires/portrait.webp" alt="Saeid Shamsaei — personal portrait" width={1122} height={1402} decoding="async"/>
+      <img src="/assets/hires/portrait.webp" alt="Saeid Shamsaei — personal portrait" width={1122} height={1402} loading="eager" fetchPriority="high" decoding="async"/>
      </div>
      <div className="sx-profile-copy">
       <p className="sx-kicker">THE PERSON BEHIND THE WORK</p>

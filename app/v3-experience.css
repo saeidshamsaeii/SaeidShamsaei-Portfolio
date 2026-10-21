@@ -168,3 +168,18 @@
  .sx-site .sx-v3-hero-stage .sx-hero-blueprint{transform:none!important;}
  .sx-site .sx-profile-copy,.sx-site .sx-contact-mark img{transform:none!important;transition:none!important;}
 }
+
+/* Actual Chromium screenshots caught a blank mobile portrait frame before image paint.
+ * Reserve its full rectangle and eagerly decode the only identity-defining image. */
+.sx-site .sx-profile-photo img{
+ display:block!important;position:relative!important;z-index:3!important;
+ width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;object-position:center bottom!important;
+ opacity:1!important;visibility:visible!important;
+}
+@media(max-width:760px){
+ .sx-site .sx-profile-inner{gap:clamp(10px,1.5svh,17px);justify-content:center;}
+ .sx-site .sx-profile-photo{display:flex;align-items:flex-end;justify-content:center;}
+ .sx-site .sx-profile-photo img{flex:0 0 100%;}
+}
