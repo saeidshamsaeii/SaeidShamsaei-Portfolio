@@ -159,7 +159,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
        <Link className="sx-action" href={'/work/'+project.id+'/'}>Open the full case study <span aria-hidden="true">↗</span></Link>
       </div>
       <div className="sx-slide-art sx-v4-project-art">
-       <img src={'/assets/hires/project-'+project.id+'.webp'} width={1448} height={1086} loading="eager" decoding="async" alt={project.brand+' concept visualization of the software product'}/>
+       <img src={'/assets/hires/project-'+project.id+'.webp'} width={1448} height={1086} loading="eager" decoding="sync" fetchPriority={index===0?'high':'auto'} alt={project.brand+' concept visualization of the software product'}/>
        <span className="sx-v4-art-label">PROJECT VISUALIZATION <span aria-hidden="true">↗</span></span>
       </div>
      </article>

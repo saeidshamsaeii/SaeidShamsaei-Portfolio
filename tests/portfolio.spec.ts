@@ -115,6 +115,16 @@ test('mobile viewport containment, no typography/image overlap and useful scroll
    const noOverflow=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1);
    expect(noOverflow,'page overflow after horizontal scroll '+id+' '+width).toBe(true);
    await progressTo(page,id,0);
+   const img=chapter.locator('.sx-slide--overview .sx-v4-project-art img');
+   const decoded=await img.evaluate(async(image:HTMLImageElement)=>{
+    await image.decode();
+    const box=image.getBoundingClientRect();
+    return {naturalWidth:image.naturalWidth,display:getComputedStyle(image).display,opacity:getComputedStyle(image).opacity,width:box.width,height:box.height};
+   });
+   expect(decoded.naturalWidth,'visual did not load '+id).toBe(1448);
+   expect(decoded.display,'visual is hidden '+id).not.toBe('none');
+   expect(decoded.width,'visual is zero width '+id).toBeGreaterThan(150);
+   expect(decoded.height,'visual is zero height '+id).toBeGreaterThan(150);
    if(width===390&&id==='gartal')await page.screenshot({path:'artifacts/v4-project-mobile.png',animations:'disabled'});
   }
   if(width===390){
