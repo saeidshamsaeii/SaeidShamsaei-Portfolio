@@ -19,7 +19,7 @@ test('first developer workspace, second personal profile, then four projects',as
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  await expect(page.locator('html')).toHaveAttribute('dir','ltr');
- await expect(page.locator('#top .sx-work-copy h1')).toContainText('BUILDING');
+ await expect(page.locator('#top .sx-work-copy h1')).toContainText('IDEAS.');
  await expect(page.locator('#about .sx-profile-photo img')).toHaveCount(1);
  await expect(page.locator('#about .sx-focus-list>div')).toHaveCount(4);
  await expect(page.locator('.sx-chapter')).toHaveCount(4);
@@ -47,6 +47,65 @@ test('first developer workspace, second personal profile, then four projects',as
  await page.screenshot({path:'artifacts/desktop-workspace.png',animations:'disabled'});
  await page.locator('#about').scrollIntoViewIfNeeded();
  await page.screenshot({path:'artifacts/desktop-about.png',animations:'disabled'});
+});
+
+test('editorial workspace has one primary action and uncluttered composition',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#top h1')).toContainText('ENGINEERED.');
+ await expect(page.locator('#top .sx-hero-actions a')).toHaveCount(1);
+ await expect(page.locator('#top .sx-work-art')).toHaveCount(1);
+ await expect(page.locator('#about .sx-profile-photo img')).toHaveCount(1);
+ await expect(page.locator('#about .sx-profile-orbit')).toHaveCount(0);
+ await expect(page.locator('#selected-projects h2')).toHaveCount(0);
+ await expect(page.locator('#about .sx-focus-list>div')).toHaveCount(4);
+ const rect=await page.locator('#top').boundingBox();
+ expect(rect?.height).toBeGreaterThan(730);
+ expect(rect?.height).toBeLessThan(920);
+ await page.screenshot({path:'artifacts/editorial-workspace-1440.png',animations:'disabled'});
+ await page.locator('#about').scrollIntoViewIfNeeded();
+ await page.screenshot({path:'artifacts/editorial-about-1440.png',animations:'disabled'});
+});
+test('hero and personal introduction are responsive single-screen frames',async({browser})=>{
+ for(const [width,height] of [[360,800],[390,844],[768,1024],[1024,768],[1440,900]]){
+  const page=await browser.newPage({viewport:{width,height}});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const measurements=await page.evaluate(()=>{
+   const hero=document.querySelector<HTMLElement>('#top')!;
+   const profile=document.querySelector<HTMLElement>('#about')!;
+   const image=document.querySelector<HTMLElement>('.sx-profile-photo')!;
+   const copy=document.querySelector<HTMLElement>('.sx-profile-copy')!;
+   const size=(el:HTMLElement)=>el.getBoundingClientRect();
+   const ph=size(profile),hi=size(hero),im=size(image),cp=size(copy);
+   return {innerHeight,heroHeight:hi.height,profileHeight:ph.height,
+    profileCopyBottom:cp.bottom,profileImageBottom:im.bottom,profileBottom:ph.bottom,
+    documentWidth:document.documentElement.scrollWidth,windowWidth:window.innerWidth,
+    copyHeight:cp.height,photoHeight:im.height};
+  });
+  expect(measurements.documentWidth,String(width)).toBeLessThanOrEqual(measurements.windowWidth+1);
+  const header=width<=760?62:72;
+  expect(Math.abs(measurements.heroHeight-(measurements.innerHeight-header)),String(width)).toBeLessThanOrEqual(2);
+  expect(Math.abs(measurements.profileHeight-measurements.innerHeight),String(width)).toBeLessThanOrEqual(2);
+  expect(measurements.profileCopyBottom, 'about copy clipped at '+width).toBeLessThanOrEqual(measurements.profileBottom+3);
+  expect(measurements.profileImageBottom, 'portrait clipped at '+width).toBeLessThanOrEqual(measurements.profileBottom+3);
+  if(width===390){
+   await page.locator('#top').scrollIntoViewIfNeeded();
+   await page.screenshot({path:'artifacts/editorial-workspace-mobile.png',animations:'disabled'});
+   await page.locator('#about').scrollIntoViewIfNeeded();
+   await page.screenshot({path:'artifacts/editorial-about-mobile.png',animations:'disabled'});
+  }
+  await page.close();
+ }
+});
+test('scroll camera movement honors reduced motion',async({browser})=>{
+ for(const mode of ['no-preference','reduce'] as const){
+  const page=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:mode});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await page.evaluate(()=>window.scrollTo({top:350,behavior:'instant'}));
+  await expect.poll(()=>page.locator('#top').evaluate(e=>e instanceof HTMLElement?e.style.getPropertyValue('--sx-scroll'):''),{timeout:3000})
+   .toBe(mode==='reduce'?'0':'0.438');
+  await page.close();
+ }
 });
 
 test('vertical scroll drives horizontal story for each project on desktop',async({page})=>{
