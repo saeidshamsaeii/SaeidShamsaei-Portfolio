@@ -42,7 +42,10 @@ export function ScrollHero(){
      <p className="sx-kicker">SAEID SHAMSAEI <span aria-hidden="true">/</span> SOFTWARE ENGINEER & PRODUCT BUILDER</p>
      <h1 id="sx-work-title">BEYOND<br/><em>THE INTERFACE.</em></h1>
      <p>I design software architecture and digital products that turn complex ideas into useful experiences.</p>
-     <div className="sx-hero-actions"><a href="#selected-projects" className="sx-action">Explore selected work <span aria-hidden="true">↘</span></a></div>
+     <div className="sx-hero-actions sx-v5-hero-actions">
+       <a href="#selected-projects" className="sx-action">Explore selected work <span aria-hidden="true">↘</span></a>
+       <a href="#contact" className="sx-v5-secondary-cta">Start a conversation <span aria-hidden="true">↗</span></a>
+      </div>
     </div>
     <div className="sx-hero-blueprint sx-v4-hero-beats" aria-label="Design, build and deliver: an animated scroll narrative">
      <div className="sx-blueprint-heading"><span>MY APPROACH</span><span>0{active+1} / 03</span></div>
@@ -56,9 +59,9 @@ export function ScrollHero(){
     </div>
    </div>
    <div className="sx-v4-hero-persona">
-    <span className="sx-v4-portrait-arc" aria-hidden="true"/>
-    <img src="/assets/hires/portrait.webp" width={1122} height={1402} loading="eager" fetchPriority="high" decoding="async" alt="Saeid Shamsaei, software engineer and product builder"/>
-    <span className="sx-v4-hero-signature">CODE / EXPERIENCE / PURPOSE</span>
+    <span className="sx-v5-portrait-halo" aria-hidden="true"/>
+    <img src="/assets/hires/portrait-office.webp" width={900} height={1125} loading="eager" fetchPriority="high" decoding="async" alt="Saeid Shamsaei sitting in a modern development office with his hand touching his mustache"/>
+    <span className="sx-v5-office-label" aria-hidden="true">THE PERSON BEHIND THE WORK <span>01 / 04</span></span>
    </div>
    <div className="sx-hero-bottom"><span>DESIGN · BUILD · EVOLVE</span><span>SCROLL TO EXPLORE ↓</span></div>
   </div>

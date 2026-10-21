@@ -1,0 +1,139 @@
+/*
+ * 2026-10-21 Office Portrait / V5
+ * The subject/office photo is the user-approved edit, not generated browser text.
+ * Hero is a real responsive UI with native vertical scrolling and 3 scene beats.
+ * It replaces only the hero art direction; four horizontal project stories remain.
+ */
+.sx-site .sx-work-hero.sx-v4-hero{background:#080b0e;}
+.sx-site .sx-v4-hero-stage{
+ background:
+  radial-gradient(ellipse 72% 105% at 95% 95%,#8a593328,transparent 65%),
+  linear-gradient(102deg,#090b0d,#101013 72%,#1c1714);
+}
+.sx-site .sx-v4-hero-stage::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background:repeating-linear-gradient(90deg,transparent 0,transparent calc(25% - 1px),#f1d6b10e 25%);
+ opacity:.38;
+}
+.sx-site .sx-v4-hero-stage::after{opacity:.7;}
+.sx-site .sx-v4-hero-content{z-index:5;}
+.sx-site .sx-v4-hero-content .sx-work-copy h1{
+ font-weight:830;max-width:710px;line-height:.91;
+ font-size:clamp(54px,6.2vw,107px);
+ text-shadow:0 3px 32px #0005;
+}
+.sx-site .sx-v4-hero-content .sx-work-copy h1 em{color:#e9bf89;}
+.sx-site .sx-v4-hero-content .sx-work-copy>p:not(.sx-kicker){
+ max-width:470px;color:#d0d0ca;
+}
+.sx-site .sx-v4-hero-content .sx-kicker{color:#e6c39d;}
+.sx-site .sx-v5-hero-actions{display:flex;align-items:center;gap:clamp(12px,2vw,28px);flex-wrap:wrap;}
+.sx-site .sx-v5-secondary-cta{
+ color:#e8d5c1!important;font-size:clamp(11px,.95vw,13px);
+ font-weight:650;letter-spacing:.025em;
+ padding:12px 2px;border-bottom:1px solid #dfbf995f;
+ transition:color .24s,border-color .24s;
+}
+.sx-site .sx-v5-secondary-cta span{margin-left:10px;color:#e7bc83;}
+.sx-site .sx-v5-secondary-cta:hover{color:#fff!important;border-color:#e9bf89;}
+.sx-site .sx-v4-hero-persona{isolation:isolate;overflow:hidden;align-items:stretch;}
+.sx-site .sx-v4-hero-persona::before{
+ content:"";position:absolute;z-index:-1;inset:9% 0 0;
+ background:radial-gradient(ellipse at 55% 46%,#dbb58326,#080c0c00 63%);
+}
+.sx-site .sx-v4-hero-persona img{
+ position:relative;z-index:1;display:block!important;
+ width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+ object-fit:cover;object-position:51% 39%;
+ transform:translate3d(0,calc(var(--sx-v3-progress,0) * 14px),0) scale(1.045)!important;
+ filter:saturate(.90) contrast(1.04);
+ mask-image:linear-gradient(to right,transparent 0%,#000 19%,#000 100%);
+ will-change:transform;
+ transition:filter .7s;
+}
+.sx-site .sx-v4-hero-persona::after{
+ content:"";position:absolute;z-index:3;inset:0;pointer-events:none;
+ background:linear-gradient(to top,#090b0dc9,transparent 21%),
+  linear-gradient(to right,#080b0e6e,transparent 39%);
+}
+.sx-v5-portrait-halo{
+ position:absolute;inset:12% -4% auto auto;width:70%;aspect-ratio:1;
+ border:1px solid #d9b08325;border-radius:50%;
+ z-index:2;pointer-events:none;
+ opacity:calc(.16 + var(--sx-v3-progress,0) * .2);
+ transform:translateX(calc(var(--sx-v3-progress,0) * -22px));
+}
+.sx-site .sx-v5-office-label{
+ position:absolute;z-index:4;bottom:9%;right:clamp(12px,3vw,42px);
+ display:flex;gap:clamp(12px,2vw,35px);
+ border-top:1px solid #f6dcb36c;
+ padding-top:12px;color:#f2dfc5;text-shadow:0 2px 10px #000e;
+ letter-spacing:.18em;font-size:9px;font-weight:680;
+ pointer-events:none;
+}
+.sx-site .sx-v5-office-label span{color:#e5b882;}
+.sx-site .sx-v4-hero-beats .sx-blueprint-step{
+ transition:opacity .3s,border-color .3s,transform .3s;
+}
+.sx-site .sx-v4-hero-beats .sx-blueprint-step.sx-is-current{
+ transform:translateY(-2px);
+ border-top-color:#e4bd85;
+}
+.sx-site .sx-v4-hero-beats .sx-blueprint-base{color:#d3baa0;}
+.sx-site .sx-v4-hero-stage .sx-hero-bottom{z-index:6;}
+@media(max-width:1000px){
+ .sx-site .sx-v4-hero-stage{grid-template-columns:minmax(0,49%) minmax(0,51%);}
+ .sx-site .sx-v4-hero-content .sx-work-copy h1{font-size:clamp(50px,6.1vw,79px);}
+ .sx-site .sx-v4-hero-persona img{object-position:48% 46%;}
+ .sx-site .sx-v5-office-label{right:9px;font-size:8px;}
+}
+@media(max-width:760px){
+ .sx-site .sx-v4-hero-stage{
+  display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(#0d0e11,#0b0d0f 87%);
+  padding:64px clamp(17px,4vw,28px) clamp(48px,7svh,62px);
+ }
+ .sx-site .sx-v4-hero-persona{
+  order:0;flex:1 1 auto;align-self:stretch;width:100%;height:auto;min-height:0;
+  margin:0;justify-content:center;position:relative;
+ }
+ .sx-site .sx-v4-hero-persona img{
+  width:100%!important;max-width:100%!important;
+  height:100%!important;max-height:100%!important;
+  object-fit:cover;object-position:50% 29%;
+  transform:translate3d(0,calc(var(--sx-v3-progress,0) * 7px),0) scale(1.01)!important;
+  mask-image:linear-gradient(to bottom,#000 0%,#000 77%,transparent 100%);
+ }
+ .sx-site .sx-v4-hero-persona::after{
+  background:linear-gradient(to top,#090b0db0,transparent 29%);
+ }
+ .sx-site .sx-v4-hero-content{order:1;flex:0 0 auto;padding:0;}
+ .sx-site .sx-v4-hero-content .sx-work-copy h1{
+  font-size:clamp(42px,10vw,67px);
+  letter-spacing:-.081em;line-height:.9;margin:7px 0;
+ }
+ .sx-site .sx-v4-hero-content .sx-work-copy>p:not(.sx-kicker){font-size:clamp(12px,2.55vw,16px);line-height:1.38;}
+ .sx-site .sx-v5-hero-actions{gap:14px;margin-top:12px;}
+ .sx-site .sx-v5-secondary-cta{font-size:11px;padding:8px 2px;}
+ .sx-site .sx-v5-office-label{display:none;}
+ .sx-v5-portrait-halo{display:none;}
+ .sx-site .sx-v4-hero-content .sx-hero-blueprint{margin-top:clamp(10px,1.7svh,17px);}
+}
+@media(max-width:440px){
+ .sx-site .sx-v4-hero-stage{padding-top:61px;padding-bottom:44px;}
+ .sx-site .sx-v4-hero-persona img{object-position:50% 32%;}
+ .sx-site .sx-v4-hero-content .sx-work-copy h1{font-size:clamp(40px,10.5vw,48px);}
+ .sx-site .sx-v4-hero-content .sx-work-copy .sx-kicker{font-size:8px;}
+ .sx-site .sx-v5-secondary-cta{font-size:10px;}
+}
+@media(max-height:700px) and (max-width:760px){
+ .sx-site .sx-v4-hero-content .sx-work-copy h1{font-size:clamp(34px,8.8vw,43px);margin:5px 0;}
+ .sx-site .sx-v4-hero-content .sx-work-copy>p:not(.sx-kicker){font-size:11px;}
+ .sx-site .sx-v5-hero-actions{margin-top:7px;}
+ .sx-site .sx-v4-hero-content .sx-hero-blueprint{margin-top:7px;}
+ .sx-site .sx-v4-hero-persona img{object-position:50% 27%;}
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-site .sx-v4-hero-persona img,.sx-v5-portrait-halo{transform:none!important;transition:none!important;will-change:auto!important;}
+ .sx-site .sx-v4-hero-beats .sx-blueprint-step{transition:none!important;}
+}

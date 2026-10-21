@@ -25,7 +25,9 @@ test('editorial homepage keeps a portrait hero, minimalist about and four five-f
  await expect(page.locator('#top h1')).toContainText('BEYOND');
  await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveCount(1);
  const imageWidth=await page.locator('#top .sx-v4-hero-persona img').evaluate(async(img:HTMLImageElement)=>{await img.decode();return img.naturalWidth;});
- expect(imageWidth).toBe(1122);
+ expect(imageWidth).toBe(900);
+ await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
+ expect((await page.request.get('/assets/hires/portrait-office.webp')).status()).toBe(200);
  await expect(page.locator('#top .sx-blueprint-step')).toHaveCount(3);
  await expect(page.locator('#about .sx-focus-list>div')).toHaveCount(3);
  await expect(page.locator('.sx-chapter')).toHaveCount(4);
@@ -45,7 +47,7 @@ test('editorial homepage keeps a portrait hero, minimalist about and four five-f
   await expect(section.locator('.sx-slide-dots button')).toHaveCount(5);
  }
  expect(errors).toEqual([]);
- await page.screenshot({path:'artifacts/v4-hero-desktop.png',animations:'disabled'});
+ await page.screenshot({path:'artifacts/v5-office-hero-desktop.png',animations:'disabled'});
  await page.locator('#about').scrollIntoViewIfNeeded();
  await page.screenshot({path:'artifacts/v4-about-desktop.png',animations:'disabled'});
 });
@@ -130,7 +132,7 @@ test('mobile viewport containment, no typography/image overlap and useful scroll
   if(width===390){
    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
    await page.locator('#top img').first().evaluate(async(img:HTMLImageElement)=>{await img.decode();});
-   await page.screenshot({path:'artifacts/v4-hero-mobile.png',animations:'disabled'});
+   await page.screenshot({path:'artifacts/v5-office-hero-mobile.png',animations:'disabled'});
    await page.locator('#about').scrollIntoViewIfNeeded();
    await page.screenshot({path:'artifacts/v4-about-mobile.png',animations:'disabled'});
   }
