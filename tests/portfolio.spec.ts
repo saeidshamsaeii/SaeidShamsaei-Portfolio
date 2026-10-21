@@ -36,10 +36,9 @@ test('first developer workspace, second personal profile, then four projects',as
  })).toBe(1122);
  for(const name of names){
   await expect(page.locator('#project-'+name+' .sx-slide')).toHaveCount(5);
-  const image=page.locator('#project-'+name+' .sx-slide-art img');
-  expect(await image.evaluate(async(e:HTMLImageElement)=>{
-   await e.decode();return e.naturalWidth;
-  })).toBe(1448);
+  const anatomy=page.locator('#project-'+name+' .sx-slide-art .sx-v3-source-preview');
+  await expect(anatomy).toHaveCount(1);
+  await expect(anatomy.getByRole('button',{name:'Workflows'})).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('#project-'+name+' .sx-architecture-list>div')).toHaveCount(6);
   await expect(page.locator('#project-'+name+' .sx-capability-list>div')).toHaveCount(4);
  }
@@ -64,8 +63,8 @@ test('editorial workspace has one primary action and uncluttered composition',as
  await expect(page.locator('#selected-projects h2')).toHaveCount(0);
  await expect(page.locator('#about .sx-focus-list>div')).toHaveCount(4);
  const rect=await page.locator('#top').boundingBox();
- expect(rect?.height).toBeGreaterThan(730);
- expect(rect?.height).toBeLessThan(920);
+ expect(rect?.height).toBeGreaterThan(1200);
+ expect(rect?.height).toBeLessThan(2000);
  await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-workspace-1440.png',animations:'disabled'});
  await page.locator('#about').scrollIntoViewIfNeeded();
  await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-about-1440.png',animations:'disabled'});
@@ -75,7 +74,7 @@ test('hero and personal introduction are responsive single-screen frames',async(
   const page=await browser.newPage({viewport:{width,height}});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   const measurements=await page.evaluate(()=>{
-   const hero=document.querySelector<HTMLElement>('#top')!;
+   const hero=document.querySelector<HTMLElement>('#top .sx-v3-hero-stage')!;
    const profile=document.querySelector<HTMLElement>('#about')!;
    const image=document.querySelector<HTMLElement>('.sx-profile-photo')!;
    const copy=document.querySelector<HTMLElement>('.sx-profile-copy')!;
@@ -87,8 +86,7 @@ test('hero and personal introduction are responsive single-screen frames',async(
     copyHeight:cp.height,photoHeight:im.height};
   });
   expect(measurements.documentWidth,String(width)).toBeLessThanOrEqual(measurements.windowWidth+1);
-  const header=width<=760?62:72;
-  expect(Math.abs(measurements.heroHeight-(measurements.innerHeight-header)),String(width)).toBeLessThanOrEqual(2);
+  expect(Math.abs(measurements.heroHeight-measurements.innerHeight),String(width)).toBeLessThanOrEqual(2);
   expect(Math.abs(measurements.profileHeight-measurements.innerHeight),String(width)).toBeLessThanOrEqual(2);
   expect(measurements.profileCopyBottom, 'about copy clipped at '+width).toBeLessThanOrEqual(measurements.profileBottom+3);
   expect(measurements.profileImageBottom, 'portrait clipped at '+width).toBeLessThanOrEqual(measurements.profileBottom+3);
@@ -106,7 +104,7 @@ test('authored atelier first frame and real gold logo in final frame',async({bro
   const page=await browser.newPage({viewport:{width,height}});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   const dimensions=await page.evaluate(()=>{
-   const hero=document.querySelector<HTMLElement>('#top')!;
+   const hero=document.querySelector<HTMLElement>('#top .sx-v3-hero-stage')!;
    const copy=hero.querySelector<HTMLElement>('.sx-work-copy')!;
    const diagram=hero.querySelector<HTMLElement>('.sx-hero-blueprint')!;
    const footer=document.querySelector<HTMLElement>('#contact .sx-contact-symbol')!;
@@ -259,6 +257,50 @@ test('scroll camera movement honors reduced motion',async({browser})=>{
   }
   await page.close();
  }
+});
+
+test('hero has real vertical scroll narrative, not static fake 3D',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0);
+ const hero=page.locator('#top');
+ await expect(hero).toHaveAttribute('data-scene','0');
+ const scene=await hero.evaluate(el=>{
+  const top=el.getBoundingClientRect().top+window.scrollY;
+  const travel=el.getBoundingClientRect().height-window.innerHeight;
+  return {top,travel};
+ });
+ expect(scene.travel).toBeGreaterThan(350);
+ await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),scene.top+scene.travel*.52);
+ await expect(hero).toHaveAttribute('data-scene','1');
+ await expect(hero.locator('.sx-blueprint-step.sx-is-current')).toContainText('Architect.');
+ await page.screenshot({path:'artifacts/v3-hero-mid-scroll.png',animations:'disabled'});
+ await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),scene.top+scene.travel*.9);
+ await expect(hero).toHaveAttribute('data-scene','2');
+ await expect(hero.locator('.sx-blueprint-step.sx-is-current')).toContainText('Deliver.');
+ await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),scene.top);
+ await expect(hero).toHaveAttribute('data-scene','0');
+ await expect(page.locator('#about')).toHaveCount(1);
+});
+
+test('source-backed project visuals are interactive and do not fabricate metrics',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0);
+ for(const name of names){
+  const visual=page.locator('#project-'+name+' .sx-v3-source-preview');
+  await expect(visual).toHaveCount(1);
+  await visual.getByRole('button',{name:'Architecture'}).click();
+  await expect(visual.getByRole('button',{name:'Architecture'})).toHaveAttribute('aria-pressed','true');
+  await expect(visual.locator('.sx-v3-source-modules>div')).toHaveCount(4);
+  await expect(visual.getByRole('link',{name:/View .* source/})).toHaveAttribute('href',/github\.com\/saeidshamsaeii/);
+  await visual.getByRole('button',{name:'Workflows'}).click();
+  await expect(visual.getByRole('button',{name:'Workflows'})).toHaveAttribute('aria-pressed','true');
+  await expect(visual.getByText(/NOT A LIVE SCREENSHOT/)).toBeVisible();
+ }
+ await page.goto('/work/digirezhim/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.case-hero-art .sx-v3-source-preview')).toHaveCount(1);
+ await expect(page.locator('.case-evidence')).toContainText('not a screenshot');
 });
 
 test('vertical scroll drives horizontal story for each project on desktop',async({page})=>{

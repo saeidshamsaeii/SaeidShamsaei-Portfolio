@@ -1,6 +1,8 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
+import {ScrollHero} from '@/components/ScrollHero';
+import {SourceProductPreview} from '@/components/SourceProductPreview';
 import {projects,publicContact,type Project} from '@/data/portfolio';
 
 const focuses=[
@@ -100,7 +102,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
       const ratio=(window.scrollY-state.current.start)/state.current.distance;
       if(ratio<=0||ratio>=1)return;
       const nearest=Math.round(ratio*(count-1))/(count-1);
-      if(Math.abs(ratio-nearest)>.015){
+      if(Math.abs(ratio-nearest)>.038){
        window.scrollTo({top:state.current.start+nearest*state.current.distance,behavior:'smooth'});
       }
      },260);
@@ -156,7 +158,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
        <div className="sx-stack">{project.features.slice(0,3).map(f=><span key={f.en}>{f.en}</span>)}</div>
        <Link className="sx-action" href={'/work/'+project.id+'/'}>Open the full case study <span aria-hidden="true">↗</span></Link>
       </div>
-      <div className="sx-slide-art"><img src={'/assets/hires/project-'+project.id+'.webp'} alt={project.brand+' illustrated product interface'} width={1448} height={1086} loading="eager" decoding="async"/></div>
+      <div className="sx-slide-art sx-slide-art--source"><SourceProductPreview id={project.id}/></div>
      </article>
      <article className="sx-slide sx-slide--detail" aria-label="The challenge">
       <div className="sx-slide-narrative"><p className="sx-kicker">01 / THE CHALLENGE</p>
@@ -183,7 +185,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
      <article className="sx-slide sx-slide--detail" aria-label="Capabilities">
       <div className="sx-slide-narrative"><p className="sx-kicker">03 / CAPABILITIES</p>
        <h2>Built with <em>purpose.</em></h2>
-       <p>Purpose-built capabilities shaped around the domain, with a focus on coherence, adaptability and user experience.</p>
+       <p>Explore the workflows and boundaries behind this product. Documented capabilities, not invented results.</p>
       </div>
       <div className="sx-diagram sx-diagram--capabilities"><span className="sx-diagram-title">CORE CAPABILITIES</span>
        <div className="sx-capability-list">{project.features.map((item,i)=><div key={item.en}><span>0{i+1}</span><strong>{item.en}</strong><i aria-hidden="true">↗</i></div>)}</div>
@@ -192,7 +194,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
      <article className="sx-slide sx-slide--detail sx-slide--end" aria-label="Documented evidence and next project">
       <div className="sx-slide-narrative"><p className="sx-kicker">04 / DOCUMENTED STATUS</p>
        <h2>Beyond the <em>concept.</em></h2><p>{project.outcome.en}</p>
-       <small className="sx-evidence-note">Visualizations are conceptual; operating metrics are not asserted.</small>
+       <small className="sx-evidence-note">Source-informed views are interactive studies, not authenticated production screenshots or live metrics.</small>
        <Link className="sx-action" href={'/work/'+project.id+'/'}>Explore full case study ↗</Link>
       </div>
       <div className="sx-diagram sx-diagram--next">
@@ -246,6 +248,13 @@ export default function PortfolioExperience(){
   update();
   return()=>{if(frame)cancelAnimationFrame(frame);window.removeEventListener('scroll',request);window.removeEventListener('resize',request);reduced.removeEventListener('change',request);};
  },[]);
+ useEffect(()=>{
+  const sections=[document.querySelector('#about'),document.querySelector('#contact')].filter((el):el is Element=>Boolean(el));
+  if(!sections.length||!('IntersectionObserver' in window))return;
+  const io=new IntersectionObserver(entries=>entries.forEach(entry=>entry.target.classList.toggle('sx-in-view',entry.isIntersecting)),{threshold:.12});
+  sections.forEach(element=>io.observe(element));
+  return()=>io.disconnect();
+ },[]);
  return <div className="sx-site">
   <IntroPresentation/>
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
@@ -255,25 +264,7 @@ export default function PortfolioExperience(){
    <a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a>
   </header>
   <main>
-   <section className="sx-work-hero sx-editorial-frame" id="top" aria-labelledby="sx-work-title">
-    <div className="sx-work-art" aria-hidden="true"><span className="sx-art-coordinates">001—FRAME / FIELD NOTES</span></div>
-    <div className="sx-work-copy">
-     <p className="sx-kicker">SAEID SHAMSAEI <span className="sx-kicker-divider">/</span> PRODUCT & SOFTWARE ENGINEERING</p>
-     <h1 id="sx-work-title">BEYOND<br/><em>THE</em><br/>INTERFACE<span className="sx-title-stop">.</span></h1>
-     <p>I design software architectures and digital products that make complexity feel effortless.</p>
-     <div className="sx-hero-actions"><a href="#about" className="sx-action">Discover the work <span aria-hidden="true">↘</span></a></div>
-    </div>
-    <div className="sx-hero-blueprint" role="img" aria-label="Design process: discovery, system architecture, and meaningful experience">
-     <div className="sx-blueprint-heading"><span>DESIGN ENGINEERING</span><span>01 — 03</span></div>
-     <div className="sx-blueprint-steps">
-      <div className="sx-blueprint-step"><span className="sx-blueprint-index">01</span><div><strong>Understand.</strong><small>Ask the right questions</small></div><span aria-hidden="true" className="sx-blueprint-sign">↗</span></div>
-      <div className="sx-blueprint-step"><span className="sx-blueprint-index">02</span><div><strong>Architect.</strong><small>Shape a clearer system</small></div><span aria-hidden="true" className="sx-blueprint-sign">↗</span></div>
-      <div className="sx-blueprint-step"><span className="sx-blueprint-index">03</span><div><strong>Deliver.</strong><small>Make it work beautifully</small></div><span aria-hidden="true" className="sx-blueprint-sign">↗</span></div>
-     </div>
-     <div className="sx-blueprint-base"><span>THOUGHTFUL BY DESIGN</span><span className="sx-blueprint-progress" aria-hidden="true"><i/></span></div>
-    </div>
-    <div className="sx-hero-bottom"><span>INDEPENDENT ENGINEERING · SELECTED WORK</span><span>SCROLL TO EXPLORE ↓</span></div>
-   </section>
+   <ScrollHero/>
 
    <section className="sx-profile sx-editorial-frame" id="about" aria-labelledby="sx-profile-title">
     <div className="sx-profile-inner">
@@ -284,7 +275,7 @@ export default function PortfolioExperience(){
       <p className="sx-kicker">THE PERSON BEHIND THE WORK</p>
       <h2 id="sx-profile-title">SAEID<br/><em>SHAMSAEI.</em></h2>
       <p className="sx-profile-role">Software Architect · Product Engineer</p>
-      <p className="sx-profile-intro">I turn complex ideas into clear, lasting digital experiences — combining product thinking with thoughtful engineering.</p>
+      <p className="sx-profile-intro">From defining the problem to verifying delivery, I lead ambitious software products through clear architecture and thoughtful decisions.</p>
       <p className="sx-profile-interests-title">WHAT DRIVES MY WORK</p>
       <div className="sx-focus-list">{focuses.map((focus,i)=><div key={focus.title}>
        <span>0{i+1}</span><div><strong>{focus.title}</strong><small>{focus.detail}</small></div>
@@ -308,9 +299,9 @@ export default function PortfolioExperience(){
     <p className="sx-kicker">05 / START A CONVERSATION</p>
     <div className="sx-contact-layout">
      <div className="sx-contact-main">
-      <h2 id="sx-contact-title">COMPLEX IDEAS.<br/><em>REAL IMPACT.</em></h2>
-      <p>Have a product to build or a system to rethink? Let’s talk about the next step.</p>
-      <a href={'mailto:'+publicContact.email+'?subject=Project%20inquiry'} className="sx-action">Discuss a project <span aria-hidden="true">↗</span></a>
+      <h2 id="sx-contact-title">LET’S BUILD<br/><em>SOMETHING<br/>MEANINGFUL.</em></h2>
+      <p>From your first idea to a reliable product architecture. Tell me what you’re building.</p>
+      <a href={'mailto:'+publicContact.email+'?subject=Project%20inquiry'} className="sx-action">Start a project <span aria-hidden="true">↗</span></a>
      </div>
      <div className="sx-contact-mark">
       <div className="sx-contact-symbol" aria-hidden="true"><img src="/assets/hires/logo.webp" alt="" width={1254} height={1254} decoding="async"/></div>

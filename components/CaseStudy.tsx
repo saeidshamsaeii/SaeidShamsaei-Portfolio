@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {projects,publicContact,txt,type ProjectId} from '@/data/portfolio';
-import {ProjectArtwork} from '@/components/ResponsiveMedia';
+import {SourceProductPreview} from '@/components/SourceProductPreview';
 
 const english='en' as const;
 export default function CaseStudy({id}:{id:ProjectId}){
@@ -14,7 +14,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
     <h2>{txt(english,p.title)}</h2><p>{txt(english,p.intro)}</p>
     <div className="case-hero-meta">{p.stack.slice(0,4).map(x=><span key={x}>{x}</span>)}</div>
    </div>
-   <div className="case-hero-art cinematic-case-art"><ProjectArtwork id={p.id}/></div>
+   <div className="case-hero-art cinematic-case-art"><SourceProductPreview id={p.id}/></div>
   </header>
   <div className="case-editorial">
    <div className="case-section"><span>01 / THE CHALLENGE</span><h2>The challenge.</h2><p>{txt(english,p.problem)}</p></div>
@@ -25,7 +25,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
   </section>
   <section className="case-evidence"><span>04 / EVIDENCE & DELIVERY</span><div><h2>Built with context, not inflated claims.</h2><p>{txt(english,p.outcome)}</p>
    <small>Source context: {p.source}</small>
-   <p className="evidence-disclaimer">Visuals are bespoke conceptual product illustrations, not authenticated screenshots of deployed production systems.</p>
+   <p className="evidence-disclaimer">This interactive product anatomy is derived from checked-in application sources; it is not a screenshot of a running or production system.</p>
   </div></section>
   <section className="case-next"><div><span>05 / NEXT PROJECT</span><h2>{next.brand}</h2></div><Link href={'/work/'+next.id+'/'}>NEXT CASE STUDY ↗</Link></section>
   <footer className="case-footer"><Link href="/">← BACK TO PORTFOLIO</Link><a href={'mailto:'+publicContact.email}>LET’S TALK ↗</a></footer>
