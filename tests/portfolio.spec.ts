@@ -19,7 +19,7 @@ test('first developer workspace, second personal profile, then four projects',as
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  await expect(page.locator('html')).toHaveAttribute('dir','ltr');
- await expect(page.locator('#top .sx-work-copy h1')).toContainText('IDEAS.');
+ await expect(page.locator('#top .sx-work-copy h1')).toContainText('BEYOND');
  await expect(page.locator('#about .sx-profile-photo img')).toHaveCount(1);
  await expect(page.locator('#about .sx-focus-list>div')).toHaveCount(4);
  await expect(page.locator('.sx-chapter')).toHaveCount(4);
@@ -52,9 +52,13 @@ test('first developer workspace, second personal profile, then four projects',as
 test('editorial workspace has one primary action and uncluttered composition',async({page})=>{
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('#top h1')).toContainText('ENGINEERED.');
+ await expect(page.locator('#top h1')).toContainText('INTERFACE.');
  await expect(page.locator('#top .sx-hero-actions a')).toHaveCount(1);
  await expect(page.locator('#top .sx-work-art')).toHaveCount(1);
+ await expect(page.locator('#top .sx-hero-blueprint .sx-blueprint-step')).toHaveCount(3);
+ expect(await page.locator('#top .sx-work-art').evaluate(e=>getComputedStyle(e).backgroundImage)).toBe('none');
+ await expect(page.locator('#contact .sx-contact-symbol img')).toHaveAttribute('src','/assets/hires/logo.webp');
+ await expect(page.locator('#contact .sx-contact-symbol span')).toHaveCount(0);
  await expect(page.locator('#about .sx-profile-photo img')).toHaveCount(1);
  await expect(page.locator('#about .sx-profile-orbit')).toHaveCount(0);
  await expect(page.locator('#selected-projects h2')).toHaveCount(0);
@@ -97,6 +101,48 @@ test('hero and personal introduction are responsive single-screen frames',async(
   await page.close();
  }
 });
+test('authored atelier first frame and real gold logo in final frame',async({browser})=>{
+ for(const [width,height] of [[360,640],[360,800],[390,844],[768,1024],[1024,768],[1440,900],[1920,1080]]){
+  const page=await browser.newPage({viewport:{width,height}});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const dimensions=await page.evaluate(()=>{
+   const hero=document.querySelector<HTMLElement>('#top')!;
+   const copy=hero.querySelector<HTMLElement>('.sx-work-copy')!;
+   const diagram=hero.querySelector<HTMLElement>('.sx-hero-blueprint')!;
+   const footer=document.querySelector<HTMLElement>('#contact .sx-contact-symbol')!;
+   const bounds=(element:HTMLElement)=>{const {top,bottom,left,right,width,height}=element.getBoundingClientRect();return{top,bottom,left,right,width,height}};
+   return {viewport:{width:innerWidth,height:innerHeight},scrollWidth:document.documentElement.scrollWidth,
+     hero:bounds(hero),copy:bounds(copy),diagram:bounds(diagram),footer:bounds(footer)};
+  });
+  expect(dimensions.scrollWidth,'horizontal overflow '+width).toBeLessThanOrEqual(width+1);
+  expect(dimensions.copy.left,'copy out of frame '+width).toBeGreaterThanOrEqual(dimensions.hero.left-1);
+  expect(dimensions.copy.right,'copy right clipped '+width).toBeLessThanOrEqual(dimensions.hero.right+2);
+  expect(dimensions.copy.bottom,'copy bottom clipped '+width).toBeLessThanOrEqual(dimensions.hero.bottom-25);
+  expect(dimensions.diagram.right,'blueprint right clipped '+width).toBeLessThanOrEqual(dimensions.hero.right+2);
+  expect(dimensions.diagram.bottom,'blueprint bottom clipped '+width).toBeLessThanOrEqual(dimensions.hero.bottom-15);
+  // The process composition and the editorial message must be distinct surfaces.
+  const overlap=(a:typeof dimensions.copy,b:typeof dimensions.copy)=>
+    Math.min(a.left+a.width,b.left+b.width)-Math.max(a.left,b.left)>2 &&
+    Math.min(a.top+a.height,b.top+b.height)-Math.max(a.top,b.top)>2;
+  expect(overlap(dimensions.copy,dimensions.diagram),'hero typography overlaps visual '+width).toBe(false);
+  await expect(page.locator('#contact .sx-contact-symbol img')).toHaveCount(1);
+  expect(await page.locator('#contact .sx-contact-symbol img').evaluate(async(i:HTMLImageElement)=>{
+   await i.decode();return i.naturalWidth;
+  })).toBe(1254);
+  if(width===390){
+   await page.screenshot({path:'artifacts/atelier-hero-mobile.png',animations:'disabled'});
+   await page.locator('#contact').scrollIntoViewIfNeeded();
+   await page.screenshot({path:'artifacts/atelier-logo-mobile.png',animations:'disabled'});
+  }
+  if(width===1440){
+   await page.screenshot({path:'artifacts/atelier-hero-desktop.png',animations:'disabled'});
+   await page.locator('#contact').scrollIntoViewIfNeeded();
+   await page.screenshot({path:'artifacts/atelier-logo-desktop.png',animations:'disabled'});
+  }
+  await page.close();
+ }
+});
+
 test('scroll camera movement honors reduced motion',async({browser})=>{
  for(const mode of ['no-preference','reduce'] as const){
   const page=await browser.newPage({viewport:{width:1280,height:800},reducedMotion:mode});

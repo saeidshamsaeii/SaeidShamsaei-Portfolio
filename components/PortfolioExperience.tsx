@@ -224,15 +224,23 @@ export default function PortfolioExperience(){
   </header>
   <main>
    <section className="sx-work-hero sx-editorial-frame" id="top" aria-labelledby="sx-work-title">
-    <div className="sx-work-art" aria-hidden="true"/>
-    <div className="sx-work-shade" aria-hidden="true"/>
+    <div className="sx-work-art" aria-hidden="true"><span className="sx-art-coordinates">001—FRAME / FIELD NOTES</span></div>
     <div className="sx-work-copy">
-     <p className="sx-kicker">SAEID SHAMSAEI / DESIGN ENGINEERING</p>
-     <h1 id="sx-work-title">IDEAS.<br/><em>ENGINEERED.</em></h1>
-     <p>Thoughtful products. Powerful systems.</p>
-     <div className="sx-hero-actions"><a href="#about" className="sx-action">Explore the journey <span aria-hidden="true">↘</span></a></div>
+     <p className="sx-kicker">SAEID SHAMSAEI <span className="sx-kicker-divider">/</span> PRODUCT & SOFTWARE ENGINEERING</p>
+     <h1 id="sx-work-title">BEYOND<br/><em>THE</em><br/>INTERFACE<span className="sx-title-stop">.</span></h1>
+     <p>I turn complex ideas into products that feel effortless.</p>
+     <div className="sx-hero-actions"><a href="#about" className="sx-action">Discover the work <span aria-hidden="true">↘</span></a></div>
     </div>
-    <div className="sx-hero-bottom"><span>ARCHITECTURE · CODE · EXPERIENCE</span><span>SCROLL TO EXPLORE ↓</span></div>
+    <div className="sx-hero-blueprint" role="img" aria-label="Design process: discovery, system architecture, and meaningful experience">
+     <div className="sx-blueprint-heading"><span>DESIGN ENGINEERING</span><span>01 — 03</span></div>
+     <div className="sx-blueprint-steps">
+      <div className="sx-blueprint-step"><span className="sx-blueprint-index">01</span><div><strong>Understand.</strong><small>Ask the right questions</small></div><span aria-hidden="true" className="sx-blueprint-sign">↗</span></div>
+      <div className="sx-blueprint-step"><span className="sx-blueprint-index">02</span><div><strong>Architect.</strong><small>Shape a clearer system</small></div><span aria-hidden="true" className="sx-blueprint-sign">↗</span></div>
+      <div className="sx-blueprint-step"><span className="sx-blueprint-index">03</span><div><strong>Deliver.</strong><small>Make it work beautifully</small></div><span aria-hidden="true" className="sx-blueprint-sign">↗</span></div>
+     </div>
+     <div className="sx-blueprint-base"><span>THOUGHTFUL BY DESIGN</span><span className="sx-blueprint-progress" aria-hidden="true"><i/></span></div>
+    </div>
+    <div className="sx-hero-bottom"><span>INDEPENDENT ENGINEERING · SELECTED WORK</span><span>SCROLL TO EXPLORE ↓</span></div>
    </section>
 
    <section className="sx-profile sx-editorial-frame" id="about" aria-labelledby="sx-profile-title">
@@ -268,7 +276,7 @@ export default function PortfolioExperience(){
     <p className="sx-kicker">05 / LET’S BUILD TOGETHER</p>
     <div><div><h2>COMPLEX IDEAS.<br/><em>REAL IMPACT.</em></h2><p>Have an ambitious product or challenging system in mind? Let’s make it tangible.</p>
      <a href={'mailto:'+publicContact.email} className="sx-action">Start a conversation ↗</a></div>
-     <div className="sx-contact-symbol" aria-hidden="true"><span>SS</span></div></div>
+     <div className="sx-contact-symbol" aria-hidden="true"><img src="/assets/hires/logo.webp" alt="" width={1254} height={1254} decoding="async"/></div></div>
    </section>
   </main>
   <footer className="sx-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#contact">Contact</a></nav>

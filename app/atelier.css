@@ -1,0 +1,194 @@
+/* Atelier / Portfolio 2026
+   A deliberately authored graphic system, not a simulated AI workspace photo.
+   One typographic idea + a design-process composition, composed with live HTML.
+   No fake circuit diagrams, ornamental letters, stock-photo wallpaper or big light orbs. */
+.sx-site{--atelier-bg:#0b0d0f;--atelier-paper:#f3f0e9;--atelier-accent:#d9b184;--atelier-muted:#a5aaab;}
+.sx-site .sx-work-hero{
+ display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
+ align-items:center;column-gap:clamp(36px,5.2vw,100px);
+ padding:clamp(54px,7svh,84px) clamp(25px,6.3vw,120px) clamp(61px,8svh,98px);
+ background:#0b0d0f;overflow:hidden;isolation:isolate;
+ position:relative;height:calc(100svh - 72px);min-height:0;
+}
+.sx-site .sx-work-hero::before{
+ content:"";position:absolute;inset:0;z-index:-2;
+ background:linear-gradient(90deg,#ffffff05 1px,transparent 1px) 0 0/25% 100%,linear-gradient(#ffffff04 1px,transparent 1px) 0 0/100% 25%;
+ mask-image:linear-gradient(to left,#0005,transparent 75%);
+ pointer-events:none;
+}
+.sx-site .sx-work-hero::after{content:none;}
+.sx-site .sx-work-art{
+ z-index:-1;inset:auto 3.2vw auto auto;width:auto;height:auto;top:16%;
+ transform:none!important;will-change:auto;background:none!important;opacity:1;
+ color:#857d74;pointer-events:none;font-size:9px;letter-spacing:.24em;
+ font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.sx-site .sx-work-copy{
+ width:100%;min-width:0;max-width:850px;padding:0;
+ margin:0;align-self:center;z-index:1;
+}
+.sx-site .sx-work-copy .sx-kicker{color:#c2a582;font-size:clamp(9px,.78vw,11px);letter-spacing:.12em;line-height:1.7;}
+.sx-kicker-divider{color:#62594c;margin:0 9px;}
+.sx-site .sx-work-copy h1{
+ font-size:clamp(65px,7.7vw,144px);font-weight:820;
+ letter-spacing:-.089em;line-height:.92;margin:clamp(25px,5svh,55px) 0 clamp(20px,4svh,37px);
+ color:var(--atelier-paper);white-space:normal;
+}
+.sx-site .sx-work-copy h1 em{font-style:normal;color:var(--atelier-accent);letter-spacing:-.085em;}
+.sx-title-stop{color:var(--atelier-accent);}
+.sx-site .sx-work-copy>p:not(.sx-kicker){
+ font-size:clamp(16px,1.45vw,22px);max-width:380px;
+ color:#b9bebd;font-weight:470;line-height:1.48;letter-spacing:-.025em;
+}
+.sx-site .sx-hero-actions{margin-top:clamp(24px,4svh,48px);}
+.sx-site .sx-hero-actions .sx-action{
+ min-height:49px;gap:36px;padding:13px 21px;
+ border-radius:2px;background:#dcb88d;color:#17120f!important;
+ font-size:12px;font-weight:770;box-shadow:none;
+}
+.sx-site .sx-hero-actions .sx-action:hover{background:#edd2b1;transform:translateY(-2px);}
+.sx-hero-blueprint{
+ align-self:center;min-width:0;position:relative;
+ display:flex;flex-direction:column;justify-content:center;
+ width:100%;max-width:600px;min-height:clamp(355px,56svh,575px);
+ background:linear-gradient(125deg,#ffffff07,#0e101200 56%);padding:clamp(20px,3vw,40px);
+ border:1px solid #d0ac8229;
+ transform:translate3d(0,calc(var(--sx-scroll,0) * 26px),0);
+}
+.sx-hero-blueprint::before{content:"";position:absolute;inset:11px;border:1px solid #ffffff09;pointer-events:none;}
+.sx-blueprint-heading,.sx-blueprint-base{display:flex;justify-content:space-between;gap:14px;align-items:center;color:#a3a6a4;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px;letter-spacing:.12em;}
+.sx-blueprint-heading{padding:0 0 clamp(17px,3.5svh,34px);border-bottom:1px solid #d7ae8066;}
+.sx-blueprint-heading span:last-child{color:#ddbf96;}
+.sx-blueprint-steps{flex:1;display:flex;flex-direction:column;justify-content:stretch;}
+.sx-blueprint-step{
+ flex:1;min-height:clamp(74px,10svh,107px);
+ display:grid;grid-template-columns:35px minmax(0,1fr) 32px;
+ column-gap:clamp(9px,1.2vw,18px);align-items:center;
+ border-bottom:1px solid #c4b29b23;
+ padding:8px 3px;position:relative;
+}
+.sx-blueprint-step:nth-child(2) {margin-left:clamp(9px,1.5vw,22px);}
+.sx-blueprint-step:nth-child(3) {margin-left:clamp(18px,3vw,44px);}
+.sx-blueprint-index{align-self:start;padding-top:clamp(12px,2svh,22px);font-size:10px;color:#caaa84;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;}
+.sx-blueprint-step strong{
+ display:block;font-size:clamp(31px,3.5vw,57px);font-weight:670;line-height:1.15;letter-spacing:-.072em;color:#f0eee7;
+}
+.sx-blueprint-step small{display:block;margin-top:4px;font-size:clamp(10px,.85vw,13px);color:#9ba4a4;line-height:1.5;}
+.sx-blueprint-sign{justify-self:end;color:#d7b58d;font-size:20px;opacity:.8;transition:transform .3s;}
+.sx-blueprint-step:hover .sx-blueprint-sign{transform:translate(3px,-3px);}
+.sx-blueprint-base{margin-top:clamp(17px,3svh,31px);align-items:center;font-size:9px;}
+.sx-blueprint-progress{width:clamp(70px,15%,96px);height:2px;background:#484644;overflow:hidden;}
+.sx-blueprint-progress i{display:block;height:100%;width:calc(17% + var(--sx-scroll,0) * 83%);background:#dfbe93;transition:width .18s linear;}
+.sx-site .sx-hero-bottom{
+ left:clamp(25px,6.3vw,120px);right:clamp(25px,6.3vw,120px);
+ bottom:clamp(15px,2.8svh,28px);padding-top:13px;color:#959a9a;
+ border-color:#ffffff2a;font-size:10px;letter-spacing:.12em;
+}
+/* Portrait is an original cutout on a neutral independent stage, not a composite fake photo. */
+.sx-site .sx-profile-photo{
+ background:#111416;border:0;isolation:isolate;border-radius:2px;
+}
+.sx-site .sx-profile-photo::before{
+ content:"";inset:0;z-index:0;
+ background:linear-gradient(115deg,#d0af8830 0%,transparent 26%),linear-gradient(160deg,#171b1c,#101316 80%);
+}
+.sx-site .sx-profile-photo::after{content:none;}
+.sx-site .sx-profile-photo img{
+ z-index:2;max-width:100%;max-height:100%;object-position:center bottom;
+ filter:drop-shadow(0 12px 18px #0008);
+}
+.sx-site .sx-profile{background:#0c0f12;border-color:#e0bc8424;}
+.sx-site .sx-focus-list>div{background:transparent;border-color:#ffffff1f;}
+.sx-site .sx-profile-copy h2 em{color:#dab589;}
+/* End mark: the actual approved image logo, never a fake typographic SS prop. */
+.sx-site .sx-contact{background:#0c0e10;border-color:#d0ae8131;}
+.sx-site .sx-contact::before{
+ content:"";inset:0;
+ background:linear-gradient(to right,transparent 65%,#ffffff04 65.07%,transparent 65.14%);
+ pointer-events:none;
+}
+.sx-site .sx-contact-symbol{
+ min-height:0;position:relative;display:grid;place-items:center;
+ height:min(44svh,400px);min-width:0;isolation:isolate;
+}
+.sx-site .sx-contact-symbol::before{content:none!important;display:none!important;}
+.sx-site .sx-contact-symbol img{
+ display:block;position:relative;z-index:1;
+ width:min(100%,min(34vw,360px));height:auto;max-height:100%;
+ aspect-ratio:1;object-fit:contain;
+ filter:drop-shadow(0 19px 27px #000a);
+ opacity:1;
+}
+.sx-site .sx-contact h2{font-size:clamp(50px,6.2vw,100px);}
+.sx-site .sx-footer{background:#090b0d;border-top:1px solid #ffffff12;}
+@supports(height:100dvh){
+ .sx-site .sx-work-hero{height:calc(100dvh - 72px);}
+}
+@media(max-width:1120px){
+ .sx-site .sx-work-hero{grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);column-gap:24px;padding-inline:clamp(24px,4vw,55px);}
+ .sx-site .sx-work-copy h1{font-size:clamp(57px,7.1vw,91px);}
+ .sx-blueprint-step strong{font-size:clamp(28px,3.4vw,41px);}
+ .sx-site .sx-hero-bottom{left:clamp(24px,4vw,55px);right:clamp(24px,4vw,55px);}
+}
+@media(max-width:760px){
+ .sx-site .sx-work-hero{
+  height:calc(100svh - 62px);display:flex;flex-direction:column;
+  align-items:stretch;justify-content:space-evenly;gap:clamp(13px,2.5svh,27px);
+  padding:clamp(22px,3.4svh,37px) clamp(18px,4vw,30px) clamp(64px,9svh,82px);
+ }
+ .sx-site .sx-work-hero::before{
+  background:linear-gradient(90deg,#ffffff05 1px,transparent 1px) 0 0/33.333% 100%;mask-image:linear-gradient(to bottom,#0004,transparent 90%);
+ }
+ .sx-site .sx-work-art{display:none;}
+ .sx-site .sx-work-copy{width:100%;flex:0 0 auto;max-width:100%;align-self:stretch;padding:0;}
+ .sx-site .sx-work-copy .sx-kicker{font-size:9px;line-height:1.45;letter-spacing:.09em;}
+ .sx-kicker-divider{margin:0 3px;}
+ .sx-site .sx-work-copy h1{
+  font-size:clamp(46px,10.4vw,77px);letter-spacing:-.089em;
+  margin:clamp(12px,2.2svh,18px) 0 clamp(11px,1.8svh,15px);
+  line-height:.9;
+ }
+ .sx-site .sx-work-copy>p:not(.sx-kicker){font-size:clamp(14px,2.8vw,18px);line-height:1.4;max-width:325px;}
+ .sx-site .sx-hero-actions{margin-top:clamp(15px,2.5svh,22px);}
+ .sx-site .sx-hero-actions .sx-action{min-height:40px;padding:10px 15px;font-size:11px;gap:19px;}
+ .sx-hero-blueprint{
+  flex:0 1 auto;align-self:stretch;margin:0 auto;
+  min-height:0;height:clamp(205px,35svh,340px);
+  max-width:580px;padding:clamp(13px,2.1svh,22px);
+  transform:none;background:transparent;
+ }
+ .sx-hero-blueprint::before{inset:6px;}
+ .sx-blueprint-heading{font-size:9px;padding-bottom:clamp(7px,1.5svh,13px);}
+ .sx-blueprint-step{min-height:0;padding-block:clamp(3px,.6svh,7px);grid-template-columns:25px 1fr 22px;}
+ .sx-blueprint-step:nth-child(2){margin-left:10px;}
+ .sx-blueprint-step:nth-child(3){margin-left:20px;}
+ .sx-blueprint-index{padding-top:clamp(5px,1svh,10px);font-size:9px;}
+ .sx-blueprint-step strong{font-size:clamp(25px,5.4vw,38px);}
+ .sx-blueprint-step small{font-size:10px;line-height:1.2;margin-top:1px;}
+ .sx-blueprint-sign{font-size:15px;}
+ .sx-blueprint-base{font-size:8px;margin-top:clamp(7px,1.4svh,14px);}
+ .sx-site .sx-hero-bottom{left:clamp(18px,4vw,30px);right:clamp(18px,4vw,30px);font-size:8px;bottom:clamp(11px,2svh,20px);}
+ .sx-site .sx-contact>div{grid-template-columns:1fr;}
+ .sx-site .sx-contact-symbol{display:grid;min-height:0;height:clamp(160px,26svh,260px);margin-top:clamp(16px,2svh,28px);}
+ .sx-site .sx-contact-symbol img{width:min(60vw,210px);}
+}
+@media(max-width:440px){
+ .sx-site .sx-work-copy h1{font-size:clamp(42px,10.9vw,53px);}
+ .sx-site .sx-work-copy .sx-kicker{font-size:8px;}
+ .sx-site .sx-work-copy>p:not(.sx-kicker){font-size:14px;}
+ .sx-hero-blueprint{height:clamp(203px,33svh,292px);}
+ .sx-blueprint-step strong{font-size:clamp(24px,6.6vw,31px);}
+ .sx-blueprint-step small{font-size:9px;}
+ .sx-site .sx-hero-bottom span:first-child{max-width:51%;}
+}
+@media(max-height:700px) and (max-width:760px){
+ .sx-site .sx-work-hero{gap:8px;padding-top:12px;padding-bottom:52px;}
+ .sx-site .sx-work-copy h1{font-size:clamp(38px,8.8vw,58px);margin:9px 0;}
+ .sx-site .sx-work-copy>p:not(.sx-kicker){font-size:13px;}
+ .sx-site .sx-hero-actions{margin-top:10px;}
+ .sx-hero-blueprint{height:clamp(160px,29svh,205px);}
+ .sx-blueprint-step strong{font-size:clamp(22px,5.9vw,30px);}
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-site .sx-hero-blueprint,.sx-site .sx-blueprint-sign,.sx-site .sx-blueprint-progress i{transform:none!important;transition:none!important;}
+}
