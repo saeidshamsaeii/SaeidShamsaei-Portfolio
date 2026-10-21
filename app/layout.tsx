@@ -6,6 +6,7 @@ import './polished.css';
 import './scroll-experience.css';
 import './editorial-refinement.css';
 import './atelier.css';
+import './release-polish.css';
 const ready=process.env.NEXT_PUBLIC_SITE_READY==='true';
 const base=process.env.NEXT_PUBLIC_SITE_URL||'https://example.invalid';
 export const metadata:Metadata={title:'Saeid Shamsaei — Product Architect & Engineer',description:'Selected software architecture, product engineering and design work by Saeid Shamsaei. Scroll-driven case studies, built with intent.',metadataBase:new URL(base),robots:{index:ready,follow:ready},icons:{icon:'/assets/hires/logo.webp'}};

@@ -57,4 +57,12 @@ export const projects:Project[]=[
  stack:['GARTAL Core','Vertical SaaS','Retail Ops','Veterinary Ops','React','REST APIs'],
  source:'Owner-provided GARTAL v2 PDF, vertical SaaS section, page 7; GARTAL case-study PDF page 6.'}
 ];
-export const publicContact={email:'saeidshamsaeii00@gmail.com',github:'https://github.com/saeidshamsaeii',linkedin:'https://www.linkedin.com/in/saeid-shamsaei-938016202/'};
+export const publicContact={
+ email:'saeidshamsaeii00@gmail.com',
+ phone:'09017470729',
+ phoneHref:'tel:+989017470729',
+ telegram:'https://t.me/sd_shms',
+ telegramHandle:'@sd_shms',
+ github:'https://github.com/saeidshamsaeii',
+ linkedin:'https://www.linkedin.com/in/saeidshamsaei/'
+} as const;

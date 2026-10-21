@@ -23,6 +23,37 @@ function Brand({footer=false}:{footer?:boolean}){
  </Link>;
 }
 
+function IntroPresentation(){
+ const [phase,setPhase]=useState<'enter'|'exit'|'hidden'>('enter');
+ const done=useCallback(()=>{
+  try{window.sessionStorage.setItem('saeid-portfolio-intro-v1','seen');}catch{}
+  setPhase('hidden');
+ },[]);
+ useEffect(()=>{
+  let seen=false;
+  try{seen=window.sessionStorage.getItem('saeid-portfolio-intro-v1')==='seen';}catch{}
+  if(seen||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+   // Respect motion preferences and never delay repeat page views.
+   done();
+   return;
+  }
+  const exit=window.setTimeout(()=>setPhase('exit'),1150);
+  const hide=window.setTimeout(done,1630);
+  return()=>{window.clearTimeout(exit);window.clearTimeout(hide);};
+ },[done]);
+ if(phase==='hidden')return null;
+ return <div className={'sx-intro sx-intro--'+phase} role="status" aria-label="Introducing the Saeid Shamsaei portfolio">
+  <div className="sx-intro-content">
+   <img src="/assets/hires/logo.webp" alt="" width={1254} height={1254} decoding="async"/>
+   <span className="sx-intro-line">SAEID SHAMSAEI</span>
+   <strong>Complex ideas.<br/><em>Clear systems.</em></strong>
+   <span className="sx-intro-subline">SOFTWARE ARCHITECTURE &amp; PRODUCT ENGINEERING</span>
+   <span className="sx-intro-meter" aria-hidden="true"><i/></span>
+  </div>
+  <button type="button" onClick={done} aria-label="Skip introduction">SKIP INTRO ↗</button>
+ </div>;
+}
+
 const phases=['OVERVIEW','THE CHALLENGE','THE ARCHITECTURE','CAPABILITIES','EVIDENCE & NEXT'];
 function ProjectChapter({project,index}:{project:Project;index:number}){
  const sectionRef=useRef<HTMLElement>(null);
@@ -216,6 +247,7 @@ export default function PortfolioExperience(){
   return()=>{if(frame)cancelAnimationFrame(frame);window.removeEventListener('scroll',request);window.removeEventListener('resize',request);reduced.removeEventListener('change',request);};
  },[]);
  return <div className="sx-site">
+  <IntroPresentation/>
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
   <header className="sx-header">
    <Brand/>
@@ -228,7 +260,7 @@ export default function PortfolioExperience(){
     <div className="sx-work-copy">
      <p className="sx-kicker">SAEID SHAMSAEI <span className="sx-kicker-divider">/</span> PRODUCT & SOFTWARE ENGINEERING</p>
      <h1 id="sx-work-title">BEYOND<br/><em>THE</em><br/>INTERFACE<span className="sx-title-stop">.</span></h1>
-     <p>I turn complex ideas into products that feel effortless.</p>
+     <p>I design software architectures and digital products that make complexity feel effortless.</p>
      <div className="sx-hero-actions"><a href="#about" className="sx-action">Discover the work <span aria-hidden="true">↘</span></a></div>
     </div>
     <div className="sx-hero-blueprint" role="img" aria-label="Design process: discovery, system architecture, and meaningful experience">
@@ -272,14 +304,36 @@ export default function PortfolioExperience(){
     <div><p className="sx-kicker">04 / HOW I WORK</p><h2>Build with<br/><em>intention.</em></h2></div>
     <div className="sx-principles">{['PROBLEM BEFORE TOOLING','ARCHITECTURE FOR CHANGE','EXPERIENCE WITHOUT FRICTION','VERIFIABLE QUALITY'].map((t,i)=><div key={t}><span>{String(i+1).padStart(2,'0')}</span><strong>{t}</strong><i aria-hidden="true">↗</i></div>)}</div>
    </section>
-   <section className="sx-contact sx-editorial-frame" id="contact">
-    <p className="sx-kicker">05 / LET’S BUILD TOGETHER</p>
-    <div><div><h2>COMPLEX IDEAS.<br/><em>REAL IMPACT.</em></h2><p>Have an ambitious product or challenging system in mind? Let’s make it tangible.</p>
-     <a href={'mailto:'+publicContact.email} className="sx-action">Start a conversation ↗</a></div>
-     <div className="sx-contact-symbol" aria-hidden="true"><img src="/assets/hires/logo.webp" alt="" width={1254} height={1254} decoding="async"/></div></div>
+   <section className="sx-contact sx-editorial-frame" id="contact" aria-labelledby="sx-contact-title">
+    <p className="sx-kicker">05 / START A CONVERSATION</p>
+    <div className="sx-contact-layout">
+     <div className="sx-contact-main">
+      <h2 id="sx-contact-title">COMPLEX IDEAS.<br/><em>REAL IMPACT.</em></h2>
+      <p>Have a product to build or a system to rethink? Let’s talk about the next step.</p>
+      <a href={'mailto:'+publicContact.email+'?subject=Project%20inquiry'} className="sx-action">Discuss a project <span aria-hidden="true">↗</span></a>
+     </div>
+     <div className="sx-contact-mark">
+      <div className="sx-contact-symbol" aria-hidden="true"><img src="/assets/hires/logo.webp" alt="" width={1254} height={1254} decoding="async"/></div>
+      <span className="sx-contact-mark-caption">ARCHITECTURE / ENGINEERING / EXPERIENCE</span>
+     </div>
+    </div>
+    <div className="sx-contact-directory" aria-label="Ways to reach Saeid Shamsaei">
+     <a className="sx-contact-link" href={'mailto:'+publicContact.email}>
+      <span>01 / EMAIL</span><strong>{publicContact.email}</strong><span aria-hidden="true">↗</span>
+     </a>
+     <a className="sx-contact-link" href={publicContact.phoneHref}>
+      <span>02 / PHONE</span><strong>{publicContact.phone}</strong><span aria-hidden="true">↗</span>
+     </a>
+     <a className="sx-contact-link" href={publicContact.linkedin} target="_blank" rel="noreferrer noopener">
+      <span>03 / LINKEDIN</span><strong>Connect on LinkedIn</strong><span aria-hidden="true">↗</span>
+     </a>
+     <a className="sx-contact-link" href={publicContact.telegram} target="_blank" rel="noreferrer noopener">
+      <span>04 / TELEGRAM</span><strong>{publicContact.telegramHandle}</strong><span aria-hidden="true">↗</span>
+     </a>
+    </div>
    </section>
   </main>
   <footer className="sx-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#contact">Contact</a></nav>
-   <div><a href={publicContact.github} rel="noreferrer" target="_blank">GitHub ↗</a><a href={publicContact.linkedin} rel="noreferrer" target="_blank">LinkedIn ↗</a></div></footer>
+   <div className="sx-footer-social"><a href={publicContact.github} rel="noreferrer noopener" target="_blank">GitHub ↗</a><a href={publicContact.linkedin} rel="noreferrer noopener" target="_blank">LinkedIn ↗</a><a href={publicContact.telegram} rel="noreferrer noopener" target="_blank">Telegram ↗</a><a href={'mailto:'+publicContact.email}>Email ↗</a></div></footer>
  </div>;
 }

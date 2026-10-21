@@ -44,9 +44,9 @@ test('first developer workspace, second personal profile, then four projects',as
   await expect(page.locator('#project-'+name+' .sx-capability-list>div')).toHaveCount(4);
  }
  expect(errors).toEqual([]);
- await page.screenshot({path:'artifacts/desktop-workspace.png',animations:'disabled'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/desktop-workspace.png',animations:'disabled'});
  await page.locator('#about').scrollIntoViewIfNeeded();
- await page.screenshot({path:'artifacts/desktop-about.png',animations:'disabled'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/desktop-about.png',animations:'disabled'});
 });
 
 test('editorial workspace has one primary action and uncluttered composition',async({page})=>{
@@ -66,9 +66,9 @@ test('editorial workspace has one primary action and uncluttered composition',as
  const rect=await page.locator('#top').boundingBox();
  expect(rect?.height).toBeGreaterThan(730);
  expect(rect?.height).toBeLessThan(920);
- await page.screenshot({path:'artifacts/editorial-workspace-1440.png',animations:'disabled'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-workspace-1440.png',animations:'disabled'});
  await page.locator('#about').scrollIntoViewIfNeeded();
- await page.screenshot({path:'artifacts/editorial-about-1440.png',animations:'disabled'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-about-1440.png',animations:'disabled'});
 });
 test('hero and personal introduction are responsive single-screen frames',async({browser})=>{
  for(const [width,height] of [[360,800],[390,844],[768,1024],[1024,768],[1440,900]]){
@@ -94,9 +94,9 @@ test('hero and personal introduction are responsive single-screen frames',async(
   expect(measurements.profileImageBottom, 'portrait clipped at '+width).toBeLessThanOrEqual(measurements.profileBottom+3);
   if(width===390){
    await page.locator('#top').scrollIntoViewIfNeeded();
-   await page.screenshot({path:'artifacts/editorial-workspace-mobile.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-workspace-mobile.png',animations:'disabled'});
    await page.locator('#about').scrollIntoViewIfNeeded();
-   await page.screenshot({path:'artifacts/editorial-about-mobile.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/editorial-about-mobile.png',animations:'disabled'});
   }
   await page.close();
  }
@@ -130,14 +130,109 @@ test('authored atelier first frame and real gold logo in final frame',async({bro
    await i.decode();return i.naturalWidth;
   })).toBe(1254);
   if(width===390){
-   await page.screenshot({path:'artifacts/atelier-hero-mobile.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/atelier-hero-mobile.png',animations:'disabled'});
    await page.locator('#contact').scrollIntoViewIfNeeded();
-   await page.screenshot({path:'artifacts/atelier-logo-mobile.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/atelier-logo-mobile.png',animations:'disabled'});
   }
   if(width===1440){
-   await page.screenshot({path:'artifacts/atelier-hero-desktop.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/atelier-hero-desktop.png',animations:'disabled'});
    await page.locator('#contact').scrollIntoViewIfNeeded();
-   await page.screenshot({path:'artifacts/atelier-logo-desktop.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/atelier-logo-desktop.png',animations:'disabled'});
+  }
+  await page.close();
+ }
+});
+
+test('intro is polished, skippable, session-aware, and respects reduced motion',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:390,height:844}});
+ const page=await context.newPage();
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-intro')).toHaveCount(1);
+ await expect(page.locator('.sx-intro strong')).toContainText('Complex ideas.');
+ await expect(page.locator('.sx-intro img')).toHaveAttribute('src','/assets/hires/logo.webp');
+ await page.locator('.sx-intro button').click();
+ await expect(page.locator('.sx-intro')).toHaveCount(0);
+ expect(await page.evaluate(()=>sessionStorage.getItem('saeid-portfolio-intro-v1'))).toBe('seen');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0);
+ await context.close();
+
+ const reduced=await browser.newContext({reducedMotion:'reduce'});
+ const reducedPage=await reduced.newPage();
+ await reducedPage.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(reducedPage.locator('.sx-intro')).toHaveCount(0);
+ await reduced.close();
+});
+
+test('real contact links and mobile layout do not collide',async({browser})=>{
+ for(const [width,height] of [[360,640],[390,844],[430,932],[768,1024],[1440,900]]){
+  const page=await browser.newPage({viewport:{width,height}});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('.sx-intro')).toHaveCount(0);
+  const directory=page.locator('#contact .sx-contact-link');
+  await expect(directory).toHaveCount(4);
+  const hrefs=await directory.evaluateAll(nodes=>nodes.map(n=>n.getAttribute('href')));
+  expect(hrefs).toEqual([
+   'mailto:saeidshamsaeii00@gmail.com',
+   'tel:+989017470729',
+   'https://www.linkedin.com/in/saeidshamsaei/',
+   'https://t.me/sd_shms'
+  ]);
+  await expect(page.locator('#contact')).toContainText('09017470729');
+  await expect(page.locator('#contact')).toContainText('@sd_shms');
+  await expect(page.locator('.sx-footer-social>a')).toHaveCount(4);
+  const geometry=await page.evaluate(()=>{
+   const root=document.querySelector<HTMLElement>('#contact')!;
+   const layout=root.querySelector<HTMLElement>('.sx-contact-layout')!;
+   const main=root.querySelector<HTMLElement>('.sx-contact-main')!;
+   const brand=root.querySelector<HTMLElement>('.sx-contact-mark')!;
+   const links=Array.from(root.querySelectorAll<HTMLElement>('.sx-contact-link'));
+   const rect=(e:HTMLElement)=>{const {top,bottom,left,right}=e.getBoundingClientRect();return{top,bottom,left,right}};
+   return {root:rect(root),layout:rect(layout),main:rect(main),brand:rect(brand),links:links.map(rect),
+    scrollWidth:document.documentElement.scrollWidth,viewWidth:innerWidth};
+  });
+  expect(geometry.scrollWidth,'body overflow '+width).toBeLessThanOrEqual(geometry.viewWidth+1);
+  const overlap=(a:{top:number;bottom:number;left:number;right:number},b:typeof a)=>
+   Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>3 &&
+   Math.min(a.right,b.right)-Math.max(a.left,b.left)>3;
+  expect(overlap(geometry.main,geometry.brand),'contact text/logo overlap '+width).toBe(false);
+  for(let i=0;i<geometry.links.length;i++){
+   expect(geometry.links[i].left,'contact link outside left '+width).toBeGreaterThanOrEqual(geometry.root.left-2);
+   expect(geometry.links[i].right,'contact link outside right '+width).toBeLessThanOrEqual(geometry.root.right+2);
+   for(let j=i+1;j<geometry.links.length;j++){
+    expect(overlap(geometry.links[i],geometry.links[j]),'contact links overlap '+width+' '+i+','+j).toBe(false);
+   }
+  }
+  if(width===390||width===1440){
+   await page.locator('#contact').scrollIntoViewIfNeeded();
+   await page.screenshot({path:'artifacts/contact-'+width+'.png',animations:'disabled'});
+  }
+  await page.close();
+ }
+});
+
+test('no mobile project overview text over picture or off the available scene',async({browser})=>{
+ for(const [width,height] of [[360,640],[390,844],[768,1024]]){
+  const page=await browser.newPage({viewport:{width,height}});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('.sx-intro')).toHaveCount(0);
+  for(const name of names){
+   await goToProgress(page,name,0);
+   await expect.poll(()=>page.locator('#project-'+name+' .sx-story-rail').evaluate(e=>e.scrollLeft)).toBeLessThan(6);
+   const g=await page.locator('#project-'+name).evaluate(section=>{
+    const area=section.querySelector('.sx-viewport')!.getBoundingClientRect();
+    const copy=section.querySelector('.sx-slide--overview .sx-slide-copy')!.getBoundingClientRect();
+    const art=section.querySelector('.sx-slide--overview .sx-slide-art')!.getBoundingClientRect();
+    return {copy:{top:copy.top,bottom:copy.bottom,left:copy.left,right:copy.right},
+     art:{top:art.top,bottom:art.bottom,left:art.left,right:art.right},area:{top:area.top,bottom:area.bottom}};
+   });
+   const intersect=Math.min(g.copy.bottom,g.art.bottom)-Math.max(g.copy.top,g.art.top)>2
+    &&Math.min(g.copy.right,g.art.right)-Math.max(g.copy.left,g.art.left)>2;
+   expect(intersect,'content/image overlay '+name+' '+width).toBe(false);
+   expect(g.art.bottom,'art exceeds frame '+name+' '+width).toBeLessThanOrEqual(g.area.bottom+3);
+   expect(g.copy.top,'copy above frame '+name+' '+width).toBeGreaterThanOrEqual(g.area.top-3);
+   if(width===390&&name==='gartal')
+    await page.screenshot({path:'artifacts/mobile-gartal-frame.png',animations:'disabled'});
   }
   await page.close();
  }
@@ -178,7 +273,7 @@ test('vertical scroll drives horizontal story for each project on desktop',async
   expect(middle.max).toBeGreaterThan(1200);
   await expect.poll(()=>segment.locator('.sx-story-rail').evaluate(e=>e.scrollLeft),{timeout:5500}).toBeGreaterThan(middle.max*.40);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
-  if(name==='gartal')await page.screenshot({path:'artifacts/desktop-case-study-horizontal.png',animations:'disabled'});
+  if(name==='gartal')await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/desktop-case-study-horizontal.png',animations:'disabled'});
   await goToProgress(page,name,1);
   await expect.poll(()=>segment.locator('.sx-story-rail').evaluate(e=>e.scrollLeft)).toBeGreaterThan(middle.max*.95);
  }
@@ -198,7 +293,7 @@ test('paused wheel scrolling snaps to a complete case-study frame',async({page})
   const left=await segment.locator('.sx-story-rail').evaluate(e=>e.scrollLeft);
   return Math.abs(left/max-.5);
  },{timeout:6000,intervals:[150,200,300]}).toBeLessThan(.022);
- await page.screenshot({path:'artifacts/desktop-case-study-snapped.png',animations:'disabled'});
+ await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/desktop-case-study-snapped.png',animations:'disabled'});
 });
 
 test('touch-size/mobile vertical scrolling progresses horizontally, then next project',async({browser})=>{
@@ -214,14 +309,14 @@ test('touch-size/mobile vertical scrolling progresses horizontally, then next pr
    expect(middle.max).toBeGreaterThan(300);
    await expect.poll(()=>chapter.locator('.sx-story-rail').evaluate(e=>e.scrollLeft),{timeout:6000}).toBeGreaterThan(middle.max*.4);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
-   if(width===390&&name==='factory')await page.screenshot({path:'artifacts/mobile-horizontal-case-study.png',animations:'disabled'});
+   if(width===390&&name==='factory')await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/mobile-horizontal-case-study.png',animations:'disabled'});
    await goToProgress(page,name,1);
   }
   if(width===390){
    await page.locator('#top').scrollIntoViewIfNeeded();
-   await page.screenshot({path:'artifacts/mobile-workspace.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/mobile-workspace.png',animations:'disabled'});
    await page.locator('#about').scrollIntoViewIfNeeded();
-   await page.screenshot({path:'artifacts/mobile-about.png',animations:'disabled'});
+   await expect(page.locator('.sx-intro')).toHaveCount(0); await page.screenshot({path:'artifacts/mobile-about.png',animations:'disabled'});
   }
   await page.close();
  }
