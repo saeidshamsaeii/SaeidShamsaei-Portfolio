@@ -1,4 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
+import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import {join} from 'node:path';
 
 const introSeen=async(page:Page)=>page.addInitScript(()=>{
  try{sessionStorage.setItem('saeid-portfolio-intro-v1','seen');}catch{}
@@ -58,7 +61,7 @@ test('professional photo is the verified existing owner portrait, with office vi
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const portrait=page.locator('#top .sx-v4-hero-persona img');
  await expect(portrait).toHaveAttribute('src','/assets/hires/portrait.webp');
- await expect(portrait).toHaveAttribute('alt',/tailored dark suit/);
+ await expect(portrait).toHaveAttribute('alt',/dark sunglasses and a black suit/);
  const d=await portrait.evaluate(async (img:HTMLImageElement)=>{
   await img.decode();
   const bg=getComputedStyle(img.parentElement!,'::before').backgroundImage;
@@ -95,4 +98,11 @@ test('reduced-motion visitors are not launched into automatic playback',async({b
  await page.getByRole('button',{name:'Start guided site tour'}).click();
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
  await context.close();
+});
+
+
+test('approved owner portrait is the exact production asset, not the prior portrait',async()=>{
+ const original=readFileSync(join(process.cwd(),'public','assets','hires','portrait.webp'));
+ expect(createHash('sha256').update(original).digest('hex'))
+  .toBe('34c4d0509db4e2cb0f1e0c48716cb60286f92c8342c254e007074781dcadec70');
 });

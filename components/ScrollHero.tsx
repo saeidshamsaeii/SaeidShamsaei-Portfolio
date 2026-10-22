@@ -60,7 +60,7 @@ export function ScrollHero(){
    </div>
    <div className="sx-v4-hero-persona">
     <span className="sx-v5-portrait-halo" aria-hidden="true"/>
-    <img src="/assets/hires/portrait.webp" width={1122} height={1402} loading="eager" fetchPriority="high" decoding="async" alt="Saeid Shamsaei wearing a tailored dark suit and a collared shirt"/>
+    <img src="/assets/hires/portrait.webp" width={1122} height={1402} loading="eager" fetchPriority="high" decoding="async" alt="Saeid Shamsaei in dark sunglasses and a black suit, with his hand beside his mustache"/>
     <span className="sx-v5-office-label" aria-hidden="true">THE PERSON BEHIND THE WORK <span>01 / 04</span></span>
    </div>
    <div className="sx-hero-bottom"><span>DESIGN · BUILD · EVOLVE</span><span>SCROLL TO EXPLORE ↓</span></div>
