@@ -11,6 +11,7 @@ import './v3-experience.css';
 import './v4-minimal-scroll.css';
 import './v4-detail.css';
 import './office-hero-v5.css';
+import './guided-story.css';
 
 const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL;
 const validUrl=typeof configuredUrl==='string'&&/^https:\/\/[^/]+\.[^/]+/.test(configuredUrl)&&!configuredUrl.includes('example.invalid');
@@ -39,7 +40,7 @@ export default function RootLayout({children}:{children:React.ReactNode}){
  return <html lang="en" dir="ltr">
   <head>
    <link rel="preload" href="/assets/hires/logo.webp" as="image"/>
-   <link rel="preload" href="/assets/hires/portrait-office.webp" as="image" type="image/webp"/>
+   <link rel="preload" href="/assets/hires/portrait.webp" as="image" type="image/webp"/>
    {ready&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(identity).replace(/</g,'\\u003c')}}/>}
   </head>
   <body>{children}</body>

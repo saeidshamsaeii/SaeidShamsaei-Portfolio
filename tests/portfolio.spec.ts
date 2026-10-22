@@ -25,8 +25,8 @@ test('editorial homepage keeps a portrait hero, minimalist about and four five-f
  await expect(page.locator('#top h1')).toContainText('BEYOND');
  await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveCount(1);
  const imageWidth=await page.locator('#top .sx-v4-hero-persona img').evaluate(async(img:HTMLImageElement)=>{await img.decode();return img.naturalWidth;});
- expect(imageWidth).toBe(900);
- await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
+ expect(imageWidth).toBe(1122);
+ await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveAttribute('src','/assets/hires/portrait.webp');
  expect((await page.request.get('/assets/hires/portrait-office.webp')).status()).toBe(200);
  await expect(page.locator('#top .sx-blueprint-step')).toHaveCount(3);
  await expect(page.locator('#about .sx-focus-list>div')).toHaveCount(3);

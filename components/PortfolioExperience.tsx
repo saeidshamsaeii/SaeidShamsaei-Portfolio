@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import {ScrollHero} from '@/components/ScrollHero';
+import {GuidedTour} from '@/components/GuidedTour';
 
 import {projects,publicContact,type Project} from '@/data/portfolio';
 
@@ -25,7 +26,7 @@ function Brand({footer=false}:{footer?:boolean}){
  </Link>;
 }
 
-function IntroPresentation(){
+function IntroPresentation({onStartTour}:{onStartTour:()=>void}){
  const [phase,setPhase]=useState<'enter'|'exit'|'hidden'>('enter');
  const done=useCallback(()=>{
   try{window.sessionStorage.setItem('saeid-portfolio-intro-v1','seen');}catch{}
@@ -39,8 +40,8 @@ function IntroPresentation(){
    done();
    return;
   }
-  const exit=window.setTimeout(()=>setPhase('exit'),1150);
-  const hide=window.setTimeout(done,1630);
+  const exit=window.setTimeout(()=>setPhase('exit'),5300);
+  const hide=window.setTimeout(done,5800);
   return()=>{window.clearTimeout(exit);window.clearTimeout(hide);};
  },[done]);
  if(phase==='hidden')return null;
@@ -52,7 +53,10 @@ function IntroPresentation(){
    <span className="sx-intro-subline">SOFTWARE ARCHITECTURE &amp; PRODUCT ENGINEERING</span>
    <span className="sx-intro-meter" aria-hidden="true"><i/></span>
   </div>
-  <button type="button" onClick={done} aria-label="Skip introduction">SKIP INTRO ↗</button>
+  <div className="sx-intro-options">
+   <button type="button" className="sx-intro-tour" onClick={()=>{done();onStartTour();}} aria-label="Watch guided tour">▶ WATCH GUIDED TOUR <span>~ 60 SEC</span></button>
+   <button type="button" className="sx-intro-enter" onClick={done} aria-label="Skip introduction">ENTER SITE ↗</button>
+  </div>
  </div>;
 }
 
@@ -64,6 +68,8 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
  const [active,setActive]=useState(0);
  const state=useRef({start:0,distance:1,width:1,reduced:false});
  const touch=useRef<{x:number;y:number}|null>(null);
+ const [autoPlaying,setAutoPlaying]=useState(false);
+ const stopAuto=useRef<()=>void>(()=>{});
  const meta=themes[project.id];
  const count=phases.length;
 
@@ -73,6 +79,12 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let handle=0;
   let snapTimer:number|undefined;
+  let startTimer:number|undefined;
+  let autoFrame=0;
+  let running=false;
+  let played=false;
+  const cancelAuto=()=>{window.clearTimeout(startTimer);if(autoFrame)cancelAnimationFrame(autoFrame);autoFrame=0;running=false;setAutoPlaying(false);};
+  stopAuto.current=cancelAuto;
   const measure=()=>{
    state.current.reduced=reduced.matches;
    if(reduced.matches){section.style.height='auto';return;}
@@ -91,7 +103,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
    setActive(current=>{const n=Math.min(count-1,Math.round(fraction*(count-1)));return n===current?current:n;});
   };
   const onScroll=()=>{
-   if(!state.current.reduced){
+   if(!state.current.reduced&&!running){
     // A paused wheel / vertical touch gesture settles on one complete case
     // frame. Never snap outside the active chapter or past its boundaries.
     window.clearTimeout(snapTimer);
@@ -111,6 +123,49 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
    if(handle)return;
    handle=requestAnimationFrame(()=>{handle=0;move();});
   };
+  const requestAuto=(direction:number)=>{
+   if(direction<=0||running||played||reduced.matches||document.documentElement.dataset.portfolioTour==='running')return;
+   const rect=section.getBoundingClientRect();
+   if(rect.top>window.innerHeight*.65||rect.bottom<window.innerHeight*.72)return;
+   window.clearTimeout(startTimer);
+   startTimer=window.setTimeout(()=>{
+    const {start,distance}=state.current;
+    const progress=(window.scrollY-start)/distance;
+    if(progress<0||progress>.85||running||played||reduced.matches||document.documentElement.dataset.portfolioTour==='running')return;
+    played=true;running=true;setAutoPlaying(true);window.clearTimeout(snapTimer);
+    const beginning=window.scrollY,target=start+distance;
+    const duration=clampDuration((1-progress)*11500);
+    let startTime=0;
+    const tick=(ts:number)=>{
+     if(!running)return;
+     if(!startTime)startTime=ts;
+     const x=Math.min(1,(ts-startTime)/duration);
+     const ease=x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+     window.scrollTo({top:beginning+(target-beginning)*ease,behavior:'instant'});
+     if(x<1)autoFrame=requestAnimationFrame(tick);
+     else{
+      running=false;setAutoPlaying(false);autoFrame=0;
+      // Handoff without another wheel gesture; the next chapter remains
+      // native-scroll controlled until the visitor chooses to engage.
+      window.scrollTo({top:target+Math.min(240,window.innerHeight*.23),behavior:'smooth'});
+     }
+    };
+    autoFrame=requestAnimationFrame(tick);
+   },260);
+  };
+  const wheel=(event:WheelEvent)=>{if(running){cancelAuto();return;}requestAuto(event.deltaY);};
+  const touchEnd=(event:TouchEvent)=>{
+   if(running){cancelAuto();return;}
+   if(event.changedTouches.length)requestAuto(1);
+  };
+  const interrupt=(event:KeyboardEvent)=>{
+   if(running&&['Escape','ArrowUp','ArrowDown','PageUp','PageDown',' '].includes(event.key))cancelAuto();
+  };
+  window.addEventListener('wheel',wheel,{passive:true});
+  window.addEventListener('touchend',touchEnd,{passive:true});
+  window.addEventListener('keydown',interrupt);
+  function clampDuration(v:number){return Math.max(2600,Math.min(11500,v));}
+
   const onResize=()=>{if(handle)cancelAnimationFrame(handle);handle=requestAnimationFrame(()=>{handle=0;measure();});};
   const observer=new ResizeObserver(onResize);observer.observe(sticky);
   window.addEventListener('scroll',onScroll,{passive:true});
@@ -118,10 +173,11 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
   const mq=()=>onResize();reduced.addEventListener('change',mq);
   const ready=document.fonts.ready.then(()=>{if(section.isConnected)measure();});
   measure();
-  return()=>{void ready;observer.disconnect();window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onResize);reduced.removeEventListener('change',mq);if(handle)cancelAnimationFrame(handle);window.clearTimeout(snapTimer);section.style.height='';};
+  return()=>{void ready;cancelAuto();window.removeEventListener('wheel',wheel);window.removeEventListener('touchend',touchEnd);window.removeEventListener('keydown',interrupt);observer.disconnect();window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onResize);reduced.removeEventListener('change',mq);if(handle)cancelAnimationFrame(handle);window.clearTimeout(snapTimer);section.style.height='';};
  },[count]);
 
  const goTo=useCallback((n:number)=>{
+  stopAuto.current();
   const rail=railRef.current;
   if(!rail)return;
   const bounded=Math.max(0,Math.min(count-1,n));
@@ -131,7 +187,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
  },[count]);
  const nextProject=projects[index+1];
  return <section className={'sx-chapter sx-theme-'+meta.accent} id={'project-'+project.id} ref={sectionRef}
-  aria-label={project.brand+' scroll-driven case study'} data-active-slide={String(active)}>
+  aria-label={project.brand+' scroll-driven case study'} data-active-slide={String(active)} data-auto-playing={autoPlaying?'true':'false'}>
   <div className="sx-chapter-sticky" ref={stickyRef}>
    <div className="sx-chapter-top">
     <div><span className="sx-chapter-index">{project.index} / 04</span><span className="sx-chapter-name">{project.brand}</span><span className="sx-chapter-category">{meta.sector}</span></div>
@@ -214,7 +270,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
      {phases.map((phase,i)=><button key={phase} type="button" className={i===active?'is-active':''}
       aria-label={'Show '+phase.toLowerCase()} aria-current={i===active?'step':undefined} onClick={()=>goTo(i)}><span/></button>)}
     </div>
-    <span className="sx-scroll-hint">{active===count-1?'NEXT PROJECT ↓':'SCROLL ↓ / STORY →'}</span>
+    <span className="sx-scroll-hint">{autoPlaying?'AUTO STORY PLAYING · SCROLL TO CONTROL':active===count-1?'NEXT PROJECT ↓':'SCROLL ONCE · STORY PLAYS →'}</span>
     <div className="sx-chapter-buttons"><button type="button" onClick={()=>goTo(active-1)} disabled={active===0} aria-label={'Previous '+project.brand+' slide'}>←</button>
     <button type="button" onClick={()=>goTo(active+1)} disabled={active===count-1} aria-label={'Next '+project.brand+' slide'}>→</button></div>
    </div>
@@ -223,6 +279,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
 }
 
 export default function PortfolioExperience(){
+ const [tour,setTour]=useState(false);
  useEffect(()=>{
   // Small scroll-led perspective changes, no scripted video or heavyweight 3D.
   // Respect reduced-motion preference and keep content fully readable.
@@ -262,12 +319,13 @@ export default function PortfolioExperience(){
   return()=>io.disconnect();
  },[]);
  return <div className="sx-site">
-  <IntroPresentation/>
+  <IntroPresentation onStartTour={()=>setTour(true)}/>
+  <GuidedTour active={tour} onExit={()=>setTour(false)}/>
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
   <header className="sx-header">
    <Brand/>
    <nav aria-label="Primary navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#approach">Approach</a><a href="#contact">Contact</a></nav>
-   <a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a>
+   <div className="sx-header-actions"><button type="button" className="sx-tour-trigger" onClick={()=>setTour(true)} aria-label="Start guided site tour">▶ TOUR</button><a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a></div>
   </header>
   <main>
    <ScrollHero/>
@@ -281,7 +339,8 @@ export default function PortfolioExperience(){
       <p className="sx-kicker">02 / ABOUT ME · SAEID SHAMSAEI</p>
       <h2 id="sx-profile-title">BUILDING<br/><em>WITH INTENT.</em></h2>
       <p className="sx-profile-role">Software Architect · Product Engineer</p>
-      <p className="sx-profile-intro">I build useful digital products and robust systems — combining thoughtful design with engineering that lasts.</p>
+      <p className="sx-profile-intro">I'm Saeid Shamsaei, a software architect and product engineer. I turn complicated challenges into clear, usable products — from early product decisions to implementation and delivery.</p>
+      <p className="sx-profile-experience">My work spans multi-tenant platforms, business systems, AI-assisted engineering and clinical nutrition workflows. GARTAL, AI Factory, DigiRezhim and Petiwoo are examples of the systems I help shape and build.</p>
       <p className="sx-profile-interests-title">WHAT DRIVES MY WORK</p>
       <div className="sx-focus-list">{focuses.slice(0,3).map((focus,i)=><div key={focus.title}>
        <span>0{i+1}</span><div><strong>{focus.title}</strong><small>{focus.detail}</small></div>
