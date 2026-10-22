@@ -202,3 +202,30 @@ test('first-visit intro is skippable; reduced motion disables forced stories',as
  await expect.poll(()=>rail.evaluate(el=>el.scrollLeft)).toBeGreaterThan(300);
  await reduced.close();
 });
+
+
+test('Edition 07 visual parity holds on dark case pages without losing authenticity disclosures',async({page})=>{
+ await suppressIntro(page);
+ for(const id of projectIds){
+  await page.goto('/work/'+id+'/',{waitUntil:'domcontentloaded'});
+  const color=await page.locator('.case-study').evaluate(e=>getComputedStyle(e).backgroundColor);
+  expect(color).toBe('rgb(10, 12, 14)');
+  await expect(page.locator('.sx-v4-case-hero-art small')).toContainText('NOT A LIVE CAPTURE');
+  await expect(page.locator('.case-nav')).toBeVisible();
+ }
+});
+
+test('Edition 07 reduced motion keeps all About passages readable without forcing playback',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const page=await context.newPage();
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const about=page.locator('#about');
+ await expect(about.locator('.sx-ed7-stories>p')).toHaveCount(3);
+ for(const p of await about.locator('.sx-ed7-stories>p').all()){
+  const style=await p.evaluate(e=>({position:getComputedStyle(e).position,opacity:getComputedStyle(e).opacity}));
+  expect(style.position).toBe('static');
+  expect(style.opacity).toBe('1');
+ }
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(1);
+ await context.close();
+});
