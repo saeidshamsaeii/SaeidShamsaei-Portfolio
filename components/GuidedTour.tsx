@@ -3,11 +3,13 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 
 type Stop={id:string;label:string;fraction?:number};
 const order:Stop[]=[
- {id:'top',label:'The idea',fraction:0},{id:'top',label:'How I work',fraction:.78},
- {id:'about',label:'About Saeid'},
+ {id:'top',label:'Saeid Shamsaei',fraction:0},
+ {id:'about',label:'About Saeid',fraction:0},
+ {id:'about',label:'Architecture and engineering',fraction:.52},
+ {id:'about',label:'Selected work and expertise',fraction:1},
  ...(['gartal','factory','digirezhim','petiwoo'] as const).flatMap(id=>
   [0,.25,.5,.75,1].map((fraction,i)=>({id:'project-'+id,label:id.toUpperCase()+' · '+(i+1)+'/5',fraction}))),
- {id:'approach',label:'My approach'},{id:'contact',label:'Let’s connect'}
+ {id:'contact',label:'Let’s connect'}
 ];
 const clamp=(x:number)=>Math.min(1,Math.max(0,x));
 function destination(stop:Stop){
@@ -15,6 +17,7 @@ function destination(stop:Stop){
  if(!target)return window.scrollY;
  const top=target.getBoundingClientRect().top+window.scrollY;
  if(stop.id==='top')return top+Math.max(0,target.getBoundingClientRect().height-window.innerHeight)*(stop.fraction||0);
+ if(stop.id==='about')return top+Math.max(0,target.getBoundingClientRect().height-window.innerHeight)*(stop.fraction||0);
  if(stop.id.startsWith('project-')){
   const sticky=target.querySelector<HTMLElement>('.sx-chapter-sticky');
   const travel=Math.max(0,target.getBoundingClientRect().height-(sticky?.getBoundingClientRect().height||window.innerHeight));
