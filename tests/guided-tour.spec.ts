@@ -70,7 +70,7 @@ test('first slider is image-free while the approved owner portrait is in the fol
  await page.screenshot({path:'artifacts/v8-personal-portrait-about.png',animations:'disabled'});
 });
 
-test('personal introduction lists factual experience and keeps unverified age private',async({page})=>{
+test('personal introduction lists owner-confirmed age and professional experience',async({page})=>{
  await introSeen(page);
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const about=page.locator('#about');
@@ -80,7 +80,10 @@ test('personal introduction lists factual experience and keeps unverified age pr
  await expect(about).toContainText('Digital Products');
  await expect(about.locator('.sx-v8-about-experience>div')).toHaveCount(3);
  await expect(about.locator('.sx-v8-fact-line')).toContainText('Software Architecture');
- await expect(about.locator('.sx-v8-fact-line')).not.toContainText('Years');
+ await expect(about.locator('.sx-v8-fact-line')).toContainText('AGE');
+ await expect(about.locator('.sx-v8-fact-line')).toContainText('25');
+ await expect(about.locator('.sx-v8-fact-line')).toContainText('EXPERIENCE');
+ await expect(about.locator('.sx-v8-fact-line')).toContainText('5+ Years');
  for(const [width,height] of [[360,640],[390,844],[768,1024]]){
   await page.setViewportSize({width,height});
   const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
