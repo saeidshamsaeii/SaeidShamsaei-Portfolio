@@ -80,7 +80,8 @@ test('experience introduction is present without fabricated time-in-role or outc
  await expect(about).toContainText('GARTAL');
  await expect(about).toContainText('DigiRezhim');
  await expect(about).toContainText('business systems');
- expect(await about.locator('.sx-profile-experience').count()).toBe(1);
+ await expect(about.locator('.sx-ed7-stories>p')).toHaveCount(3);
+ await expect(about.locator('.sx-ed7-expertise')).toContainText('ARCHITECTURE');
  for(const [width,height] of [[360,640],[390,844],[768,1024]]){
   await page.setViewportSize({width,height});
   const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
