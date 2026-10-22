@@ -119,3 +119,25 @@ The owner-directed Edition 07 source implementation is now present in the dedica
 - No change to domain, deployment, search indexing, production services or laptop worktrees.
 
 **Remaining gates:** exact-SHA `typecheck`/`build`, actual browser Playwright at specified widths, local Docker Worker result with matching SHA, local pull and owner visual acceptance. All must be evidenced separately before marking Edition 07 fully released.
+
+## Edition 08 - owner refinement / 22 October 2026
+
+**This section supersedes the earlier Edition 07 portrait-in-Hero layout.** Owner-approved sequence: text-only purpose slider, then personal portrait and verified biography, then work chapters.
+
+### Final three-act structure
+1. **Opening (image-free):** Three full-viewport editorial typographic scenes - what Saeid builds, his mission, and his approach. Native vertical scrolling changes each scene, visible numbered controls permit navigation, and the anchor enters the About section. No personal image or visual gallery in this opening.
+2. **The person (portrait and experience):** Next section features the authentic existing owner portrait with architectural office ambience, a first-person English introduction, engineering interests, and three verified work areas. The source in `data/portfolio.ts` provides nullable publicBiography.ageYears and publicBiography.yearsOfExperience, rendered only after owner verification. Neither number is invented.
+3. **Selected work:** Four existing full-screen five-frame stories GARTAL, AI Factory, DigiRezhim and Petiwoo, with normal vertical scroll driving each horizontal case. Individual deep-linked case-study routes remain available.
+
+### Source changes
+- `components/ScrollHero.tsx`: replace photo-led Hero with three editorial, purpose-led text scenes.
+- `components/PortfolioExperience.tsx`: move authentic image to About; replace text-only About with personal bio, factual expertise and next-project transition; remove blocking first-visit splash.
+- `components/GuidedTour.tsx`: navigate three opening text scenes, one portrait About and the four five-frame case reels.
+- `app/edition08.css`: append image-free slider and portrait bio responsive art direction after Edition 07 stylesheet, with reduced-motion and JavaScript-off fallbacks; prevent overflowing desktop grids.
+- `tests/portfolio.spec.ts` and `tests/guided-tour.spec.ts`: update structural and mobile visual assertions to match. Test code is present, but no execution success has yet been proven for this exact revision.
+
+### Non-negotiables
+- English only; no location disclosure, unverified years of work or age, invented metrics or false live screenshots.
+- Reuse the original owner portrait, the existing genuine logo and source-informed conceptual project visuals.
+- No production deployment, search-indexing change, Windows Worker privilege change or destructive sync.
+- Exact-SHA local Docker quality gates and real browser screenshots must be checked before calling the new website fully validated.
