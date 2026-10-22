@@ -182,15 +182,13 @@ test('independent case routes show conceptual art and truthful interactive sourc
  }
 });
 
-test('first-visit intro is skippable; reduced motion disables forced stories',async({browser})=>{
+test('direct entry shows all purpose slides and reduced motion keeps projects navigable',async({browser})=>{
  const context=await browser.newContext({viewport:{width:390,height:844}});
  const page=await context.newPage();
  await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.sx-intro')).toHaveCount(1);
- await page.getByRole('button',{name:'Skip introduction'}).click();
  await expect(page.locator('.sx-intro')).toHaveCount(0);
- await page.reload({waitUntil:'domcontentloaded'});
- await expect(page.locator('.sx-intro')).toHaveCount(0);
+ await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
+ await expect(page.locator('#top img')).toHaveCount(0);
  await context.close();
 
  const reduced=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
@@ -198,7 +196,6 @@ test('first-visit intro is skippable; reduced motion disables forced stories',as
  await rp.goto('/',{waitUntil:'domcontentloaded'});
  await expect(rp.locator('.sx-intro')).toHaveCount(0);
  await expect(rp.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
- await expect(rp.locator('#top img')).toHaveCount(0);
  const sticky=await rp.locator('#project-gartal .sx-chapter-sticky').evaluate(e=>getComputedStyle(e).position);
  expect(sticky).toBe('relative');
  const rail=rp.locator('#project-gartal .sx-story-rail');
@@ -207,7 +204,6 @@ test('first-visit intro is skippable; reduced motion disables forced stories',as
  await expect.poll(()=>rail.evaluate(el=>el.scrollLeft)).toBeGreaterThan(300);
  await reduced.close();
 });
-
 
 test('Edition 07 visual parity holds on dark case pages without losing authenticity disclosures',async({page})=>{
  await suppressIntro(page);
