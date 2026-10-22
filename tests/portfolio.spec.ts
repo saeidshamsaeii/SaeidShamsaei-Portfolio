@@ -29,7 +29,7 @@ test('Edition 08 opens with purpose-only slides, then a portrait bio and four fi
  await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveCount(1);
  const imageWidth=await page.locator('#about .sx-v8-about-portrait img').evaluate(async(img:HTMLImageElement)=>{await img.decode();return img.naturalWidth;});
  expect(imageWidth).toBe(1122);
- await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveAttribute('src','/assets/hires/portrait.webp');
  expect((await page.request.get('/assets/hires/portrait-office.webp')).status()).toBe(200);
  await expect(page.locator('#top .sx-blueprint-step')).toHaveCount(0);
  await expect(page.locator('#about .sx-v8-about-experience>div')).toHaveCount(3);
