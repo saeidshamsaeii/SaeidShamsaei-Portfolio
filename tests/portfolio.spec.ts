@@ -15,21 +15,23 @@ async function progressTo(page:Page,id:string,ratio:number){
  },ratio);
 }
 
-test('editorial homepage keeps a portrait hero, minimalist about and four five-frame project journeys',async({page})=>{
+test('Edition 07 keeps a portrait-led hero, sequential About and four five-frame project journeys',async({page})=>{
  await suppressIntro(page);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  await expect(page.locator('html')).toHaveAttribute('dir','ltr');
- await expect(page.locator('#top h1')).toContainText('BEYOND');
+ await expect(page.locator('#top h1')).toContainText('SAEID');
+ await expect(page.locator('#top h1')).toContainText('SHAMSAEI.');
  await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveCount(1);
  const imageWidth=await page.locator('#top .sx-v4-hero-persona img').evaluate(async(img:HTMLImageElement)=>{await img.decode();return img.naturalWidth;});
  expect(imageWidth).toBe(1122);
  await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveAttribute('src','/assets/hires/portrait.webp');
  expect((await page.request.get('/assets/hires/portrait-office.webp')).status()).toBe(200);
- await expect(page.locator('#top .sx-blueprint-step')).toHaveCount(3);
- await expect(page.locator('#about .sx-focus-list>div')).toHaveCount(3);
+ await expect(page.locator('#top .sx-blueprint-step')).toHaveCount(0);
+ await expect(page.locator('#about .sx-ed7-stories>p')).toHaveCount(3);
+ await expect(page.locator('#approach')).toHaveCount(0);
  await expect(page.locator('.sx-chapter')).toHaveCount(4);
  await expect(page.locator('.sx-slide')).toHaveCount(20);
  await expect(page.locator('#contact .sx-contact-symbol img')).toHaveCount(1);
@@ -42,8 +44,8 @@ test('editorial homepage keeps a portrait hero, minimalist about and four five-f
   await expect(art).toHaveAttribute('src','/assets/hires/project-'+id+'.webp');
   const dimensions=await art.evaluate(async(img:HTMLImageElement)=>{await img.decode();return{width:img.naturalWidth,height:img.naturalHeight}});
   expect(dimensions).toEqual({width:1448,height:1086});
-  await expect(section.locator('.sx-architecture-list>div')).toHaveCount(6);
-  await expect(section.locator('.sx-capability-list>div')).toHaveCount(4);
+  await expect(section.locator('.sx-architecture-list>div')).toHaveCount(3);
+  await expect(section.locator('.sx-capability-list>div')).toHaveCount(3);
   await expect(section.locator('.sx-slide-dots button')).toHaveCount(5);
  }
  expect(errors).toEqual([]);
@@ -75,22 +77,27 @@ test('vertical wheel progress moves every horizontal chapter and allows natural 
  await expect(last).toBeVisible();
 });
 
-test('hero changes message as user scrolls, then moves vertically to About',async({page})=>{
+test('Edition 07 keeps the hero on one viewport and reveals three About passages on scroll',async({page})=>{
  await suppressIntro(page);
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const hero=page.locator('#top');
- await expect(hero).toHaveAttribute('data-scene','0');
- const info=await hero.evaluate(element=>({start:element.getBoundingClientRect().top+window.scrollY,travel:element.getBoundingClientRect().height-window.innerHeight}));
- expect(info.travel).toBeGreaterThan(350);
- await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.start+info.travel*.5);
- await expect(hero).toHaveAttribute('data-scene','1');
- await expect(hero.locator('.sx-blueprint-step.sx-is-current')).toContainText('BUILD');
- await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.start+info.travel*.95);
- await expect(hero).toHaveAttribute('data-scene','2');
- await expect(hero.locator('.sx-blueprint-step.sx-is-current')).toContainText('SHIP');
- await page.locator('#about').scrollIntoViewIfNeeded();
- await expect(page.locator('#about')).toBeVisible();
+ const heroHeight=await hero.evaluate(e=>e.getBoundingClientRect().height);
+ expect(heroHeight).toBeGreaterThan(880);
+ expect(heroHeight).toBeLessThan(930);
+ const about=page.locator('#about');
+ const info=await about.evaluate(element=>({
+  start:element.getBoundingClientRect().top+window.scrollY,
+  travel:element.getBoundingClientRect().height-window.innerHeight
+ }));
+ expect(info.travel).toBeGreaterThan(300);
+ for(const [fraction,scene] of [[.05,'0'],[.52,'1'],[.92,'2']] as const){
+  await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.start+info.travel*fraction);
+  await expect(about).toHaveAttribute('data-about-scene',scene);
+  await expect(about.locator('.sx-ed7-stories>p').nth(Number(scene))).toBeVisible();
+ }
+ await page.locator('#selected-projects').scrollIntoViewIfNeeded();
+ await expect(page.locator('#selected-projects')).toBeVisible();
 });
 
 test('mobile viewport containment, no typography/image overlap and useful scroll cues',async({browser})=>{
