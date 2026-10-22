@@ -75,6 +75,6 @@ export const publicBiography:{
  ageYears:number|null;
  yearsOfExperience:number|null;
 }={
- ageYears:null,
- yearsOfExperience:null
+ ageYears:25,
+ yearsOfExperience:5
 };
