@@ -20,39 +20,6 @@ function Brand({footer=false}:{footer?:boolean}){
  </Link>;
 }
 
-function IntroPresentation({onStartTour}:{onStartTour:()=>void}){
- const [phase,setPhase]=useState<'enter'|'exit'|'hidden'>('enter');
- const done=useCallback(()=>{
-  try{window.sessionStorage.setItem('saeid-portfolio-intro-v1','seen');}catch{}
-  setPhase('hidden');
- },[]);
- useEffect(()=>{
-  let seen=false;
-  try{seen=window.sessionStorage.getItem('saeid-portfolio-intro-v1')==='seen';}catch{}
-  if(seen||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-   // Respect motion preferences and never delay repeat page views.
-   done();
-   return;
-  }
-  const exit=window.setTimeout(()=>setPhase('exit'),2700);
-  const hide=window.setTimeout(done,3200);
-  return()=>{window.clearTimeout(exit);window.clearTimeout(hide);};
- },[done]);
- if(phase==='hidden')return null;
- return <div className={'sx-intro sx-intro--'+phase} role="status" aria-label="Introducing the Saeid Shamsaei portfolio">
-  <div className="sx-intro-content">
-   <img src="/assets/hires/logo.webp" alt="" width={1254} height={1254} decoding="async"/>
-   <span className="sx-intro-line">SAEID SHAMSAEI</span>
-   <strong>Complex ideas.<br/><em>Clear systems.</em></strong>
-   <span className="sx-intro-subline">SOFTWARE ARCHITECTURE &amp; PRODUCT ENGINEERING</span>
-  </div>
-  <div className="sx-intro-options">
-   <button type="button" className="sx-intro-tour" onClick={()=>{done();onStartTour();}} aria-label="Watch guided tour">▶ WATCH GUIDED TOUR</button>
-   <button type="button" className="sx-intro-enter" onClick={done} aria-label="Skip introduction">ENTER SITE ↗</button>
-  </div>
- </div>;
-}
-
 const phases=['REVEAL','CHALLENGE','ARCHITECTURE','EXPERIENCE','NEXT'];
 function ProjectChapter({project,index}:{project:Project;index:number}){
  const sectionRef=useRef<HTMLElement>(null);
@@ -290,7 +257,6 @@ export default function PortfolioExperience(){
   return()=>io.disconnect();
  },[]);
  return <div className="sx-site">
-  <IntroPresentation onStartTour={()=>setTour(true)}/>
   <GuidedTour active={tour} onExit={()=>setTour(false)}/>
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
   <header className="sx-header">
