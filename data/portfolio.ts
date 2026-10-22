@@ -66,3 +66,15 @@ export const publicContact={
  github:'https://github.com/saeidshamsaeii',
  linkedin:'https://www.linkedin.com/in/saeidshamsaei/'
 } as const;
+
+/**
+ * Verified public biography facts. Populate age/tenure only after the owner
+ * supplies and approves exact information; null must never become a fake zero.
+ */
+export const publicBiography:{
+ ageYears:number|null;
+ yearsOfExperience:number|null;
+}={
+ ageYears:null,
+ yearsOfExperience:null
+};
