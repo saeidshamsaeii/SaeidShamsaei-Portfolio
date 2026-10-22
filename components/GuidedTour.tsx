@@ -33,6 +33,9 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
  const label=useMemo(()=>order[index]?.label||'Finishing', [index]);
  useEffect(()=>{
   if(!active)return;
+  // Replays always begin from a playing state, not a prior session's pause.
+  pausedRef.current=false;
+  setPaused(false);
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){onExitRef.current();return;}
   const root=document.documentElement;
   root.dataset.portfolioTour='running';
