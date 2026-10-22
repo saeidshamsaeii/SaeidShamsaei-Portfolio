@@ -3,10 +3,10 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 
 type Stop={id:string;label:string;fraction?:number};
 const order:Stop[]=[
- {id:'top',label:'Saeid Shamsaei',fraction:0},
- {id:'about',label:'About Saeid',fraction:0},
- {id:'about',label:'Architecture and engineering',fraction:.52},
- {id:'about',label:'Selected work and expertise',fraction:1},
+ {id:'top',label:'What I build',fraction:0},
+ {id:'top',label:'Why it matters',fraction:.45},
+ {id:'top',label:'How I think',fraction:.88},
+ {id:'about',label:'Meet Saeid and his experience'},
  ...(['gartal','factory','digirezhim','petiwoo'] as const).flatMap(id=>
   [0,.25,.5,.75,1].map((fraction,i)=>({id:'project-'+id,label:id.toUpperCase()+' · '+(i+1)+'/5',fraction}))),
  {id:'contact',label:'Let’s connect'}
