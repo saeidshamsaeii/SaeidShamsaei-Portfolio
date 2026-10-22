@@ -83,7 +83,7 @@ test('personal introduction lists owner-confirmed age and professional experienc
  await expect(about.locator('.sx-v8-fact-line')).toContainText('AGE');
  await expect(about.locator('.sx-v8-fact-line')).toContainText('25');
  await expect(about.locator('.sx-v8-fact-line')).toContainText('EXPERIENCE');
- await expect(about.locator('.sx-v8-fact-line')).toContainText('5+ Years');
+ await expect(about.locator('.sx-v8-fact-line')).toContainText('5 Years');
  for(const [width,height] of [[360,640],[390,844],[768,1024]]){
   await page.setViewportSize({width,height});
   const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
