@@ -76,6 +76,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
   let autoFrame=0;
   let running=false;
   let played=false;
+  let touchStartY:number|null=null;
   const cancelAuto=()=>{window.clearTimeout(startTimer);if(autoFrame)cancelAnimationFrame(autoFrame);autoFrame=0;running=false;setAutoPlaying(false);};
   stopAuto.current=cancelAuto;
   const measure=()=>{
@@ -147,14 +148,22 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
    },260);
   };
   const wheel=(event:WheelEvent)=>{if(running){cancelAuto();return;}requestAuto(event.deltaY);};
+  const touchStart=(event:TouchEvent)=>{
+   touchStartY=event.touches[0]?.clientY??null;
+   if(running)cancelAuto();
+  };
   const touchEnd=(event:TouchEvent)=>{
+   const endY=event.changedTouches[0]?.clientY;
+   const intendedDownwardScroll=touchStartY!==null&&endY!==undefined&&touchStartY-endY>35;
+   touchStartY=null;
    if(running){cancelAuto();return;}
-   if(event.changedTouches.length)requestAuto(1);
+   if(intendedDownwardScroll)requestAuto(1);
   };
   const interrupt=(event:KeyboardEvent)=>{
    if(running&&['Escape','ArrowUp','ArrowDown','PageUp','PageDown',' '].includes(event.key))cancelAuto();
   };
   window.addEventListener('wheel',wheel,{passive:true});
+  window.addEventListener('touchstart',touchStart,{passive:true});
   window.addEventListener('touchend',touchEnd,{passive:true});
   window.addEventListener('keydown',interrupt);
   function clampDuration(v:number){return Math.max(2600,Math.min(11500,v));}
@@ -166,7 +175,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
   const mq=()=>onResize();reduced.addEventListener('change',mq);
   const ready=document.fonts.ready.then(()=>{if(section.isConnected)measure();});
   measure();
-  return()=>{void ready;cancelAuto();window.removeEventListener('wheel',wheel);window.removeEventListener('touchend',touchEnd);window.removeEventListener('keydown',interrupt);observer.disconnect();window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onResize);reduced.removeEventListener('change',mq);if(handle)cancelAnimationFrame(handle);window.clearTimeout(snapTimer);section.style.height='';};
+  return()=>{void ready;cancelAuto();window.removeEventListener('wheel',wheel);window.removeEventListener('touchstart',touchStart);window.removeEventListener('touchend',touchEnd);window.removeEventListener('keydown',interrupt);observer.disconnect();window.removeEventListener('scroll',onScroll);window.removeEventListener('resize',onResize);reduced.removeEventListener('change',mq);if(handle)cancelAnimationFrame(handle);window.clearTimeout(snapTimer);section.style.height='';};
  },[count]);
 
  const goTo=useCallback((n:number)=>{
