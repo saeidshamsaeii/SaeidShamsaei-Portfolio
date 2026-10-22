@@ -7,18 +7,15 @@ const introSeen=async(page:Page)=>page.addInitScript(()=>{
  try{sessionStorage.setItem('saeid-portfolio-intro-v1','seen');}catch{}
 });
 
-test('first landing offers both exploration and a non-trapping guided tour',async({page})=>{
+test('first landing opens directly on the text slider, with an opt-in guided tour',async({page})=>{
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const intro=page.locator('.sx-intro');
- await expect(intro).toBeVisible();
- await expect(intro.getByRole('button',{name:'Watch guided tour'})).toBeVisible();
- await expect(intro.getByRole('button',{name:'Skip introduction'})).toBeVisible();
- await intro.getByRole('button',{name:'Watch guided tour'}).click();
- await expect(intro).toHaveCount(0);
+ await expect(page.locator('.sx-intro')).toHaveCount(0);
+ await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
+ await expect(page.locator('#top img')).toHaveCount(0);
+ await page.getByRole('button',{name:'Start guided site tour'}).click();
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>document.documentElement.dataset.portfolioTour)).toBe('running');
- await expect(page.getByRole('button',{name:'Pause tour'})).toBeVisible();
  await page.getByRole('button',{name:'Pause tour'}).click();
  await expect(page.getByRole('button',{name:'Resume tour'})).toBeVisible();
  const y=await page.evaluate(()=>window.scrollY);
