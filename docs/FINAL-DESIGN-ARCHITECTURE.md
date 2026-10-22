@@ -1,7 +1,7 @@
 # SAEID PORTFOLIO — FINAL VISUAL ARCHITECTURE
 ## Edition 07 / Cinematic Minimalism
 **Status:** OWNER SELECTED — DESIGN BASELINE LOCKED (2026-10-22).
-**Status of live UI:** This file is a design/implementation contract. It does **not** claim the current website has already been rebuilt.
+**Source implementation status (2026-10-22):** Edition 07 homepage and case-study visual source changes are now committed to `main`; exact-SHA runtime build, hydrated browser QA, Windows Worker sync and deployment are not yet verified.
 
 ### 1. Creative decision / blend
 - **Camille Mormal:** image-first, full-viewport film-strip project storytelling, sparse progress index.
@@ -103,3 +103,19 @@ One choreographed motion system, not a collection of competing animations:
 
 ## Implementation approval gate
 This document finalizes the visual direction only; **do not report the live website redesigned or locally deployed just because this specification is committed.** Implement in a subsequent source change with browser proof and exact-SHA Worker verification.
+
+## Edition 07 implementation tracking — 2026-10-22
+
+The owner-directed Edition 07 source implementation is now present in the dedicated Portfolio GitHub repository. This records **source delivery**, not a claim of a rendered, CI-green or on-device-accepted website.
+
+- `components/ScrollHero.tsx`: real approved portrait and source office atmosphere, one identity heading, one work CTA; removed the three crowded Design/Build/Ship tiles.
+- `components/PortfolioExperience.tsx`: sticky sequential About storytelling, trimmed home-page project architecture to three factual boundaries, concept visual detail treatment, four existing horizontal five-frame reels and their interruptible one-gesture assist, simplified final Contact; unnecessary Approach chapter removed.
+- `components/GuidedTour.tsx`: itinerary updated to Identity → three About stages → four five-frame projects → Contact. Opt-in manual-interrupt controls retained.
+- `app/edition07.css`: Edition 07 monochrome/gold visual system scoped to homepage and all four separate case-study routes, with responsive layouts and reduced-motion fallback; imported last by `app/layout.tsx`.
+- `tests/portfolio.spec.ts` and `tests/guided-tour.spec.ts`: updated structural expectations; added explicit reduced-motion and dark-case-route parity checks. Tests have not been executed successfully against this new commit in a verified runtime.
+- Original owner portrait, logo and conceptual project images are preserved unchanged. No made-up production metrics or asserted real-app captures.
+- Protected Factory registry remains unchanged; the current repo's Worker execution profile has not been verified enabled.
+- Existing legacy stylesheet imports remain until an actual responsive screenshot comparison is available. They are intentionally not mass-deleted without a regression baseline.
+- No change to domain, deployment, search indexing, production services or laptop worktrees.
+
+**Remaining gates:** exact-SHA `typecheck`/`build`, actual browser Playwright at specified widths, local Docker Worker result with matching SHA, local pull and owner visual acceptance. All must be evidenced separately before marking Edition 07 fully released.
