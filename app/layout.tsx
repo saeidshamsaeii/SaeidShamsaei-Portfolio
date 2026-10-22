@@ -12,6 +12,7 @@ import './v4-minimal-scroll.css';
 import './v4-detail.css';
 import './office-hero-v5.css';
 import './guided-story.css';
+import './edition07.css';
 
 const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL;
 const validUrl=typeof configuredUrl==='string'&&/^https:\/\/[^/]+\.[^/]+/.test(configuredUrl)&&!configuredUrl.includes('example.invalid');
