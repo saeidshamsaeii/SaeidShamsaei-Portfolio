@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {ScrollHero} from '@/components/ScrollHero';
 import {GuidedTour} from '@/components/GuidedTour';
 
-import {projects,publicContact,type Project} from '@/data/portfolio';
+import {projects,publicContact,publicBiography,type Project} from '@/data/portfolio';
 
 const themes:{[key in Project['id']]:{sector:string;accent:string;tagline:string}}={
  gartal:{sector:'ENTERPRISE PLATFORM',accent:'gold',tagline:'One foundation. Multiple businesses.'},
@@ -280,37 +280,6 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
 export default function PortfolioExperience(){
  const [tour,setTour]=useState(false);
  useEffect(()=>{
-  // Small scroll-led perspective changes, no scripted video or heavyweight 3D.
-  // Respect reduced-motion preference and keep content fully readable.
-  const hero=document.querySelector<HTMLElement>('.sx-work-hero');
-  const profile=document.querySelector<HTMLElement>('.sx-profile');
-  if(!hero||!profile)return;
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  let frame=0;
-  const update=()=>{
-   frame=0;
-   if(reduced.matches){
-    hero.style.setProperty('--sx-scroll','0');
-    profile.style.setProperty('--sx-reveal','0.5');
-    profile.dataset.aboutScene='0';
-    return;
-   }
-   const height=Math.max(1,window.innerHeight);
-   const intro=Math.min(1,Math.max(0,-hero.getBoundingClientRect().top/height));
-   const aboutTravel=Math.max(1,profile.offsetHeight-height);
-   const about=Math.min(1,Math.max(0,-profile.getBoundingClientRect().top/aboutTravel));
-   hero.style.setProperty('--sx-scroll',intro.toFixed(3));
-   profile.style.setProperty('--sx-reveal',about.toFixed(3));
-   profile.dataset.aboutScene=String(Math.min(2,Math.floor(about*3)));
-  };
-  const request=()=>{if(!frame)frame=requestAnimationFrame(update);};
-  window.addEventListener('scroll',request,{passive:true});
-  window.addEventListener('resize',request);
-  reduced.addEventListener('change',request);
-  update();
-  return()=>{if(frame)cancelAnimationFrame(frame);window.removeEventListener('scroll',request);window.removeEventListener('resize',request);reduced.removeEventListener('change',request);};
- },[]);
- useEffect(()=>{
   const sections=Array.from(document.querySelectorAll('#about,#contact'));
   if(!sections.length||!('IntersectionObserver' in window))return;
   const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
@@ -332,17 +301,29 @@ export default function PortfolioExperience(){
   <main>
    <ScrollHero/>
 
-   <section className="sx-profile sx-editorial-frame sx-ed7-about" id="about" aria-labelledby="sx-profile-title" data-about-scene="0">
-    <div className="sx-profile-inner sx-ed7-about-inner">
-     <div className="sx-profile-copy sx-ed7-about-copy">
-      <p className="sx-kicker">01 / ABOUT & EXPERTISE</p>
-      <h2 id="sx-profile-title">FROM COMPLEXITY<br/><em>TO CLARITY.</em></h2>
-      <div className="sx-ed7-stories">
-       <p>I'm Saeid Shamsaei. I translate complex product ideas into software people can understand and use.</p>
-       <p>My work bridges architecture, engineering and product decisions — from foundations to delivery.</p>
-       <p>Selected work includes GARTAL, AI Factory, DigiRezhim and Petiwoo, from business systems to clinical nutrition workflows.</p>
+   <section className="sx-profile sx-editorial-frame sx-v8-about" id="about" aria-labelledby="sx-profile-title">
+    <div className="sx-v8-about-inner">
+     <div className="sx-v8-about-portrait">
+      <img src="/assets/hires/portrait.webp" alt="Portrait of Saeid Shamsaei in a black suit and sunglasses" width={1122} height={1402} loading="eager" decoding="async"/>
+      <div className="sx-v8-portrait-note"><span>SAEID SHAMSAEI</span><span>THE PERSON BEHIND THE WORK</span></div>
+     </div>
+     <div className="sx-v8-about-content">
+      <p className="sx-kicker">02 / ABOUT ME</p>
+      <h2 id="sx-profile-title">A LITTLE<br/><em>ABOUT ME.</em></h2>
+      <p className="sx-v8-about-role">Software Architect &amp; Product Engineer</p>
+      <p className="sx-v8-about-summary">I'm Saeid Shamsaei. I enjoy turning ambitious ideas into thoughtful software — combining system architecture, practical engineering and a strong sense of product experience.</p>
+      <div className="sx-v8-fact-line" aria-label="Verified professional profile">
+       <div><span>FOCUS</span><strong>Software Architecture · Product Engineering</strong></div>
+       {publicBiography.ageYears!==null&&<div><span>AGE</span><strong>{publicBiography.ageYears}</strong></div>}
+       {publicBiography.yearsOfExperience!==null&&<div><span>EXPERIENCE</span><strong>{publicBiography.yearsOfExperience}+ Years</strong></div>}
       </div>
-      <p className="sx-ed7-expertise">ARCHITECTURE <span>/</span> AUTOMATION <span>/</span> PRODUCT EXPERIENCE</p>
+      <div className="sx-v8-about-experience" aria-label="Experience areas">
+       <p className="sx-v8-experience-kicker">EXPERIENCE &amp; INTERESTS</p>
+       <div><span>01</span><strong>Platform Architecture</strong><small>Multi-tenant systems, reusable foundations and product infrastructure</small></div>
+       <div><span>02</span><strong>Engineering &amp; Automation</strong><small>Developer workflows, quality gates and source-driven delivery</small></div>
+       <div><span>03</span><strong>Digital Products</strong><small>Business platforms, commerce and clinical nutrition workflows</small></div>
+      </div>
+      <a href="#selected-projects" className="sx-v8-about-cta">EXPLORE SELECTED PROJECTS <span aria-hidden="true">↘</span></a>
      </div>
     </div>
    </section>
