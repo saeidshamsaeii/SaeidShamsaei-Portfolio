@@ -178,7 +178,7 @@
 }
 .sx-site .sx-v8-about-inner {
   display:grid;
-  grid-template-columns:minmax(0,43%) minmax(0,57%);
+  grid-template-columns:minmax(0,43fr) minmax(0,57fr);
   gap:clamp(28px,5vw,88px);
   align-items:center;
   height:100%;
@@ -325,6 +325,13 @@
 .sx-site .sx-v8-about-cta span{color:#D0AE80;font-size:20px;}
 .sx-site .sx-v8-about-cta:hover{color:#D0AE80;}
 
+/* Avoid grid tracks adding up to 100% before the column gap. */
+@media(min-width:761px){
+ .sx-site .sx-slide{grid-template-columns:minmax(0,37fr) minmax(0,63fr);}
+}
+@media(min-width:761px) and (max-width:960px){
+ .sx-site .sx-slide{grid-template-columns:minmax(0,41fr) minmax(0,59fr);}
+}
 /* Clean handoff to the existing four horizontal case studies. */
 .sx-site .sx-work-intro{border-top:0;}
 .sx-site :is(.sx-v8-hero-controls button,.sx-v8-about-cta,.sx-v8-next):focus-visible{
@@ -333,7 +340,7 @@
 }
 @media(max-width:1080px) and (min-width:761px){
  .sx-site .sx-v8-hero-slide :is(h1,h2){font-size:clamp(55px,7vw,90px);}
- .sx-site .sx-v8-about-inner{grid-template-columns:minmax(0,43%) minmax(0,57%);gap:27px;padding-inline:clamp(22px,3.3vw,52px);}
+ .sx-site .sx-v8-about-inner{grid-template-columns:minmax(0,43fr) minmax(0,57fr);gap:27px;padding-inline:clamp(22px,3.3vw,52px);}
  .sx-site .sx-v8-about-content h2{font-size:clamp(40px,5vw,63px);}
  .sx-site .sx-v8-about-summary{font-size:13px;}
  .sx-site .sx-v8-about-experience>div{grid-template-columns:22px minmax(0,130px) minmax(0,1fr);}
