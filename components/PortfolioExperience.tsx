@@ -281,7 +281,7 @@ export default function PortfolioExperience(){
       <div className="sx-v8-fact-line" aria-label="Verified professional profile">
        <div><span>FOCUS</span><strong>Software Architecture · Product Engineering</strong></div>
        {publicBiography.ageYears!==null&&<div><span>AGE</span><strong>{publicBiography.ageYears}</strong></div>}
-       {publicBiography.yearsOfExperience!==null&&<div><span>EXPERIENCE</span><strong>{publicBiography.yearsOfExperience}+ Years</strong></div>}
+       {publicBiography.yearsOfExperience!==null&&<div><span>EXPERIENCE</span><strong>{publicBiography.yearsOfExperience} Years</strong></div>}
       </div>
       <div className="sx-v8-about-experience" aria-label="Experience areas">
        <p className="sx-v8-experience-kicker">EXPERIENCE &amp; INTERESTS</p>
