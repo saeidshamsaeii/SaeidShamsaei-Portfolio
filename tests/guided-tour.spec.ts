@@ -56,38 +56,40 @@ test('one real downward gesture starts chapter autoplay; a second gesture takes 
  await expect(chapter).toHaveAttribute('data-auto-playing','false',{timeout:2500});
 });
 
-test('professional photo is the verified existing owner portrait, with office visual behind it',async({page})=>{
+test('first slider is image-free while the approved owner portrait is in the following chapter',async({page})=>{
  await introSeen(page);
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const portrait=page.locator('#top .sx-v4-hero-persona img');
+ await expect(page.locator('#top img')).toHaveCount(0);
+ const portrait=page.locator('#about .sx-v8-about-portrait img');
  await expect(portrait).toHaveAttribute('src','/assets/hires/portrait.webp');
- await expect(portrait).toHaveAttribute('alt',/dark sunglasses and a black suit/);
+ await expect(portrait).toHaveAttribute('alt',/black suit and sunglasses/);
  const d=await portrait.evaluate(async (img:HTMLImageElement)=>{
   await img.decode();
-  const bg=getComputedStyle(img.parentElement!,'::before').backgroundImage;
-  return {w:img.naturalWidth,h:img.naturalHeight,bg};
+  return{w:img.naturalWidth,h:img.naturalHeight,bg:getComputedStyle(img.parentElement!,'::before').backgroundImage};
  });
  expect(d.w).toBe(1122);expect(d.h).toBe(1402);
  expect(d.bg).toContain('portrait-office.webp');
- await page.screenshot({path:'artifacts/v6-professional-hero.png',animations:'disabled'});
+ await page.locator('#about').scrollIntoViewIfNeeded();
+ await page.screenshot({path:'artifacts/v8-personal-portrait-about.png',animations:'disabled'});
 });
 
-test('experience introduction is present without fabricated time-in-role or outcomes',async({page})=>{
+test('personal introduction lists factual experience and keeps unverified age private',async({page})=>{
  await introSeen(page);
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const about=page.locator('#about');
  await expect(about).toContainText("I'm Saeid Shamsaei");
- await expect(about).toContainText('GARTAL');
- await expect(about).toContainText('DigiRezhim');
- await expect(about).toContainText('business systems');
- await expect(about.locator('.sx-ed7-stories>p')).toHaveCount(3);
- await expect(about.locator('.sx-ed7-expertise')).toContainText('ARCHITECTURE');
+ await expect(about).toContainText('Platform Architecture');
+ await expect(about).toContainText('Engineering & Automation');
+ await expect(about).toContainText('Digital Products');
+ await expect(about.locator('.sx-v8-about-experience>div')).toHaveCount(3);
+ await expect(about.locator('.sx-v8-fact-line')).toContainText('Software Architecture');
+ await expect(about.locator('.sx-v8-fact-line')).not.toContainText('Years');
  for(const [width,height] of [[360,640],[390,844],[768,1024]]){
   await page.setViewportSize({width,height});
   const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   expect(over,'horizontal overflow at '+width).toBeLessThanOrEqual(1);
   await about.scrollIntoViewIfNeeded();
-  if(width===390)await page.screenshot({path:'artifacts/v6-about-experience-mobile.png',animations:'disabled'});
+  if(width===390)await page.screenshot({path:'artifacts/v8-about-experience-mobile.png',animations:'disabled'});
  }
 });
 
