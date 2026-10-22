@@ -15,22 +15,24 @@ async function progressTo(page:Page,id:string,ratio:number){
  },ratio);
 }
 
-test('Edition 07 keeps a portrait-led hero, sequential About and four five-frame project journeys',async({page})=>{
+test('Edition 08 opens with purpose-only slides, then a portrait bio and four five-frame projects',async({page})=>{
  await suppressIntro(page);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  await expect(page.locator('html')).toHaveAttribute('dir','ltr');
- await expect(page.locator('#top h1')).toContainText('SAEID');
- await expect(page.locator('#top h1')).toContainText('SHAMSAEI.');
- await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveCount(1);
- const imageWidth=await page.locator('#top .sx-v4-hero-persona img').evaluate(async(img:HTMLImageElement)=>{await img.decode();return img.naturalWidth;});
+ await expect(page.locator('#top h1')).toContainText('I BUILD DIGITAL');
+ await expect(page.locator('#top h1')).toContainText('THINGS THAT MATTER.');
+ await expect(page.locator('#top img')).toHaveCount(0);
+ await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
+ await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveCount(1);
+ const imageWidth=await page.locator('#about .sx-v8-about-portrait img').evaluate(async(img:HTMLImageElement)=>{await img.decode();return img.naturalWidth;});
  expect(imageWidth).toBe(1122);
  await expect(page.locator('#top .sx-v4-hero-persona img')).toHaveAttribute('src','/assets/hires/portrait.webp');
  expect((await page.request.get('/assets/hires/portrait-office.webp')).status()).toBe(200);
  await expect(page.locator('#top .sx-blueprint-step')).toHaveCount(0);
- await expect(page.locator('#about .sx-ed7-stories>p')).toHaveCount(3);
+ await expect(page.locator('#about .sx-v8-about-experience>div')).toHaveCount(3);
  await expect(page.locator('#approach')).toHaveCount(0);
  await expect(page.locator('.sx-chapter')).toHaveCount(4);
  await expect(page.locator('.sx-slide')).toHaveCount(20);
@@ -77,27 +79,27 @@ test('vertical wheel progress moves every horizontal chapter and allows natural 
  await expect(last).toBeVisible();
 });
 
-test('Edition 07 keeps the hero on one viewport and reveals three About passages on scroll',async({page})=>{
+test('Edition 08 advances purpose slider with native scrolling and hands off to portrait biography',async({page})=>{
  await suppressIntro(page);
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const hero=page.locator('#top');
- const heroHeight=await hero.evaluate(e=>e.getBoundingClientRect().height);
- expect(heroHeight).toBeGreaterThan(880);
- expect(heroHeight).toBeLessThan(930);
- const about=page.locator('#about');
- const info=await about.evaluate(element=>({
-  start:element.getBoundingClientRect().top+window.scrollY,
-  travel:element.getBoundingClientRect().height-window.innerHeight
- }));
- expect(info.travel).toBeGreaterThan(300);
- for(const [fraction,scene] of [[.05,'0'],[.52,'1'],[.92,'2']] as const){
-  await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.start+info.travel*fraction);
-  await expect(about).toHaveAttribute('data-about-scene',scene);
-  await expect(about.locator('.sx-ed7-stories>p').nth(Number(scene))).toBeVisible();
+ await expect(hero.locator('img')).toHaveCount(0);
+ await expect(hero).toHaveAttribute('data-ready','true');
+ const height=await hero.evaluate(e=>e.getBoundingClientRect().height);
+ expect(height).toBeGreaterThan(1300);
+ const meta=await hero.evaluate(e=>({start:e.getBoundingClientRect().top+window.scrollY,travel:e.getBoundingClientRect().height-window.innerHeight}));
+ for(const [ratio,scene] of [[.08,'0'],[.47,'1'],[.88,'2']] as const){
+  await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),meta.start+meta.travel*ratio);
+  await expect(hero).toHaveAttribute('data-scene',scene);
+  await expect(hero.locator('.sx-v8-hero-slide').nth(Number(scene))).toHaveAttribute('data-active','true');
  }
- await page.locator('#selected-projects').scrollIntoViewIfNeeded();
- await expect(page.locator('#selected-projects')).toBeVisible();
+ const about=page.locator('#about');
+ await about.scrollIntoViewIfNeeded();
+ await expect(about.locator('.sx-v8-about-portrait img')).toBeVisible();
+ await expect(about).toContainText('Software Architect');
+ await expect(about.locator('.sx-v8-about-experience>div')).toHaveCount(3);
+ await expect(page.locator('#selected-projects')).toHaveCount(1);
 });
 
 test('mobile viewport containment, no typography/image overlap and useful scroll cues',async({browser})=>{
@@ -106,16 +108,17 @@ test('mobile viewport containment, no typography/image overlap and useful scroll
   await suppressIntro(page);
   await page.goto('/',{waitUntil:'domcontentloaded'});
   const geom=await page.evaluate(()=>{
-   const bounds=(selector:string)=>{const r=document.querySelector(selector)!.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};
+   const rect=(selector:string)=>{const r=document.querySelector(selector)!.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom,height:r.height,width:r.width}};
    return{w:window.innerWidth,outer:document.documentElement.scrollWidth,
-    stage:bounds('.sx-v4-hero-stage'),title:bounds('.sx-v4-hero-content'),portrait:bounds('.sx-v4-hero-persona'),about:bounds('#about')};
+    hero:rect('#top'),slide:rect('.sx-v8-hero-slide[data-active="true"]'),
+    about:rect('#about'),portrait:rect('#about .sx-v8-about-portrait')};
   });
   expect(geom.outer,'horizontal overflow '+width).toBeLessThanOrEqual(geom.w+1);
-  expect(geom.title.left,'hero text left '+width).toBeGreaterThanOrEqual(-2);
-  expect(geom.title.right,'hero text right '+width).toBeLessThanOrEqual(geom.w+2);
+  expect(geom.slide.left,'hero text left '+width).toBeGreaterThanOrEqual(-2);
+  expect(geom.slide.right,'hero text right '+width).toBeLessThanOrEqual(geom.w+2);
   expect(geom.portrait.right,'portrait right '+width).toBeLessThanOrEqual(geom.w+2);
-  expect(geom.title.bottom,'hero text clipped '+width).toBeLessThanOrEqual(geom.stage.bottom+2);
-  expect(geom.about.height,'about too short '+width).toBeGreaterThan(height*.95);
+  expect(geom.hero.height,'purpose scroll area '+width).toBeGreaterThan(height*1.4);
+  expect(geom.about.height,'bio height '+width).toBeGreaterThan(height*.95);
   for(const id of projectIds){
    const chapter=page.locator('#project-'+id);
    const mid=await progressTo(page,id,.53);
@@ -138,7 +141,7 @@ test('mobile viewport containment, no typography/image overlap and useful scroll
   }
   if(width===390){
    await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
-   await page.locator('#top img').first().evaluate(async(img:HTMLImageElement)=>{await img.decode();});
+   await page.locator('#about .sx-v8-about-portrait img').evaluate(async(img:HTMLImageElement)=>{await img.decode();});
    await page.screenshot({path:'artifacts/v5-office-hero-mobile.png',animations:'disabled'});
    await page.locator('#about').scrollIntoViewIfNeeded();
    await page.screenshot({path:'artifacts/v4-about-mobile.png',animations:'disabled'});
@@ -194,6 +197,8 @@ test('first-visit intro is skippable; reduced motion disables forced stories',as
  const rp=await reduced.newPage();
  await rp.goto('/',{waitUntil:'domcontentloaded'});
  await expect(rp.locator('.sx-intro')).toHaveCount(0);
+ await expect(rp.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
+ await expect(rp.locator('#top img')).toHaveCount(0);
  const sticky=await rp.locator('#project-gartal .sx-chapter-sticky').evaluate(e=>getComputedStyle(e).position);
  expect(sticky).toBe('relative');
  const rail=rp.locator('#project-gartal .sx-story-rail');
@@ -215,17 +220,18 @@ test('Edition 07 visual parity holds on dark case pages without losing authentic
  }
 });
 
-test('Edition 07 reduced motion keeps all About passages readable without forcing playback',async({browser})=>{
+test('Edition 08 reduced motion keeps every mission slide readable without a scroll trap',async({browser})=>{
  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
  const page=await context.newPage();
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const about=page.locator('#about');
- await expect(about.locator('.sx-ed7-stories>p')).toHaveCount(3);
- for(const p of await about.locator('.sx-ed7-stories>p').all()){
-  const style=await p.evaluate(e=>({position:getComputedStyle(e).position,opacity:getComputedStyle(e).opacity}));
-  expect(style.position).toBe('static');
+ const root=page.locator('#top');
+ await expect(root.locator('.sx-v8-hero-slide')).toHaveCount(3);
+ for(const slide of await root.locator('.sx-v8-hero-slide').all()){
+  const style=await slide.evaluate(e=>({position:getComputedStyle(e).position,opacity:getComputedStyle(e).opacity}));
+  expect(style.position).toBe('relative');
   expect(style.opacity).toBe('1');
  }
+ await expect(page.locator('#about .sx-v8-about-portrait img')).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(1);
  await context.close();
 });
