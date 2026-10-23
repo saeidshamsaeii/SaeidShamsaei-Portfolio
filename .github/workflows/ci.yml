@@ -1,0 +1,31 @@
+name: Portfolio CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: portfolio-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  website:
+    name: Portfolio TypeScript, source tests and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies (lockfile not yet committed)
+        run: npm install --no-audit --fund=false
+      - name: Source contracts and production bundle
+        run: npm run check
+      - name: Dependency reproducibility notice
+        run: echo "::warning::Add a committed package-lock.json for reproducible npm ci on later runs."
