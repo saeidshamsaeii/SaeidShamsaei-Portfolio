@@ -1,4 +1,4 @@
-name: Portfolio CI
+name: Portfolio build and export
 on:
   push:
     branches: [main]
