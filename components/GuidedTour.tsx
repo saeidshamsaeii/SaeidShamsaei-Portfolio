@@ -1,18 +1,20 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 
-type Stop={element:HTMLElement;label:string;seconds:number;fraction:number|null};
+type Stop={element:HTMLElement;label:string;seconds:number;pace:number;fraction:number|null};
 type Mode='playing'|'manual'|'paused'|'finished';
 type Playback={index:number;elapsed:number;last:number;start:number;end:number;duration:number};
 const clamp=(x:number)=>Math.max(0,Math.min(1,x));
 const format=(n:number)=>String(n).padStart(2,'0');
-const AUTO_SPEED=2 as const;
+const BASE_SPEED=2 as const;
+const paceBound=(value:number)=>Math.max(.58,Math.min(1.55,Number.isFinite(value)?value:1));
 const IDLE_RESUME_MS=3500;
 
 function findStops():Stop[]{
  return Array.from(document.querySelectorAll<HTMLElement>('[data-tour-stop]')).map(element=>({
   element,label:element.dataset.tourLabel||'The story',
   seconds:Math.max(4,Math.min(24,Number(element.dataset.tourDuration)||9)),
+  pace:paceBound(Number(element.dataset.tourPace||'1')),
   fraction:element.dataset.tourProgress!==undefined?clamp(Number(element.dataset.tourProgress)):null
  }));
 }
@@ -40,8 +42,8 @@ function scrollDestination(stop:Stop){
 }
 
 /**
- * Default-on continuous cinematic scroll at a fixed 2x pace.
- * The visitor retains native bidirectional scroll and keyboard/touch control.
+ * Default-on cinematic scroll with an underlying 2x tempo and per-scene
+ * variable speed ramps. Native bidirectional scroll always remains free.
  * Every genuine interaction suspends playback; after 3.5s idle, the director
  * finds the next stop AHEAD OF THE CURRENT scrollY (never jumps to the start).
  * A deliberate top-bar Pause or Exit remains available for accessibility.
@@ -49,6 +51,7 @@ function scrollDestination(stop:Stop){
  */
 export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
  const [mode,setMode]=useState<Mode>('playing');
+ const [displaySpeed,setDisplaySpeed]=useState<number>(2);
  const [step,setStep]=useState(0);
  const [percent,setPercent]=useState(0);
  const [label,setLabel]=useState('Introduction');
@@ -68,6 +71,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let playback:Mode='playing';
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, hudAt=0, touchActive=false, disposed=false;
+  let currentSpeed=BASE_SPEED,targetSpeed=BASE_SPEED;
 
   const setPlayback=(next:Mode)=>{
    if(playback===next)return;
@@ -84,9 +88,9 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.last=0;
    state.start=from;
    state.end=target(index);
-   // Preserve the authored beat at exactly 2x rather than introducing a
-   // variable speed setting. Resume always begins at the actual scrollY.
+   // The destination and chapter pacing are recalculated from current scrollY.
    state.duration=stops[index].seconds*1000;
+   targetSpeed=BASE_SPEED*stops[index].pace;
    setStep(index);
    setLabel(stops[index].label);
   };
@@ -177,7 +181,9 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    if(playback==='playing'&&!document.hidden){
     const delta=state.last?Math.min(100,time-state.last):0;
     state.last=time;
-    state.elapsed+=delta*AUTO_SPEED;
+    // Ease between different scene speeds instead of a robotic hard switch.
+    currentSpeed+=(targetSpeed-currentSpeed)*Math.min(1,delta/650);
+    state.elapsed+=delta*currentSpeed;
     const fraction=clamp(state.elapsed/state.duration);
     const move=clamp(fraction/.83);
     const eased=move*move*(3-2*move);
@@ -185,6 +191,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
     window.scrollTo({top:scriptedScroll,behavior:'instant'});
     if(time-hudAt>100){
      hudAt=time;setPercent((state.index+fraction)/stops.length);
+     setDisplaySpeed(Math.round(currentSpeed*10)/10);
     }
     if(fraction>=1){
      if(state.index===stops.length-1){
@@ -236,7 +243,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(percent*100)}>
    <i style={{width:percent*100+'%'}}/>
   </div>
-  <span className="sx-v11-top-speed" aria-label="Fixed playback speed">2×</span>
+  <span className="sx-v11-top-speed" aria-label="Current cinematic playback pace">{displaySpeed.toFixed(1)}×</span>
   <button type="button" className="sx-v11-top-button"
    onClick={()=>{if(mode==='paused')explicitResumeRef.current();else explicitPauseRef.current();}}
    aria-label={mode==='paused'?'Resume tour':'Pause tour'} title={mode==='paused'?'Resume':'Pause'}>
