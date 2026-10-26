@@ -234,3 +234,30 @@
  .sx-source-app--compact .sx-app-store-cats>div{padding:7px;}
  .sx-source-app--compact .sx-app-store-cats strong{font-size:13px;}
 }
+
+/* GARTAL's actual studio identity, distinct from the GARTAL Platform admin. */
+.sx-source-app--gartal{--sxa:#ff6400!important;}
+.sx-app-screen--gartal.sx-app-screen--gartal-site{background:#111417;color:#f7f5f0;padding:0;border:1px solid #ffffff15;display:flex;flex-direction:column;}
+.sx-gartal-site-top{display:flex;gap:clamp(8px,1.5vw,25px);align-items:center;padding:14px clamp(13px,2vw,26px);border-bottom:1px solid #ffffff20;font-size:10px;font-weight:600;color:#c8c8c3;}
+.sx-gartal-site-top strong{margin-right:auto;font-size:18px;letter-spacing:-.065em;color:#f7f5f0;}
+.sx-gartal-site-top strong span{color:#ff6400;}
+.sx-gartal-site-hero{padding:clamp(16px,2.8vw,42px) clamp(14px,3vw,46px);flex:1;}
+.sx-gartal-site-hero small{font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.15em;color:#ff761f;}
+.sx-gartal-site-hero h3{font:650 clamp(22px,3.15vw,47px)/1.08 Inter,Arial,sans-serif;letter-spacing:-.07em;max-width:440px;color:#f7f5f0;margin:17px 0;}
+.sx-gartal-site-hero h3 em{font-style:normal;color:#ff6400;}
+.sx-gartal-site-hero p{color:#c0c1ba;max-width:410px;font-size:clamp(10px,1.1vw,14px);line-height:1.6;margin:0 0 20px;}
+.sx-gartal-site-cta{display:inline-block;padding:10px 16px;color:#111417;background:#ff6400;border-radius:3px;font-size:10px;font-weight:750;}
+.sx-gartal-service-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid #ffffff17;}
+.sx-gartal-service-row span{min-width:0;padding:15px 11px;border-right:1px solid #ffffff1b;color:#e6e6de;font:600 9px ui-monospace,Consolas,monospace;}
+.sx-gartal-service-row span:last-child{border-right:0;}
+.sx-source-app--compact .sx-gartal-site-hero{padding:18px;}
+.sx-source-app--compact .sx-gartal-site-hero h3{font-size:clamp(21px,2vw,31px);margin:10px 0;}
+.sx-source-app--compact .sx-gartal-site-hero p{font-size:10px;margin-bottom:10px;}
+.sx-source-app--compact .sx-gartal-site-top{padding:8px;}
+.sx-source-app--compact .sx-gartal-site-top>span{font-size:8px;}
+.sx-source-app--compact .sx-gartal-service-row span{padding:7px;font-size:7px;}
+@media(max-width:760px){
+ .sx-source-app--compact .sx-gartal-site-top>span:nth-of-type(2),.sx-source-app--compact .sx-gartal-site-top>span:nth-of-type(3){display:none;}
+ .sx-gartal-site-hero h3{font-size:clamp(19px,4.5vw,32px);}
+ .sx-gartal-service-row span{font-size:7px;padding:8px;}
+}
