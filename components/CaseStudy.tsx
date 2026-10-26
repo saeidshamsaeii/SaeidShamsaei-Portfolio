@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useState} from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
 import {projects,publicContact,type ProjectId} from '@/data/portfolio';
 import {caseNarratives} from '@/data/caseNarratives';
@@ -10,24 +10,12 @@ export default function CaseStudy({id}:{id:ProjectId}){
  const p=projects.find(project=>project.id===id)!;
  const next=projects[(projects.findIndex(project=>project.id===id)+1)%projects.length];
  const story=caseNarratives[id];
- const [tour,setTour]=useState(false);
- const [dismissed,setDismissed]=useState(false);
- useEffect(()=>{
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  let interacted=window.scrollY>80;
-  const cancel=()=>{interacted=true;};
-  const timer=window.setTimeout(()=>{if(!dismissed&&!interacted)setTour(true);},1800);
-  window.addEventListener('wheel',cancel,{passive:true});
-  window.addEventListener('touchstart',cancel,{passive:true});
-  window.addEventListener('keydown',cancel);
-  return()=>{window.clearTimeout(timer);window.removeEventListener('wheel',cancel);
-   window.removeEventListener('touchstart',cancel);window.removeEventListener('keydown',cancel);};
- },[dismissed]);
+ const [tour,setTour]=useState(true); // Auto-direct the case page from hydration at a fixed 2x.
  return <main className={'case-study sx-v10-case-page scene-'+id}>
-  <GuidedTour active={tour} onExit={()=>{setTour(false);setDismissed(true);}}/>
+  <GuidedTour active={tour} onExit={()=>setTour(false)}/>
   <nav className="case-nav"><Link href="/">← SAEID SHAMSAEI</Link>
    <span>CASE STUDY / {p.index} OF 04</span>
-   <button className="sx-v10-case-tour-button" type="button" onClick={()=>{setDismissed(false);setTour(true);}}>RESTART TOUR ↻</button>
+   
   </nav>
   <header className="sx-v10-case-cover" data-tour-stop data-tour-label={p.brand+' / introduction'} data-tour-duration="10">
    <span className="sx-v10-counter">{p.index} / {p.kicker.en}</span>
