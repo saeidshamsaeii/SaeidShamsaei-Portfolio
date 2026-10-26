@@ -1,6 +1,7 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {LinuxCodeCanvas} from '@/components/LinuxCodeCanvas';
+import {WordReveal} from '@/components/WordReveal';
 
 /**
  * Linux code is a DOM animation driven by native scroll progress.
@@ -72,10 +73,14 @@ export function ScrollHero(){
     </div>
     <div className="sx-v8-hero-slides">
      {slides.map((slide,index)=><div key={slide.index} className="sx-v8-hero-slide"
-      data-active={scene===index?'true':'false'} aria-hidden={enhanced&&scene!==index}>
+      data-active={scene===index?'true':'false'} aria-hidden={enhanced&&scene!==index}
+      data-tour-stop data-tour-label={'Introduction / '+slide.eyebrow} data-tour-duration="7"
+      data-tour-progress={String((index+.18)/slides.length)}>
        <p className="sx-kicker">{slide.eyebrow}</p>
-       {index===0?<h1 id="sx-work-title">{slide.title}</h1>:<h2>{slide.title}</h2>}
-       <p className="sx-v8-hero-desc">{slide.description}</p>
+       {index===0?<h1 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h1>:
+        <h2>{index===1?<><WordReveal as="span" text="COMPLEX IDEAS."/><br/><em><WordReveal as="span" text="CLEAR EXPERIENCES."/></em></>:
+         <><WordReveal as="span" text="ARCHITECTURE."/><br/><em><WordReveal as="span" text="PRODUCT. PEOPLE."/></em></>}</h2>}
+       <WordReveal className="sx-v8-hero-desc" text={slide.description}/>
       </div>)}
     </div>
     <div className="sx-v8-hero-bottom">
