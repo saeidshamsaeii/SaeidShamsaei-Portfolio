@@ -38,64 +38,64 @@ export default function PortfolioExperience(){
   <main>
    <ScrollHero/>
 
-   <section className="sx-profile sx-editorial-frame sx-v8-about" id="about" data-tour-stop data-tour-label="Meet Saeid" data-tour-duration="12" aria-labelledby="sx-profile-title">
+   <section className="sx-profile sx-editorial-frame sx-v8-about" id="about" data-tour-stop data-tour-label="Meet Saeid" data-tour-duration="17" data-tour-pace="0.65" aria-labelledby="sx-profile-title">
     <div className="sx-v8-about-inner">
      <div className="sx-v8-about-portrait">
       <img src="/assets/hires/portrait.webp" alt="Portrait of Saeid Shamsaei in a black suit and sunglasses" width={1122} height={1402} loading="eager" decoding="async"/>
-      <div className="sx-v8-portrait-note"><span>SAEID SHAMSAEI</span><span>THE PERSON BEHIND THE WORK</span></div>
+      <div className="sx-v8-portrait-note"><WordReveal as="span" text="SAEID SHAMSAEI"/><WordReveal as="span" text="THE PERSON BEHIND THE WORK"/></div>
      </div>
      <div className="sx-v8-about-content">
-      <p className="sx-kicker">02 / ABOUT ME</p>
+      <WordReveal className="sx-kicker" text="02 / ABOUT ME"/>
       <WordReveal as="h2" id="sx-profile-title" text="A LITTLE ABOUT ME."/>
       <WordReveal className="sx-v8-about-role" text="Software Architect & Product Engineer"/>
       <WordReveal className="sx-v8-about-summary" text="I'm Saeid Shamsaei. I enjoy turning ambitious ideas into thoughtful software — combining system architecture, practical engineering and a strong sense of product experience."/>
       <div className="sx-v8-fact-line" aria-label="Verified professional profile">
-       <div><span>FOCUS</span><strong>Software Architecture · Product Engineering</strong></div>
-       {publicBiography.ageYears!==null&&<div><span>AGE</span><strong>{publicBiography.ageYears}</strong></div>}
-       {publicBiography.yearsOfExperience!==null&&<div><span>EXPERIENCE</span><strong>{publicBiography.yearsOfExperience} Years</strong></div>}
+       <div><WordReveal as="span" text="FOCUS"/><WordReveal as="strong" text="Software Architecture · Product Engineering"/></div>
+       {publicBiography.ageYears!==null&&<div><WordReveal as="span" text="AGE"/><WordReveal as="strong" text={String(publicBiography.ageYears)}/></div>}
+       {publicBiography.yearsOfExperience!==null&&<div><WordReveal as="span" text="EXPERIENCE"/><WordReveal as="strong" text={String(publicBiography.yearsOfExperience)+" Years"}/></div>}
       </div>
       <div className="sx-v8-about-experience" aria-label="Experience areas">
-       <p className="sx-v8-experience-kicker">EXPERIENCE &amp; INTERESTS</p>
-       <div><span>01</span><strong>Platform Architecture</strong><small>Multi-tenant systems, reusable foundations and product infrastructure</small></div>
-       <div><span>02</span><strong>Engineering &amp; Automation</strong><small>Developer workflows, quality gates and source-driven delivery</small></div>
-       <div><span>03</span><strong>Digital Products</strong><small>Business platforms, commerce and clinical nutrition workflows</small></div>
+       <WordReveal className="sx-v8-experience-kicker" text="EXPERIENCE & INTERESTS"/>
+       <div><WordReveal as="span" text="01"/><WordReveal as="strong" text="Platform Architecture"/><WordReveal as="small" text="Multi-tenant systems, reusable foundations and product infrastructure"/></div>
+       <div><WordReveal as="span" text="02"/><WordReveal as="strong" text="Engineering & Automation"/><WordReveal as="small" text="Developer workflows, quality gates and source-driven delivery"/></div>
+       <div><WordReveal as="span" text="03"/><WordReveal as="strong" text="Digital Products"/><WordReveal as="small" text="Business platforms, commerce and clinical nutrition workflows"/></div>
       </div>
-      <a href="#selected-projects" className="sx-v8-about-cta">EXPLORE SELECTED PROJECTS <span aria-hidden="true">↘</span></a>
+      <a href="#selected-projects" className="sx-v8-about-cta"><WordReveal as="span" text="EXPLORE SELECTED PROJECTS ↘"/></a>
      </div>
     </div>
    </section>
 
-   <div className="sx-work-intro" id="selected-projects" data-tour-stop data-tour-label="Four engineering stories" data-tour-duration="5" aria-label="Selected projects">
-    <span className="sx-kicker">SELECTED WORK / FOUR STORIES</span>
-    <span className="sx-work-intro-hint">SCROLL DOWN · EXPLORE SIDEWAYS ↘</span>
+   <div className="sx-work-intro" id="selected-projects" data-tour-stop data-tour-label="Four engineering stories" data-tour-duration="7" data-tour-pace="1.25" aria-label="Selected projects">
+    <WordReveal as="span" className="sx-kicker" text="SELECTED WORK / FOUR STORIES"/>
+    <WordReveal as="span" className="sx-work-intro-hint" text="SCROLL DOWN · EXPLORE SIDEWAYS ↘"/>
    </div>
    {projects.map((project,index)=><HorizontalCaseChapter key={project.id} project={project} index={index}/>)}
 
-   <section className="sx-contact sx-editorial-frame" id="contact" data-tour-stop data-tour-label="Start a conversation" data-tour-duration="10" aria-labelledby="sx-contact-title">
-    <p className="sx-kicker">04 / DIRECT CONTACT</p>
+   <section className="sx-contact sx-editorial-frame" id="contact" data-tour-stop data-tour-label="Start a conversation" data-tour-duration="12" data-tour-pace="0.82" aria-labelledby="sx-contact-title">
+    <WordReveal className="sx-kicker" text="04 / DIRECT CONTACT"/>
     <div className="sx-contact-layout">
      <div className="sx-contact-main">
       <WordReveal as="h2" id="sx-contact-title" text="LET’S BUILD WHAT MATTERS."/>
       <WordReveal text="Thoughtful products start with a good conversation."/>
-      <a href={'mailto:'+publicContact.email+'?subject=Project%20inquiry'} className="sx-action">Start a project <span aria-hidden="true">↗</span></a>
+      <a href={'mailto:'+publicContact.email+'?subject=Project%20inquiry'} className="sx-action"><WordReveal as="span" text="Start a project ↗"/></a>
      </div>
      <div className="sx-contact-mark">
       <div className="sx-contact-symbol" aria-hidden="true"><img src="/assets/hires/logo.webp" alt="" width={1254} height={1254} decoding="async"/></div>
-      <span className="sx-contact-mark-caption">ARCHITECTURE / ENGINEERING / EXPERIENCE</span>
+      <WordReveal as="span" className="sx-contact-mark-caption" text="ARCHITECTURE / ENGINEERING / EXPERIENCE"/>
      </div>
     </div>
     <div className="sx-contact-directory" aria-label="Ways to reach Saeid Shamsaei">
      <a className="sx-contact-link" href={'mailto:'+publicContact.email}>
-      <span>01 / EMAIL</span><strong>{publicContact.email}</strong><span aria-hidden="true">↗</span>
+      <WordReveal as="span" text="01 / EMAIL"/><WordReveal as="strong" text={publicContact.email}/><span aria-hidden="true">↗</span>
      </a>
      <a className="sx-contact-link" href={publicContact.phoneHref}>
-      <span>02 / PHONE</span><strong>{publicContact.phone}</strong><span aria-hidden="true">↗</span>
+      <WordReveal as="span" text="02 / PHONE"/><WordReveal as="strong" text={publicContact.phone}/><span aria-hidden="true">↗</span>
      </a>
      <a className="sx-contact-link" href={publicContact.linkedin} target="_blank" rel="noreferrer noopener">
-      <span>03 / LINKEDIN</span><strong>Connect on LinkedIn</strong><span aria-hidden="true">↗</span>
+      <WordReveal as="span" text="03 / LINKEDIN"/><WordReveal as="strong" text="Connect on LinkedIn"/><span aria-hidden="true">↗</span>
      </a>
      <a className="sx-contact-link" href={publicContact.telegram} target="_blank" rel="noreferrer noopener">
-      <span>04 / TELEGRAM</span><strong>{publicContact.telegramHandle}</strong><span aria-hidden="true">↗</span>
+      <WordReveal as="span" text="04 / TELEGRAM"/><WordReveal as="strong" text={publicContact.telegramHandle}/><span aria-hidden="true">↗</span>
      </a>
     </div>
    </section>
