@@ -14,8 +14,14 @@ export default function CaseStudy({id}:{id:ProjectId}){
  const [dismissed,setDismissed]=useState(false);
  useEffect(()=>{
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const timer=window.setTimeout(()=>{if(!dismissed)setTour(true);},1800);
-  return()=>window.clearTimeout(timer);
+  let interacted=window.scrollY>80;
+  const cancel=()=>{interacted=true;};
+  const timer=window.setTimeout(()=>{if(!dismissed&&!interacted)setTour(true);},1800);
+  window.addEventListener('wheel',cancel,{passive:true});
+  window.addEventListener('touchstart',cancel,{passive:true});
+  window.addEventListener('keydown',cancel);
+  return()=>{window.clearTimeout(timer);window.removeEventListener('wheel',cancel);
+   window.removeEventListener('touchstart',cancel);window.removeEventListener('keydown',cancel);};
  },[dismissed]);
  return <main className={'case-study sx-v10-case-page scene-'+id}>
   <GuidedTour active={tour} onExit={()=>{setTour(false);setDismissed(true);}}/>
