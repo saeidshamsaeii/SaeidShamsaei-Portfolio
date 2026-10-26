@@ -1,26 +1,29 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
+import {LinuxCodeCanvas} from '@/components/LinuxCodeCanvas';
 
 /**
- * Edition 08 — an image-free, scroll-controlled editorial opening.
- * The portrait deliberately appears only in the next personal chapter.
- * Ordinary vertical scrolling, touch and keyboard navigation remain native.
+ * Linux code is a DOM animation driven by native scroll progress.
+ * No canvas capture, stock photo, autoplay, interval, or animated background asset.
+ * Screen-reader narration stays with the three editorial story slides.
  */
 const slides=[
  {index:'01',eyebrow:'SAEID SHAMSAEI / SOFTWARE ARCHITECT & PRODUCT ENGINEER',
   title:<>I BUILD DIGITAL<br/><em>THINGS THAT MATTER.</em></>,
-  description:'I design and engineer useful products, from a first idea to the systems that make them work.'},
+  description:'I design useful digital products — thoughtful experiences built on dependable engineering.'},
  {index:'02',eyebrow:'MY PURPOSE / CLARITY BEFORE COMPLEXITY',
   title:<>COMPLEX IDEAS.<br/><em>CLEAR EXPERIENCES.</em></>,
-  description:'My goal is to turn difficult problems into thoughtful, dependable software people can actually use.'},
+  description:'A clear problem, a considered interface and the systems underneath it. Every decision serves a purpose.'},
  {index:'03',eyebrow:'HOW I THINK / THE BIG PICTURE',
   title:<>ARCHITECTURE.<br/><em>PRODUCT. PEOPLE.</em></>,
-  description:'I connect engineering decisions with real product needs — and care about every detail along the way.'}
+  description:'From the first line of code to the full product experience, I build for people and for what comes next.'}
 ] as const;
 
 export function ScrollHero(){
  const host=useRef<HTMLElement>(null);
  const [scene,setScene]=useState(0);
+ const [progress,setProgress]=useState(0);
+ const [reduced,setReduced]=useState(false);
  const [enhanced,setEnhanced]=useState(false);
  useEffect(()=>{
   const root=host.current;
@@ -29,12 +32,13 @@ export function ScrollHero(){
   let frame=0;
   const update=()=>{
    frame=0;
-   if(media.matches){setEnhanced(false);setScene(0);return;}
-   setEnhanced(true);
+   if(media.matches){setReduced(true);setEnhanced(false);setScene(0);setProgress(1);return;}
+   setReduced(false);setEnhanced(true);
    const rect=root.getBoundingClientRect();
-   const travel=Math.max(1,rect.height-window.innerHeight);
-   const progress=Math.max(0,Math.min(1,-rect.top/travel));
-   const next=Math.min(slides.length-1,Math.floor(progress*slides.length));
+   const distance=Math.max(1,rect.height-window.innerHeight);
+   const fraction=Math.max(0,Math.min(1,-rect.top/distance));
+   setProgress(previous=>Math.abs(previous-fraction)>.001?fraction:previous);
+   const next=Math.min(slides.length-1,Math.floor(fraction*slides.length));
    setScene(previous=>previous===next?previous:next);
   };
   const request=()=>{if(!frame)frame=requestAnimationFrame(update);};
@@ -53,16 +57,18 @@ export function ScrollHero(){
   const root=host.current;if(!root)return;
   const top=root.getBoundingClientRect().top+window.scrollY;
   const travel=Math.max(0,root.getBoundingClientRect().height-window.innerHeight);
-  const position=top+travel*(index+.08)/slides.length;
+  const position=top+travel*(index+.1)/slides.length;
   window.scrollTo({top:position,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
  },[]);
- return <section id="top" ref={host} className="sx-work-hero sx-v3-hero sx-v4-hero sx-v8-hero"
-  data-scene={String(scene)} data-ready={enhanced?'true':'false'} aria-label="Introduction and professional purpose">
+ return <section id="top" ref={host} className="sx-work-hero sx-v3-hero sx-v4-hero sx-v8-hero sx-v9-hero"
+  data-scene={String(scene)} data-ready={enhanced?'true':'false'}
+  aria-label="Introduction and professional purpose">
   <div className="sx-v8-hero-stage">
+   <LinuxCodeCanvas progress={progress} reduced={reduced}/>
    <div className="sx-v8-hero-frame">
     <div className="sx-v8-hero-head">
      <span>PORTFOLIO / SAEID SHAMSAEI</span>
-     <span>INTRODUCTION / 01—03</span>
+     <span>CODE AS A CANVAS / 01—03</span>
     </div>
     <div className="sx-v8-hero-slides">
      {slides.map((slide,index)=><div key={slide.index} className="sx-v8-hero-slide"
