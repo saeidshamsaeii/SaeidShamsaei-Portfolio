@@ -3,19 +3,19 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 
-test('autoplay starts on initial hydration at a locked 2x pace without a TOUR button',async({page})=>{
+test('autoplay begins without a launch button and ramps speed by authored chapter',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
  await expect(tour).toHaveAttribute('data-playback','playing');
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing');
- await expect(tour.getByLabel('Fixed playback speed')).toHaveText('2×');
+ await expect(tour.getByLabel('Current cinematic playback pace')).toContainText('×');
  await expect(tour.getByRole('button',{name:'Change tour speed'})).toHaveCount(0);
  await expect(page.getByRole('button',{name:'Restart guided site tour'})).toHaveCount(0);
  await expect(tour.locator('[role="progressbar"]')).toHaveAttribute('aria-valuemax','100');
 });
 
-test('scrolling either direction yields instantly; 3.5 seconds idle resumes DOWN from the current position',async({page})=>{
+test('scrolling either direction yields instantly; idle restarts ahead of the actual scroll position',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
@@ -29,7 +29,19 @@ test('scrolling either direction yields instantly; 3.5 seconds idle resumes DOWN
  expect(resumedY).toBeGreaterThanOrEqual(manualY-3);
  await expect.poll(async()=>await page.evaluate(()=>window.scrollY),{timeout:4500})
   .toBeGreaterThan(manualY+10);
- await expect(tour.getByLabel('Fixed playback speed')).toHaveText('2×');
+ await expect(tour.getByLabel('Current cinematic playback pace')).toContainText('×');
+});
+
+test('scroll-linked velocity is not constant across slow and fast authored beats',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ await expect(tour).toBeVisible({timeout:6000});
+ const speed=tour.getByLabel('Current cinematic playback pace');
+ await expect.poll(async()=>speed.innerText(),{timeout:6000}).not.toBe('2.0×');
+ // Every authored hero beat declares a different pace; transition remains smooth.
+ const paces=await page.locator('#top [data-tour-pace]').evaluateAll(
+  nodes=>nodes.map(node=>Number((node as HTMLElement).dataset.tourPace)));
+ expect(new Set(paces).size).toBeGreaterThan(1);
 });
 
 test('new touch/keyboard actions extend the idle timeout instead of killing autoplay',async({page})=>{
@@ -77,7 +89,7 @@ test('a separate technical case page starts automatically and allows manual resu
  await page.goto('/work/digirezhim/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
- await expect(tour.getByLabel('Fixed playback speed')).toHaveText('2×');
+ await expect(tour.getByLabel('Current cinematic playback pace')).toContainText('×');
  await expect(page.getByRole('button',{name:'RESTART TOUR'})).toHaveCount(0);
  await page.mouse.wheel(0,480);
  await expect(tour).toHaveAttribute('data-playback','manual');
