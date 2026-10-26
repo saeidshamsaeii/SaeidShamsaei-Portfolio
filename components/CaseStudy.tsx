@@ -1,36 +1,61 @@
 'use client';
+import {useEffect,useState} from 'react';
 import Link from 'next/link';
-import {projects,publicContact,txt,type ProjectId} from '@/data/portfolio';
-import {SourceProductPreview} from '@/components/SourceProductPreview';
+import {projects,publicContact,type ProjectId} from '@/data/portfolio';
+import {caseNarratives} from '@/data/caseNarratives';
+import {WordReveal} from '@/components/WordReveal';
+import {GuidedTour} from '@/components/GuidedTour';
 
-const english='en' as const;
 export default function CaseStudy({id}:{id:ProjectId}){
- const p=projects.find(x=>x.id===id)!;
- const next=projects[(projects.findIndex(x=>x.id===id)+1)%projects.length];
- return <main className={'case-study scene-'+p.id}>
-  <nav className="case-nav"><Link href="/">← SAEID SHAMSAEI</Link><span>CASE STUDY / {p.index} OF 04</span></nav>
-  <header className="case-hero">
-   <div className="case-hero-text"><p className="eyebrow">{txt(english,p.kicker)}</p><h1>{p.brand}</h1>
-    <h2>{txt(english,p.title)}</h2><p>{txt(english,p.intro)}</p>
-    <div className="case-hero-meta">{p.stack.slice(0,4).map(x=><span key={x}>{x}</span>)}</div>
-   </div>
-   <div className="case-hero-art cinematic-case-art sx-v4-case-hero-art sx-source-showcase">
-    <SourceProductPreview id={p.id} compact/>
-   </div>
+ const p=projects.find(project=>project.id===id)!;
+ const next=projects[(projects.findIndex(project=>project.id===id)+1)%projects.length];
+ const story=caseNarratives[id];
+ const [tour,setTour]=useState(false);
+ const [dismissed,setDismissed]=useState(false);
+ useEffect(()=>{
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const timer=window.setTimeout(()=>{if(!dismissed)setTour(true);},1800);
+  return()=>window.clearTimeout(timer);
+ },[dismissed]);
+ return <main className={'case-study sx-v10-case-page scene-'+id}>
+  <GuidedTour active={tour} onExit={()=>{setTour(false);setDismissed(true);}}/>
+  <nav className="case-nav"><Link href="/">← SAEID SHAMSAEI</Link>
+   <span>CASE STUDY / {p.index} OF 04</span>
+   <button className="sx-v10-case-tour-button" type="button" onClick={()=>{setDismissed(false);setTour(true);}}>RESTART TOUR ↻</button>
+  </nav>
+  <header className="sx-v10-case-cover" data-tour-stop data-tour-label={p.brand+' / introduction'} data-tour-duration="10">
+   <span className="sx-v10-counter">{p.index} / {p.kicker.en}</span>
+   <WordReveal as="h1" text={p.brand}/>
+   <WordReveal as="h2" text={p.title.en}/>
+   <WordReveal text={story.thesis}/>
+   <div className="sx-v10-techline">{p.stack.map(technology=><span key={technology}>{technology}</span>)}</div>
+   <a href="#case-story" className="sx-v10-case-link">READ THE ENGINEERING STORY ↓</a>
   </header>
-  <div className="case-editorial">
-   <div className="case-section"><span>01 / THE CHALLENGE</span><h2>The challenge.</h2><p>{txt(english,p.problem)}</p></div>
-   <div className="case-section"><span>02 / THE APPROACH</span><h2>The architectural answer.</h2><p>{txt(english,p.solution)}</p></div>
+  <div id="case-story">
+   {story.chapters.map((chapter,i)=><article className="sx-v10-case-section" key={chapter.id} id={'chapter-'+chapter.id}
+     data-tour-stop data-tour-label={p.brand+' / '+chapter.title} data-tour-duration={String(chapter.durationSeconds)}>
+    <div className="sx-v10-story-mark"><span>{String(i+1).padStart(2,'0')} / 06</span><span>{chapter.eyebrow}</span></div>
+    <div className="sx-v10-story-text"><WordReveal as="h2" text={chapter.title}/>
+     {chapter.paragraphs.map((paragraph,j)=><WordReveal key={j} text={paragraph}/>)}
+    </div>
+    <aside className="sx-v10-story-aside"><span>DOCUMENTED CONSIDERATIONS</span>
+     {chapter.details.map((detail,j)=><div key={detail}><small>{String(j+1).padStart(2,'0')}</small><WordReveal as="span" text={detail}/></div>)}
+    </aside>
+   </article>)}
   </div>
-  <section className="sx-v4-case-source"><div className="sx-v4-case-source-label"><span>SOURCE-DERIVED PRODUCT ANATOMY</span><p>An interactive reconstruction based on the source of the real project. No fabricated customer or performance data.</p></div><SourceProductPreview id={p.id}/></section>
-  <section className="case-systems"><div className="case-systems-head"><span>03 / SYSTEM ANATOMY</span><h2>Inside the system.</h2><p>Documented capabilities and domain boundaries</p></div>
-   <div className="case-capabilities">{p.architecture.map((item,i)=><div key={i}><span>{String(i+1).padStart(2,'0')}</span><h3>{txt(english,item)}</h3><b>↗</b></div>)}</div>
+  <section className="sx-v10-case-evidence" data-tour-stop data-tour-label={p.brand+' / evidence and current state'} data-tour-duration="12">
+   <span className="sx-v10-counter">SOURCE / EVIDENCE & DELIVERY</span>
+   <WordReveal as="h2" text="Built with context, not inflated claims."/>
+   <WordReveal text={p.outcome.en}/>
+   <WordReveal text="These descriptions are grounded in project documentation and checked-in source. No screenshots, fictitious customers, unverified production metrics or privately held data are displayed."/>
+   <p className="sx-v10-source-line">Source context: {p.source}</p>
+   <div className="sx-v10-reference-list">{story.references.map(reference=><a key={reference.href} target="_blank" rel="noreferrer noopener" href={reference.href}>{reference.label} ↗</a>)}</div>
   </section>
-  <section className="case-evidence"><span>04 / EVIDENCE & DELIVERY</span><div><h2>Built with context, not inflated claims.</h2><p>{txt(english,p.outcome)}</p>
-   <small>Repository evidence: {p.source}</small>
-   <p className="evidence-disclaimer">Both interface compositions use checked-in project source as their reference. They are not live screenshots, and no user data or unverified business results are displayed.</p>
-  </div></section>
-  <section className="case-next"><div><span>05 / NEXT PROJECT</span><h2>{next.brand}</h2></div><Link href={'/work/'+next.id+'/'}>NEXT CASE STUDY ↗</Link></section>
+  <section className="sx-v10-case-next" data-tour-stop data-tour-label={'Continue to '+next.brand} data-tour-duration="8">
+   <span className="sx-v10-counter">UP NEXT / {next.index}</span>
+   <WordReveal as="h2" text={next.brand}/>
+   <Link href={'/work/'+next.id+'/'}>NEXT ENGINEERING STORY ↗</Link>
+  </section>
   <footer className="case-footer"><Link href="/">← BACK TO PORTFOLIO</Link><a href={'mailto:'+publicContact.email}>LET’S TALK ↗</a></footer>
  </main>;
 }
