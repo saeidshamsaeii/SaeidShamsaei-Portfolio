@@ -19,14 +19,16 @@ test('Linux hero types real DOM code according to scroll and retains three edito
 });
 test('all four case studies replace images and visual simulations with detailed source-backed prose',()=>{
  const home=read('components/PortfolioExperience.tsx');
+ const horizontal=read('components/HorizontalCaseChapter.tsx');
  const detail=read('components/CaseStudy.tsx');
  const narrative=read('data/caseNarratives.ts');
  const data=read('data/portfolio.ts');
  assert.doesNotMatch(home,/SourceProductPreview|project-'\+project\.id|sx-v4-project-art|sx-slide--overview/);
  assert.doesNotMatch(detail,/SourceProductPreview|project-'\+p\.id|case-hero-art/);
- assert.match(home,/story\.chapters\.map/);
+ assert.match(home,/HorizontalCaseChapter/);
+ assert.match(horizontal,/narrative\.chapters\.flatMap/);
  assert.match(detail,/story\.chapters\.map/);
- assert.match(home,/WordReveal/);
+ assert.match(horizontal,/WordReveal/);
  assert.match(detail,/WordReveal/);
  for(const id of ['gartal','factory','digirezhim','petiwoo']){
   assert.ok(data.includes("id:'"+id+"'"),'missing core project '+id);
@@ -51,6 +53,7 @@ test('readable word reveal is linked to native scroll and respects reduced motio
 });
 test('automatic tour is shared by home and case pages and always allows manual takeover',()=>{
  const director=read('components/GuidedTour.tsx');
+ const horizontal=read('components/HorizontalCaseChapter.tsx');
  const homepage=read('components/PortfolioExperience.tsx');
  const cases=read('components/CaseStudy.tsx');
  assert.match(director,/querySelectorAll<HTMLElement>\('\[data-tour-stop\]'\)/);
@@ -59,11 +62,32 @@ test('automatic tour is shared by home and case pages and always allows manual t
  assert.match(director,/window\.addEventListener\('wheel',onManual/);
  assert.match(director,/window\.addEventListener\('touchstart',onManual/);
  assert.match(director,/Pause tour/);
+ assert.match(director,/sx-v11-tour/);
+ assert.match(director,/frameIndex/);
+ assert.match(horizontal,/data-horizontal-chapter/);
+ assert.match(horizontal,/data-frame-index/);
  assert.match(director,/Resume tour/);
  assert.match(director,/Change tour speed/);
  assert.match(director,/Exit guided tour/);
  assert.match(homepage,/window\.setTimeout\(\(\)=>\{if\(!tourDismissed&&!interacted\)setTour\(true\);\},1800\)/);
  assert.match(cases,/window\.setTimeout\(\(\)=>\{if\(!dismissed&&!interacted\)setTour\(true\);\},1800\)/);
+});
+test('pinned long-form chapters convert scrollY into twenty horizontal frames, then release naturally',()=>{
+ const home=read('components/PortfolioExperience.tsx');
+ const chapter=read('components/HorizontalCaseChapter.tsx');
+ const css=read('app/edition11.css');
+ const word=read('components/WordReveal.tsx');
+ assert.match(home,/HorizontalCaseChapter key=\{project\.id\}/);
+ assert.match(chapter,/const count=20/);
+ assert.match(chapter,/narrative\.chapters\.flatMap/);
+ assert.match(chapter,/window\.addEventListener\('scroll',request/);
+ assert.match(chapter,/translate3d\(/);
+ assert.match(chapter,/data-frame-count=\{count\}/);
+ assert.match(css,/position:sticky/);
+ assert.match(css,/overflow:visible!important/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(word,/chapter\.dataset\.frameProgress/);
+ assert.match(read('app/layout.tsx'),/edition11\.css/);
 });
 test('personal portrait is preserved and public-facing case narrative is English',()=>{
  const homepage=read('components/PortfolioExperience.tsx');
