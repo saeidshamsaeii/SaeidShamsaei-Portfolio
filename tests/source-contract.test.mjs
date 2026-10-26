@@ -26,7 +26,7 @@ test('all four case studies replace images and visual simulations with detailed 
  assert.doesNotMatch(home,/SourceProductPreview|project-'\+project\.id|sx-v4-project-art|sx-slide--overview/);
  assert.doesNotMatch(detail,/SourceProductPreview|project-'\+p\.id|case-hero-art/);
  assert.match(home,/HorizontalCaseChapter/);
- assert.match(horizontal,/narrative\.chapters\.flatMap/);
+ assert.match(horizontal,/narrative\.chapters\.map/);
  assert.match(detail,/story\.chapters\.map/);
  assert.match(horizontal,/WordReveal/);
  assert.match(detail,/WordReveal/);
@@ -57,7 +57,11 @@ test('fixed 2x auto-tour starts immediately, yields to manual input and resumes 
  const homepage=read('components/PortfolioExperience.tsx');
  const cases=read('components/CaseStudy.tsx');
  assert.ok(director.includes("querySelectorAll<HTMLElement>('[data-tour-stop]')"));
- assert.ok(director.includes('const AUTO_SPEED=2'));
+ assert.ok(director.includes('const BASE_SPEED=2'));
+ assert.ok(director.includes('paceBound'));
+ assert.ok(director.includes('currentSpeed+=(targetSpeed-currentSpeed)'));
+ assert.ok(director.includes('data-tour-pace')||director.includes('dataset.tourPace'));
+ assert.ok(director.includes('Current cinematic playback pace'));
  assert.ok(director.includes('const IDLE_RESUME_MS=3500'));
  assert.ok(director.includes('findNextFromScroll'));
  assert.ok(director.includes('resumeFromHere'));
@@ -68,7 +72,10 @@ test('fixed 2x auto-tour starts immediately, yields to manual input and resumes 
  assert.ok(director.includes("window.addEventListener('scroll',onScroll"));
  assert.ok(director.includes('data-playback={mode}'));
  assert.ok(director.includes('sx-v11-tour'));
- assert.ok(director.includes('Fixed playback speed'));
+ assert.ok(!director.includes('Fixed playback speed'));
+ assert.ok(director.includes('displaySpeed.toFixed(1)'));
+ assert.ok(director.includes('setDisplaySpeed'));
+ assert.match(read('app/edition13.css'),/@media \\(scripting:enabled\\)/);
  assert.ok(!director.includes('Change tour speed'));
  assert.ok(director.includes('Pause tour'));
  assert.ok(director.includes('Resume tour'));
@@ -81,14 +88,14 @@ test('fixed 2x auto-tour starts immediately, yields to manual input and resumes 
  assert.doesNotMatch(homepage,/Restart guided site tour|sx-tour-trigger/);
  assert.doesNotMatch(cases,/RESTART TOUR/);
 });
-test('pinned long-form chapters convert scrollY into twenty horizontal frames, then release naturally',()=>{
+test('edited eight-frame chapters stay horizontal and release naturally with scroll-linked typography',()=>{
  const home=read('components/PortfolioExperience.tsx');
  const chapter=read('components/HorizontalCaseChapter.tsx');
  const css=read('app/edition11.css');
  const word=read('components/WordReveal.tsx');
  assert.match(home,/HorizontalCaseChapter key=\{project\.id\}/);
- assert.match(chapter,/const count=20/);
- assert.match(chapter,/narrative\.chapters\.flatMap/);
+ assert.match(chapter,/const count=8/);
+ assert.match(chapter,/narrative\.chapters\.map/);
  assert.match(chapter,/window\.addEventListener\('scroll',request/);
  assert.match(chapter,/translate3d\(/);
  assert.match(chapter,/data-frame-count=\{count\}/);
@@ -96,6 +103,9 @@ test('pinned long-form chapters convert scrollY into twenty horizontal frames, t
  assert.match(css,/overflow:visible!important/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.match(word,/chapter\.dataset\.frameProgress/);
+ assert.match(word,/opacity=String\\(fraction\\)/);
+ assert.match(word,/clipPath='inset\\(0 '/);
+ assert.match(read('app/layout.tsx'),/edition13\\.css/);
  assert.match(read('app/layout.tsx'),/edition11\.css/);
 });
 test('personal portrait is preserved and public-facing case narrative is English',()=>{
