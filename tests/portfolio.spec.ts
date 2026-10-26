@@ -110,6 +110,24 @@ test('mobile text chapters fit without horizontal overflow',async({browser})=>{
  }
 });
 
+test('horizontal chapters do not widen the page at phone widths during the live pinned transition',async({browser})=>{
+ for(const width of [360,390,430]){
+  const page=await browser.newPage({viewport:{width,height:844}});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#top')).toHaveAttribute('data-ready','true');
+  await page.mouse.wheel(0,1);
+  const chapter=page.locator('#project-digirezhim');
+  await chapter.evaluate(e=>{
+   const rect=e.getBoundingClientRect();
+   window.scrollTo({top:window.scrollY+rect.top+(rect.height-window.innerHeight)*.43,behavior:'instant'});
+  });
+  await expect.poll(()=>chapter.getAttribute('data-active-frame')).not.toBe('0');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),
+   'active horizontal scene leaked viewport width at '+width).toBeLessThanOrEqual(2);
+  await page.close();
+ }
+});
+
 test('reduced-motion readers receive full text and no automatic movement',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
