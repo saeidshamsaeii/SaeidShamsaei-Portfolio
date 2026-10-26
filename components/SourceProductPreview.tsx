@@ -11,11 +11,11 @@ import type {ProjectId} from '@/data/portfolio';
 type Preview={kind:string;title:string;repo:string;source:string;nav:string[];
  workflow:string[];foundation:string[]};
 export const previewRecords:Record<ProjectId,Preview>={
- gartal:{kind:'SHARED BUSINESS OPERATIONS',title:'GARTAL / CORE ADMIN',
-  repo:'saeidshamsaeii/Core-Admin',source:'pages/Dashboard.tsx',
-  nav:['Overview','Customers','Products','Orders','Animals','Appointments','Inventory'],
-  workflow:['Overview and filters','Products and orders','Inventory and expiration','Customer relationships'],
-  foundation:['Core Server','Core Admin','Tenant context','Industry packs']},
+ gartal:{kind:'DIGITAL STUDIO / SERVICE EXPERIENCE',title:'GARTAL / MAIN WEBSITE',
+  repo:'saeidshamsaeii/GARTAL-SITE',source:'content.py',
+  nav:['Home','Web design','E-commerce','Custom software','Automation'],
+  workflow:['Web design services','Business automation','Project inquiry','Individual SEO pages'],
+  foundation:['Python WSGI','Server-rendered pages','Lead intake','Brand system']},
  factory:{kind:'LOCAL ENGINEERING CONTROL',title:'SAEID / AI FACTORY',
   repo:'saeidshamsaeii/AI-Development-Factory',source:'scripts/owner-full-worker/owner-worker.mjs',
   nav:['Overview','Projects','Local sync','Guardians','Activity'],
@@ -34,16 +34,13 @@ export const previewRecords:Record<ProjectId,Preview>={
 };
 
 function AppInterior({id}:{id:ProjectId}){
- if(id==='gartal')return <div className="sx-app-screen sx-app-screen--gartal">
-  <div className="sx-app-screen-top"><span>Operations</span><strong>Business overview</strong><span className="sx-app-filter">Date range / Filter</span></div>
-  <div className="sx-app-metric-row"><span>PRODUCTS <b>Product dashboard</b></span><span>ORDERS <b>Order management</b></span><span>INVENTORY <b>Stock & expiry</b></span></div>
-  <div className="sx-app-two-cols">
-   <div className="sx-app-module"><span>ADMINISTRATION</span><strong>Management workspace</strong>
-    <div className="sx-app-data-row"><span>Customers</span><i/><i/></div>
-    <div className="sx-app-data-row"><span>Orders</span><i/><i/></div>
-    <div className="sx-app-data-row"><span>Inventory</span><i/><i/></div></div>
-   <div className="sx-app-module"><span>OPERATIONAL AREAS</span><strong>Shared core modules</strong><div className="sx-app-labels"><em>Retail</em><em>Appointments</em><em>Animals</em><em>Products</em></div></div>
-  </div></div>;
+ if(id==='gartal')return <div className="sx-app-screen sx-app-screen--gartal sx-app-screen--gartal-site">
+  <div className="sx-gartal-site-top"><strong>GARTAL<span>.</span></strong><span>Web design</span><span>Software</span><span>Automation</span></div>
+  <div className="sx-gartal-site-hero"><small>GARTAL / DIGITAL ENGINEERING</small><h3>Digital products.<br/><em>Built for momentum.</em></h3>
+   <p>Websites, custom software and business automation, from discovery to delivery.</p><span className="sx-gartal-site-cta">Start a project ↗</span>
+  </div>
+  <div className="sx-gartal-service-row"><span>01 / Web experiences</span><span>02 / Software systems</span><span>03 / Automation</span></div>
+ </div>;
  if(id==='factory')return <div className="sx-app-screen sx-app-screen--factory">
   <div className="sx-app-screen-top"><span>CONTROL CENTER</span><strong>Owner operations</strong><span className="sx-app-filter">GitHub → local</span></div>
   <div className="sx-app-metric-row"><span>ACTIVE <b>Projects</b></span><span>SYNC <b>Protected</b></span><span>EVIDENCE <b>Guardians</b></span></div>
