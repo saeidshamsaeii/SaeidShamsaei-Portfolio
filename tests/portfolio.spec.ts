@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 const ids=['gartal','factory','digirezhim','petiwoo'] as const;
 
-test('full portfolio pins four image-free, twenty-frame horizontal reading stories',async({page})=>{
+test('full portfolio pins four image-free, eight-frame curated horizontal reading stories',async({page})=>{
  const errors:string[]=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.emulateMedia({reducedMotion:'reduce'});
@@ -15,14 +15,14 @@ test('full portfolio pins four image-free, twenty-frame horizontal reading stori
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
  for(const id of ids){
   const section=page.locator('#project-'+id);
-  await expect(section.locator('.sx-v11-slide')).toHaveCount(20);
-  await expect(section.locator('.sx-v11-slide--story')).toHaveCount(18);
+  await expect(section.locator('.sx-v11-slide')).toHaveCount(8);
+  await expect(section.locator('.sx-v11-slide--story')).toHaveCount(6);
   await expect(section).toHaveAttribute('data-horizontal-chapter','');
-  await expect(section.locator('.sx-v11-story-content>p')).toHaveCount(18);
+  await expect(section.locator('.sx-v11-story-content>p')).toHaveCount(6);
   await expect(section.locator('img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
   await expect(section.locator('.sx-v11-slide--end')).toHaveCount(1);
-  await expect(section.getByRole('link',{name:/THE FULL ENGINEERING STORY/i})).toHaveAttribute('href','/work/'+id+'/');
+  await expect(section.getByRole('link',{name:/READ THE COMPLETE CASE STUDY/i})).toHaveAttribute('href','/work/'+id+'/');
  }
  expect(errors).toEqual([]);
 });
@@ -46,7 +46,7 @@ test('vertical scrolling advances each project sideways, then releases to the ne
   const horizontal=await track.evaluate(e=>getComputedStyle(e).transform);
   expect(horizontal).not.toBe('none');
   await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.top+info.distance*.97);
-  await expect(chapter).toHaveAttribute('data-active-frame','19');
+  await expect(chapter).toHaveAttribute('data-active-frame','7');
  }
  const last=page.locator('#project-petiwoo');
  const bottom=await last.evaluate(e=>e.getBoundingClientRect().bottom+window.scrollY);
@@ -68,22 +68,35 @@ test('native scroll reveals code and words without drawing a code screenshot',as
  expect(Number(visible)).toBeGreaterThanOrEqual(0);
 });
 
-test('portfolio launches at fixed 2x, yields to manual scroll and resumes after idle',async({page})=>{
+test('automatic tour varies speed by scene but allows temporary manual interruption',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const director=page.getByRole('region',{name:'Guided portfolio tour'});
- await expect(director).toBeVisible({timeout:6000});
- await expect(director).toHaveAttribute('data-playback','playing');
- await expect(director.getByLabel('Fixed playback speed')).toHaveText('2×');
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ await expect(tour).toBeVisible({timeout:6000});
+ await expect(tour).toHaveAttribute('data-playback','playing');
  await expect(page.getByRole('button',{name:'Restart guided site tour'})).toHaveCount(0);
+ await expect(tour.getByLabel('Current cinematic playback pace')).toContainText('×');
  await page.mouse.wheel(0,180);
- await expect(director).toHaveAttribute('data-playback','manual');
- await expect(director).toHaveAttribute('data-playback','playing',{timeout:6500});
- await director.getByRole('button',{name:'Pause tour'}).click();
- await expect(director).toHaveAttribute('data-playback','paused');
- await director.getByRole('button',{name:'Resume tour'}).click();
- await expect(director).toHaveAttribute('data-playback','playing');
- await director.getByRole('button',{name:'Exit guided tour'}).click();
- await expect(director).toHaveCount(0);
+ await expect(tour).toHaveAttribute('data-playback','manual');
+ await expect(tour).toHaveAttribute('data-playback','playing',{timeout:6500});
+ await tour.getByRole('button',{name:'Pause tour'}).click();
+ await expect(tour).toHaveAttribute('data-playback','paused');
+ await tour.getByRole('button',{name:'Resume tour'}).click();
+ await expect(tour).toHaveAttribute('data-playback','playing');
+ await tour.getByRole('button',{name:'Exit guided tour'}).click();
+ await expect(tour).toHaveCount(0);
+});
+
+test('unwritten story words begin fully invisible and reveal as native scroll advances',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ if(await tour.isVisible())await tour.getByRole('button',{name:'Exit guided tour'}).click();
+ const future=page.locator('#project-gartal-problem .sx-word-piece').first();
+ expect(await future.evaluate(el=>getComputedStyle(el).opacity)).toBe('0');
+ const chapter=page.locator('#project-gartal');
+ const info=await chapter.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,travel:el.getBoundingClientRect().height-innerHeight}));
+ // Frame index 2 is the problem chapter.
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),info.top+info.travel*(2.60/8));
+ await expect.poll(()=>future.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:5000}).toBeGreaterThan(.5);
 });
 
 test('case pages are text-only with source links and auto-tour',async({page})=>{
@@ -92,7 +105,7 @@ test('case pages are text-only with source links and auto-tour',async({page})=>{
   await page.goto('/work/'+id+'/',{waitUntil:'domcontentloaded'});
   const body=page.locator('.sx-v10-case-page');
   await expect(body.locator('.sx-v10-case-section')).toHaveCount(6);
-  await expect(body.locator('.sx-v10-case-section .sx-v10-story-text>p')).toHaveCount(18);
+  await expect(body.locator('.sx-v10-case-section .sx-v10-story-text>p')).toHaveCount(6);
   await expect(body.locator('img,canvas,video')).toHaveCount(0);
   await expect(body.locator('.sx-source-app')).toHaveCount(0);
   await expect(body.locator('.sx-v10-reference-list>a').first()).toHaveAttribute('href',/github.com/);
