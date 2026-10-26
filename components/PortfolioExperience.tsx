@@ -72,8 +72,14 @@ export default function PortfolioExperience(){
   // A reduced-motion visitor receives static, fully readable content.
   const media=window.matchMedia('(prefers-reduced-motion: reduce)');
   if(media.matches)return;
-  const kickoff=window.setTimeout(()=>{if(!tourDismissed)setTour(true);},1800);
-  return()=>window.clearTimeout(kickoff);
+  let interacted=window.scrollY>80;
+  const cancel=()=>{interacted=true;};
+  const kickoff=window.setTimeout(()=>{if(!tourDismissed&&!interacted)setTour(true);},1800);
+  window.addEventListener('wheel',cancel,{passive:true});
+  window.addEventListener('touchstart',cancel,{passive:true});
+  window.addEventListener('keydown',cancel);
+  return()=>{window.clearTimeout(kickoff);window.removeEventListener('wheel',cancel);
+   window.removeEventListener('touchstart',cancel);window.removeEventListener('keydown',cancel);};
  },[tourDismissed]);
  useEffect(()=>{
   const sections=Array.from(document.querySelectorAll('#about,#contact'));
