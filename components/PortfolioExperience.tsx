@@ -3,6 +3,7 @@ import {useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import {ScrollHero} from '@/components/ScrollHero';
 import {GuidedTour} from '@/components/GuidedTour';
+import {SourceProductPreview} from '@/components/SourceProductPreview';
 
 import {projects,publicContact,publicBiography,type Project} from '@/data/portfolio';
 
@@ -182,9 +183,8 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
        <p>{project.intro.en}</p>
        <Link className="sx-action" href={'/work/'+project.id+'/'}>Open the full case study <span aria-hidden="true">↗</span></Link>
       </div>
-      <div className="sx-slide-art sx-v4-project-art">
-       <img src={'/assets/hires/project-'+project.id+'.webp'} width={1448} height={1086} loading="eager" decoding="sync" fetchPriority={index===0?'high':'auto'} alt={project.brand+' concept visualization of the software product'}/>
-       <span className="sx-v4-art-label">CONCEPT VISUALIZATION — NOT A LIVE SCREENSHOT</span>
+      <div className="sx-slide-art sx-v4-project-art sx-source-showcase">
+       <SourceProductPreview id={project.id} compact/>
       </div>
      </article>
      <article className="sx-slide sx-slide--detail" aria-label="The challenge">
@@ -192,9 +192,8 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
        <h2>The <em>challenge.</em></h2><p>{project.problem.en}</p>
        <div className="sx-slide-footnote">DESIGNING A BETTER FOUNDATION</div>
       </div>
-      <div className="sx-ed7-image-detail">
-       <img src={'/assets/hires/project-'+project.id+'.webp'} width={1448} height={1086} loading="lazy" decoding="async" alt={project.brand+' illustrated product concept detail'}/>
-       <small>DETAIL OF CONCEPT VISUALIZATION — NOT A LIVE SCREENSHOT</small>
+      <div className="sx-ed7-image-detail sx-source-detail">
+       <SourceProductPreview id={project.id} compact/>
       </div>
      </article>
      <article className="sx-slide sx-slide--detail" aria-label="System architecture">
@@ -219,7 +218,7 @@ function ProjectChapter({project,index}:{project:Project;index:number}){
      <article className="sx-slide sx-slide--detail sx-slide--end" aria-label="Documented evidence and next project">
       <div className="sx-slide-narrative"><p className="sx-kicker">04 / DOCUMENTED STATUS</p>
        <h2>Beyond the <em>concept.</em></h2><p>{project.outcome.en}</p>
-       <small className="sx-evidence-note">Project images are conceptual visualizations, not verified live screenshots or operating metrics.</small>
+       <small className="sx-evidence-note">The interfaces shown are HTML reconstructions of documented source modules — not product screenshots, customer data or operating metrics.</small>
        <Link className="sx-action" href={'/work/'+project.id+'/'}>Explore full case study ↗</Link>
       </div>
       <div className="sx-diagram sx-diagram--next">
