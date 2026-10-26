@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 const ids=['gartal','factory','digirezhim','petiwoo'] as const;
 
-test('full portfolio has authentic portrait, Linux scroll code, and six long-form chapters per project',async({page})=>{
+test('full portfolio pins four image-free, twenty-frame horizontal reading stories',async({page})=>{
  const errors:string[]=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.emulateMedia({reducedMotion:'reduce'});
@@ -15,14 +15,43 @@ test('full portfolio has authentic portrait, Linux scroll code, and six long-for
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
  for(const id of ids){
   const section=page.locator('#project-'+id);
-  await expect(section.locator('.sx-v10-story-panel')).toHaveCount(6);
-  await expect(section.locator('.sx-v10-story-text>p')).toHaveCount(18);
+  await expect(section.locator('.sx-v11-slide')).toHaveCount(20);
+  await expect(section.locator('.sx-v11-slide--story')).toHaveCount(18);
+  await expect(section).toHaveAttribute('data-horizontal-chapter','');
+  await expect(section.locator('.sx-v11-story-content>p')).toHaveCount(18);
   await expect(section.locator('img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
-  await expect(section.locator('.sx-v10-chapter-end')).toHaveCount(1);
+  await expect(section.locator('.sx-v11-slide--end')).toHaveCount(1);
   await expect(section.getByRole('link',{name:/FULL TECHNICAL CASE STUDY/i})).toHaveAttribute('href','/work/'+id+'/');
  }
  expect(errors).toEqual([]);
+});
+
+test('vertical scrolling advances each project sideways, then releases to the next project',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ // Exit the default auto-tour before precise manual scroll assertions.
+ const controller=page.getByRole('region',{name:'Guided portfolio tour'});
+ if(await controller.isVisible().catch(()=>false))await controller.getByRole('button',{name:'Exit guided tour'}).click();
+ for(const id of ids){
+  const chapter=page.locator('#project-'+id);
+  const info=await chapter.evaluate(e=>({
+   top:e.getBoundingClientRect().top+window.scrollY,
+   distance:e.getBoundingClientRect().height-window.innerHeight
+  }));
+  expect(info.distance).toBeGreaterThan(3000);
+  await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.top+info.distance*.24);
+  await expect.poll(()=>chapter.getAttribute('data-active-frame')).not.toBe('0');
+  const track=chapter.locator('.sx-v11-rail');
+  const horizontal=await track.evaluate(e=>getComputedStyle(e).transform);
+  expect(horizontal).not.toBe('none');
+  await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.top+info.distance*.97);
+  await expect(chapter).toHaveAttribute('data-active-frame','19');
+ }
+ const last=page.locator('#project-petiwoo');
+ const bottom=await last.evaluate(e=>e.getBoundingClientRect().bottom+window.scrollY);
+ await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),bottom+50);
+ await expect(page.locator('#contact')).toBeVisible();
 });
 
 test('native scroll reveals code and words without drawing a code screenshot',async({page})=>{
@@ -75,7 +104,10 @@ test('mobile text chapters fit without horizontal overflow',async({browser})=>{
   const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),'mobile overflow at '+width).toBeLessThanOrEqual(2);
-  await page.locator('#project-factory-problem').scrollIntoViewIfNeeded();
+  await page.locator('#project-factory').evaluate(section=>{
+  const rect=section.getBoundingClientRect();
+  window.scrollTo({top:window.scrollY+rect.top+(rect.height-window.innerHeight)*.2,behavior:'instant'});
+ });
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),'chapter overflow at '+width).toBeLessThanOrEqual(2);
   await page.close();
  }
