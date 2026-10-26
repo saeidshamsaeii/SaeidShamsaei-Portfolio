@@ -3,69 +3,106 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 
-test('the portfolio automatically launches a full-screen-scroll narrative with real progress',async({page})=>{
+test('autoplay starts on initial hydration at a locked 2x pace without a TOUR button',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
+ await expect(tour).toHaveAttribute('data-playback','playing');
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing');
+ await expect(tour.getByLabel('Fixed playback speed')).toHaveText('2×');
+ await expect(tour.getByRole('button',{name:'Change tour speed'})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Restart guided site tour'})).toHaveCount(0);
  await expect(tour.locator('[role="progressbar"]')).toHaveAttribute('aria-valuemax','100');
- await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','running');
- await expect(tour).toContainText('AUTO STORY');
- await expect(tour).toHaveClass(/sx-v11-tour/);
- await expect(tour.getByRole('button',{name:'Change tour speed'})).toContainText('2×');
- const position=await tour.evaluate(e=>getComputedStyle(e).top);
- expect(parseFloat(position)).toBeGreaterThan(0);
 });
 
-test('stopping the director never blocks free scroll or navigating case studies',async({page})=>{
+test('scrolling either direction yields instantly; 3.5 seconds idle resumes DOWN from the current position',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
- await tour.getByRole('button',{name:'Exit guided tour'}).click();
- await expect(tour).toHaveCount(0);
- await page.locator('#project-gartal').evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+window.scrollY+10,behavior:'instant'}));
- await expect(page.locator('#project-gartal .sx-v11-slide--intro')).toBeVisible();
- await page.locator('#project-gartal').getByRole('link',{name:/THE FULL ENGINEERING STORY/i}).click();
- await expect(page).toHaveURL(/\/work\/gartal\//);
- await expect(page.locator('.sx-v10-case-section')).toHaveCount(6);
+ await page.mouse.wheel(0,650);
+ await expect(tour).toHaveAttribute('data-playback','manual');
+ await page.mouse.wheel(0,-220);
+ await expect(tour).toHaveAttribute('data-playback','manual');
+ const manualY=await page.evaluate(()=>window.scrollY);
+ await expect(tour).toHaveAttribute('data-playback','playing',{timeout:6500});
+ const resumedY=await page.evaluate(()=>window.scrollY);
+ expect(resumedY).toBeGreaterThanOrEqual(manualY-3);
+ await expect.poll(async()=>await page.evaluate(()=>window.scrollY),{timeout:4500})
+  .toBeGreaterThan(manualY+10);
+ await expect(tour.getByLabel('Fixed playback speed')).toHaveText('2×');
 });
 
-test('a full independent case study also starts its own timed reading tour',async({page})=>{
- await page.goto('/work/digirezhim/',{waitUntil:'domcontentloaded'});
+test('new touch/keyboard actions extend the idle timeout instead of killing autoplay',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ await expect(tour).toBeVisible({timeout:6000});
+ await page.keyboard.press('ArrowDown');
+ await expect(tour).toHaveAttribute('data-playback','manual');
+ await page.waitForTimeout(1900);
+ await page.keyboard.press('ArrowUp');
+ await expect(tour).toHaveAttribute('data-playback','manual');
+ await page.waitForTimeout(1800);
+ await expect(tour).toHaveAttribute('data-playback','manual');
+ await expect(tour).toHaveAttribute('data-playback','playing',{timeout:3500});
+});
+
+test('explicit pause is durable and resumes only by the small upper playback control',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
  await tour.getByRole('button',{name:'Pause tour'}).click();
- await expect(tour.getByRole('button',{name:'Resume tour'})).toBeVisible();
- await tour.getByRole('button',{name:'Exit guided tour'}).click();
- await expect(tour).toHaveCount(0);
- await expect(page.getByRole('button',{name:'RESTART TOUR'})).toBeVisible();
+ await expect(tour).toHaveAttribute('data-playback','paused');
+ await page.mouse.wheel(0,180);
+ await page.waitForTimeout(3800);
+ await expect(tour).toHaveAttribute('data-playback','paused');
+ await tour.getByRole('button',{name:'Resume tour'}).click();
+ await expect(tour).toHaveAttribute('data-playback','playing',{timeout:2000});
 });
 
-test('top-only transparent tour toolbar has no bottom controller box',async({page})=>{
+test('site tours can be permanently dismissed from the top, without a restart requirement',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
- const placement=await tour.evaluate(el=>({
+ await tour.getByRole('button',{name:'Exit guided tour'}).click();
+ await expect(tour).toHaveCount(0);
+ await page.mouse.wheel(0,240);
+ await page.waitForTimeout(3750);
+ await expect(tour).toHaveCount(0);
+ await page.locator('#project-gartal').evaluate(el=>
+  window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY,behavior:'instant'}));
+ await expect(page.locator('#project-gartal .sx-v11-slide--story')).toHaveCount(18);
+});
+
+test('a separate technical case page starts automatically and allows manual resume',async({page})=>{
+ await page.goto('/work/digirezhim/',{waitUntil:'domcontentloaded'});
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ await expect(tour).toBeVisible({timeout:6000});
+ await expect(tour.getByLabel('Fixed playback speed')).toHaveText('2×');
+ await expect(page.getByRole('button',{name:'RESTART TOUR'})).toHaveCount(0);
+ await page.mouse.wheel(0,480);
+ await expect(tour).toHaveAttribute('data-playback','manual');
+ await expect(tour).toHaveAttribute('data-playback','playing',{timeout:6500});
+});
+
+test('transparent control line stays at the top and replaces the bottom box',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ await expect(tour).toBeVisible({timeout:6000});
+ const layout=await tour.evaluate(el=>({
   top:parseFloat(getComputedStyle(el).top),
   bottom:getComputedStyle(el).bottom,
   background:getComputedStyle(el).backgroundColor,
   border:getComputedStyle(el).borderTopWidth,
   buttons:el.querySelectorAll('button').length
  }));
- expect(placement.top).toBeGreaterThan(0);
- expect(placement.bottom).toBe('auto');
- expect(placement.background).toBe('rgba(0, 0, 0, 0)');
- expect(placement.border).toBe('0px');
- expect(placement.buttons).toBe(3);
+ expect(layout.top).toBeGreaterThan(0);
+ expect(layout.bottom).toBe('auto');
+ expect(layout.background).toBe('rgba(0, 0, 0, 0)');
+ expect(layout.border).toBe('0px');
+ expect(layout.buttons).toBe(2);
 });
 
-test('manual keyboard navigation exits playback without a forced scroll trap',async({page})=>{
- await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toBeVisible({timeout:6000});
- await page.keyboard.press('Escape');
- await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
-});
-
-test('reduced motion never autostarts the tour but keeps the complete story visible',async({page})=>{
+test('reduced-motion leaves the complete story readable and does not start automatic scrolling',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
@@ -73,7 +110,7 @@ test('reduced motion never autostarts the tour but keeps the complete story visi
  await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveCount(1);
 });
 
-test('owner portrait remains the approved original asset',()=>{
+test('authentic original personal portrait remains unchanged',()=>{
  const file=readFileSync(join(process.cwd(),'public','assets','hires','portrait.webp'));
  expect(createHash('sha256').update(file).digest('hex'))
   .toBe('34c4d0509db4e2cb0f1e0c48716cb60286f92c8342c254e007074781dcadec70');
