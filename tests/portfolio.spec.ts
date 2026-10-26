@@ -22,7 +22,7 @@ test('full portfolio pins four image-free, twenty-frame horizontal reading stori
   await expect(section.locator('img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
   await expect(section.locator('.sx-v11-slide--end')).toHaveCount(1);
-  await expect(section.getByRole('link',{name:/FULL TECHNICAL CASE STUDY/i})).toHaveAttribute('href','/work/'+id+'/');
+  await expect(section.getByRole('link',{name:/THE FULL ENGINEERING STORY/i})).toHaveAttribute('href','/work/'+id+'/');
  }
  expect(errors).toEqual([]);
 });
@@ -30,9 +30,9 @@ test('full portfolio pins four image-free, twenty-frame horizontal reading stori
 test('vertical scrolling advances each project sideways, then releases to the next project',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- // Exit the default auto-tour before precise manual scroll assertions.
- const controller=page.getByRole('region',{name:'Guided portfolio tour'});
- if(await controller.isVisible().catch(()=>false))await controller.getByRole('button',{name:'Exit guided tour'}).click();
+ // A manual interaction before the start delay suppresses automatic playback.
+ await expect(page.locator('#top')).toHaveAttribute('data-ready','true');
+ await page.mouse.wheel(0,1);
  for(const id of ids){
   const chapter=page.locator('#project-'+id);
   const info=await chapter.evaluate(e=>({
@@ -74,11 +74,11 @@ test('tour launches automatically, pauses, resumes, accelerates and manual wheel
  await expect(director).toBeVisible({timeout:6000});
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','running');
  await director.getByRole('button',{name:'Pause tour'}).click();
- await expect(director).toContainText('PAUSED');
+ await expect(director.getByRole('button',{name:'Resume tour'})).toBeVisible();
  await director.getByRole('button',{name:'Change tour speed'}).click();
- await expect(director).toContainText('1.5×');
+ await expect(director.getByRole('button',{name:'Change tour speed'})).toContainText('1×');
  await director.getByRole('button',{name:'Resume tour'}).click();
- await expect(director).toContainText('PLAYING');
+ await expect(director.getByRole('button',{name:'Pause tour'})).toBeVisible();
  await page.mouse.wheel(0,130);
  await expect(director).toHaveCount(0);
  await expect(page.locator('html')).not.toHaveAttribute('data-portfolio-tour','running');
@@ -104,10 +104,7 @@ test('mobile text chapters fit without horizontal overflow',async({browser})=>{
   const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
   await page.goto('/',{waitUntil:'domcontentloaded'});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),'mobile overflow at '+width).toBeLessThanOrEqual(2);
-  await page.locator('#project-factory').evaluate(section=>{
-  const rect=section.getBoundingClientRect();
-  window.scrollTo({top:window.scrollY+rect.top+(rect.height-window.innerHeight)*.2,behavior:'instant'});
- });
+  await page.locator('#project-factory').scrollIntoViewIfNeeded();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth),'chapter overflow at '+width).toBeLessThanOrEqual(2);
   await page.close();
  }
