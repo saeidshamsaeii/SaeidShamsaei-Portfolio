@@ -43,10 +43,28 @@ test('source includes four real project chapters and direct case navigation',()=
  const data=read('data/portfolio.ts');
  assert.match(homepage,/projects\.map\(/);
  assert.match(homepage,/\/work\/\x27\+project\.id/);
+ const preview=read('components/SourceProductPreview.tsx');
  for(const name of ['gartal','factory','digirezhim','petiwoo']){
   assert.ok(data.includes("id:'"+name+"'"),'missing '+name);
-  assert.ok(fs.statSync(path.join(root,'public/assets/hires/project-'+name+'.webp')).size>1000);
+  assert.ok(preview.includes(name+':{'),'source study missing '+name);
  }
+ assert.match(homepage,/SourceProductPreview id=\{project\.id\} compact/);
+ assert.doesNotMatch(homepage,/project-'\+project\.id\+'\.webp/);
+ assert.match(preview,/NOT A SCREENSHOT/);
+});
+
+test('Linux terminal uses actual scroll-revealed DOM text rather than imagery',()=>{
+ const hero=read('components/ScrollHero.tsx');
+ const linux=read('components/LinuxCodeCanvas.tsx');
+ const css=read('app/edition09.css');
+ assert.match(hero,/progress=\{progress\}/);
+ assert.match(hero,/requestAnimationFrame\(update\)/);
+ assert.match(linux,/fullProgram\.slice\(0,reveal\)/);
+ assert.match(linux,/reduced\?1:progress/);
+ assert.match(linux,/sx-linux-code-line/);
+ assert.doesNotMatch(linux,/<img\b|<canvas\b|<video\b/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(read('app/layout.tsx'),/edition09\.css/);
 });
 
 test('source retains reduced-motion and direct page accessibility',()=>{
