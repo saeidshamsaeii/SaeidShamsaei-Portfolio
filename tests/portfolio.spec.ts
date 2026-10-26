@@ -68,21 +68,22 @@ test('native scroll reveals code and words without drawing a code screenshot',as
  expect(Number(visible)).toBeGreaterThanOrEqual(0);
 });
 
-test('tour launches automatically, pauses, resumes, accelerates and manual wheel exits',async({page})=>{
+test('portfolio launches at fixed 2x, yields to manual scroll and resumes after idle',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const director=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(director).toBeVisible({timeout:6000});
- await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','running');
+ await expect(director).toHaveAttribute('data-playback','playing');
+ await expect(director.getByLabel('Fixed playback speed')).toHaveText('2×');
+ await expect(page.getByRole('button',{name:'Restart guided site tour'})).toHaveCount(0);
+ await page.mouse.wheel(0,180);
+ await expect(director).toHaveAttribute('data-playback','manual');
+ await expect(director).toHaveAttribute('data-playback','playing',{timeout:6500});
  await director.getByRole('button',{name:'Pause tour'}).click();
- await expect(director.getByRole('button',{name:'Resume tour'})).toBeVisible();
- await director.getByRole('button',{name:'Change tour speed'}).click();
- await expect(director.getByRole('button',{name:'Change tour speed'})).toContainText('1×');
+ await expect(director).toHaveAttribute('data-playback','paused');
  await director.getByRole('button',{name:'Resume tour'}).click();
- await expect(director.getByRole('button',{name:'Pause tour'})).toBeVisible();
- await page.mouse.wheel(0,130);
+ await expect(director).toHaveAttribute('data-playback','playing');
+ await director.getByRole('button',{name:'Exit guided tour'}).click();
  await expect(director).toHaveCount(0);
- await expect(page.locator('html')).not.toHaveAttribute('data-portfolio-tour','running');
- await expect(page.getByRole('button',{name:'Restart guided site tour'})).toBeVisible();
 });
 
 test('case pages are text-only with source links and auto-tour',async({page})=>{
