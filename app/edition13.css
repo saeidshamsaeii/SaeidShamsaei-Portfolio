@@ -62,3 +62,17 @@
  .sx-word-piece{opacity:1!important;clip-path:none!important;transform:none!important;transition:none!important;}
  .sx-v12-curated .sx-v11-story-content::before{opacity:.6;}
 }
+
+/* Full case-study narrative: every paragraph is its own tour waypoint.
+   Preserve Edition 10 typography after adding waypoint wrappers. */
+.sx-v10-story-text>.sx-v13-paragraph{width:100%;max-width:880px;min-width:0;}
+.sx-v10-story-text>.sx-v13-paragraph>p{
+ font:400 clamp(16px,1.36vw,22px)/1.85 Inter,Arial,sans-serif;
+ color:#bfc6c2;max-width:880px;margin:0;letter-spacing:-.006em;
+}
+.sx-v10-story-text>.sx-v13-paragraph:first-of-type>p{font-weight:500;color:#e1e3db;}
+@media(max-width:760px){
+ .sx-v10-story-text>.sx-v13-paragraph>p{
+  font-size:clamp(15px,3.75vw,18px);line-height:1.73;
+ }
+}
