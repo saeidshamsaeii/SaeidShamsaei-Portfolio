@@ -26,7 +26,7 @@ test('all four case studies replace images and visual simulations with detailed 
  assert.doesNotMatch(home,/SourceProductPreview|project-'\+project\.id|sx-v4-project-art|sx-slide--overview/);
  assert.doesNotMatch(detail,/SourceProductPreview|project-'\+p\.id|case-hero-art/);
  assert.match(home,/HorizontalCaseChapter/);
- assert.match(horizontal,/narrative\.chapters\.map/);
+ assert.match(horizontal,/story\.beats\.map/);
  assert.match(detail,/story\.chapters\.map/);
  assert.match(horizontal,/WordReveal/);
  assert.match(detail,/WordReveal/);
@@ -88,14 +88,14 @@ test('fixed 2x auto-tour starts immediately, yields to manual input and resumes 
  assert.doesNotMatch(homepage,/Restart guided site tour|sx-tour-trigger/);
  assert.doesNotMatch(cases,/RESTART TOUR/);
 });
-test('edited eight-frame chapters stay horizontal and release naturally with scroll-linked typography',()=>{
+test('five distinct scroll-pinned editorial scenes preserve source-backed context and natural handoff',()=>{
  const home=read('components/PortfolioExperience.tsx');
  const chapter=read('components/HorizontalCaseChapter.tsx');
  const css=read('app/edition11.css');
  const word=read('components/WordReveal.tsx');
  assert.match(home,/HorizontalCaseChapter key=\{project\.id\}/);
- assert.match(chapter,/const count=8/);
- assert.match(chapter,/narrative\.chapters\.map/);
+ assert.match(chapter,/const count=5/);
+ assert.match(chapter,/story\.beats\.map/);
  assert.match(chapter,/window\.addEventListener\('scroll',request/);
  assert.match(chapter,/translate3d\(/);
  assert.match(chapter,/data-frame-count=\{count\}/);
@@ -107,6 +107,13 @@ test('edited eight-frame chapters stay horizontal and release naturally with scr
  assert.ok(word.includes("clipPath='inset(0 '"));
  assert.ok(read('app/layout.tsx').includes("import './edition13.css';"));
  assert.match(read('app/layout.tsx'),/edition11\.css/);
+ assert.ok(read('app/layout.tsx').includes("import './edition14.css';"));
+ assert.ok(read('data/homeStories.ts').includes("factory:"));
+ assert.ok(read('data/homeStories.ts').includes("digirezhim:"));
+ assert.ok(!chapter.includes('chapters.flatMap'));
+ assert.ok(!read('components/GuidedTour.tsx').includes('const eased='));
+ assert.ok(read('components/GuidedTour.tsx').includes('scriptedScroll=state.start+(state.end-state.start)*fraction'));
+
 });
 test('personal portrait is preserved and public-facing case narrative is English',()=>{
  const homepage=read('components/PortfolioExperience.tsx');
