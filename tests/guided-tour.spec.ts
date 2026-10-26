@@ -22,9 +22,9 @@ test('stopping the director never blocks free scroll or navigating case studies'
  await expect(tour).toBeVisible({timeout:6000});
  await tour.getByRole('button',{name:'Exit guided tour'}).click();
  await expect(tour).toHaveCount(0);
- await page.locator('#project-gartal').scrollIntoViewIfNeeded();
+ await page.locator('#project-gartal').evaluate(e=>window.scrollTo({top:e.getBoundingClientRect().top+window.scrollY+10,behavior:'instant'}));
  await expect(page.locator('#project-gartal .sx-v11-slide--intro')).toBeVisible();
- await page.locator('#project-gartal').getByRole('link',{name:/FULL TECHNICAL CASE STUDY/i}).click();
+ await page.locator('#project-gartal').getByRole('link',{name:/THE FULL ENGINEERING STORY/i}).click();
  await expect(page).toHaveURL(/\/work\/gartal\//);
  await expect(page.locator('.sx-v10-case-section')).toHaveCount(6);
 });
@@ -34,7 +34,7 @@ test('a full independent case study also starts its own timed reading tour',asyn
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible({timeout:6000});
  await tour.getByRole('button',{name:'Pause tour'}).click();
- await expect(tour).toContainText('PAUSED');
+ await expect(tour.getByRole('button',{name:'Resume tour'})).toBeVisible();
  await tour.getByRole('button',{name:'Exit guided tour'}).click();
  await expect(tour).toHaveCount(0);
  await expect(page.getByRole('button',{name:'RESTART TOUR'})).toBeVisible();
