@@ -2,78 +2,112 @@
 import {useEffect,useRef} from 'react';
 
 type Tag='p'|'h1'|'h2'|'h3'|'span'|'small'|'strong';
-const clamp=(v:number)=>Math.max(0,Math.min(1,v));
+const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 
-/**
- * True native-scroll word reveal. Text stays in the DOM from SSR and remains
- * fully accessible with CSS off, JS off or reduced-motion. Only the visible
- * decoration is split; screen readers receive one uninterrupted sentence.
- * Automatic site tour uses the same real scroll position, not a fake timer.
+/** Scroll-scripted typography: nothing is ghosted before its first word.
+ * Every sentence exists unbroken in semantic HTML for assistive technology.
+ * The visible word layer starts at zero opacity/fully clipped, then writes
+ * from left to right as native scroll advances. Reverse scrolling rewinds.
+ * The CSS scripting media query keeps no-JS and reduced-motion fully legible.
  */
 export function WordReveal({text,as='p',className='',id}:{
  text:string;as?:Tag;className?:string;id?:string
 }){
  const root=useRef<HTMLElement>(null);
- const words=text.trim().split(/\s+/);
+ const words=text.trim().split(/\s+/).filter(Boolean);
  useEffect(()=>{
   const host=root.current;if(!host)return;
   const media=window.matchMedia('(prefers-reduced-motion: reduce)');
-  let frame=0,visible=false;
-  const pieces=Array.from(host.querySelectorAll<HTMLElement>('[data-reveal-word]'));
+  const nodes=Array.from(host.querySelectorAll<HTMLElement>('[data-reveal-word]'));
+  let raf=0,observing=false;
+  const render=(progress:number)=>{
+   host.dataset.motion='on';
+   const position=clamp(progress)*(nodes.length+.5);
+   const active=Math.floor(position);
+   for(let i=0;i<nodes.length;i++){
+    const fraction=clamp(position-i);
+    // Unlike the old 13% opacity treatment, zero means truly blank.
+    nodes[i].style.opacity=String(fraction);
+    nodes[i].style.clipPath='inset(0 '+((1-fraction)*100)+'% 0 0)';
+    nodes[i].style.transform='translateY('+((1-fraction)*.18)+'em)';
+    nodes[i].classList.toggle('is-typing',i===active&&progress>0&&progress<1);
+   }
+  };
   const clear=()=>{
    host.dataset.motion='off';
-   for(const node of pieces){node.style.opacity='';node.style.transform='';node.classList.remove('is-typing');}
+   for(const node of nodes){
+    node.style.removeProperty('opacity');
+    node.style.removeProperty('clip-path');
+    node.style.removeProperty('transform');
+    node.classList.remove('is-typing');
+   }
   };
   const update=()=>{
-   frame=0;
+   raf=0;
    if(media.matches){clear();return;}
-   host.dataset.motion='on';
    const chapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
    const panel=host.closest<HTMLElement>('[data-frame-index]');
    let progress=0;
    if(chapter&&panel){
-    // While the project is pinned, the word animation must follow its
-    // own horizontal frame's vertical scroll interval. BoundingClientRect
-    // alone would remain stationary and stop the typography from typing.
-    const sectionProgress=Number(chapter.dataset.frameProgress||'0');
-    const frameIndex=Number(panel.dataset.frameIndex||'0');
+    const scaled=Number(chapter.dataset.frameProgress||'0');
+    const index=Number(panel.dataset.frameIndex||'0');
     const blocks=Array.from(panel.querySelectorAll<HTMLElement>('.sx-word-reveal'));
     const ordinal=Math.max(0,blocks.indexOf(host));
-    progress=clamp((sectionProgress-frameIndex-.05-ordinal*.07)/Math.max(.17,.63-ordinal*.06));
+    const total=blocks.length;
+    const start=.035+(ordinal/Math.max(1,total))*.46;
+    const duration=Math.max(.11,.58/Math.max(1,total)+.09);
+    progress=clamp((scaled-index-start)/duration);
    }else{
-    const box=host.getBoundingClientRect();
-    const travel=Math.max(window.innerHeight*.48,Math.min(window.innerHeight*.95,box.height+window.innerHeight*.27));
-    progress=clamp((window.innerHeight*.91-box.top)/travel);
+    const hero=host.closest<HTMLElement>('.sx-v8-hero-slide');
+    const heroRoot=hero?.closest<HTMLElement>('#top');
+    if(hero&&heroRoot){
+     const slides=Array.from(heroRoot.querySelectorAll('.sx-v8-hero-slide'));
+     const idx=slides.indexOf(hero);
+     const scaled=Number(heroRoot.dataset.heroProgress||'0')*slides.length;
+     progress=clamp((scaled-idx-.01)/.67);
+    }else{
+     const rect=host.getBoundingClientRect();
+     const travel=Math.max(window.innerHeight*.52,Math.min(window.innerHeight*.98,rect.height+window.innerHeight*.32));
+     progress=clamp((window.innerHeight*.89-rect.top)/travel);
+    }
    }
-   const reached=progress*(pieces.length+2);
-   for(let i=0;i<pieces.length;i++){
-    const fade=clamp((reached-i)*1.65);
-    pieces[i].style.opacity=String(.13+.87*fade);
-    pieces[i].style.transform='translateY('+((1-fade)*.34)+'em)';
-    pieces[i].classList.toggle('is-typing',i===Math.floor(reached)&&progress>0&&progress<1);
-   }
+   render(progress);
   };
-  const request=()=>{if(!frame)frame=requestAnimationFrame(update);};
+  const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const observer=new IntersectionObserver(entries=>{
-   visible=entries.some(entry=>entry.isIntersecting);
-   if(visible){window.addEventListener('scroll',request,{passive:true});window.addEventListener('resize',request);request();}
-   else{window.removeEventListener('scroll',request);window.removeEventListener('resize',request);
-    // Keep previously passed blocks fully revealed instead of hiding them.
-    if(host.getBoundingClientRect().bottom<=0){
-     pieces.forEach(node=>{node.style.opacity='1';node.style.transform='none';node.classList.remove('is-typing');});
-    }}
-  },{rootMargin:'130px 0px 130px 0px'});
+   observing=entries.some(e=>e.isIntersecting);
+   if(observing){
+    window.addEventListener('scroll',request,{passive:true});
+    window.addEventListener('resize',request);
+    request();
+   }else{
+    window.removeEventListener('scroll',request);
+    window.removeEventListener('resize',request);
+    // The past remains fully written; future chapters stay truly blank.
+    if(host.getBoundingClientRect().bottom<0&&!host.closest('[data-horizontal-chapter]'))render(1);
+   }
+  },{rootMargin:'160px 0px 160px 0px',threshold:0});
   observer.observe(host);
-  const onMotion=()=>{if(media.matches)clear();else request();};
+  const onMotion=()=>media.matches?clear():request();
   media.addEventListener('change',onMotion);
   if(media.matches)clear();
-  return()=>{observer.disconnect();window.removeEventListener('scroll',request);window.removeEventListener('resize',request);media.removeEventListener('change',onMotion);if(frame)cancelAnimationFrame(frame);};
+  else request();
+  return()=>{
+   observer.disconnect();
+   window.removeEventListener('scroll',request);
+   window.removeEventListener('resize',request);
+   media.removeEventListener('change',onMotion);
+   if(raf)cancelAnimationFrame(raf);
+  };
  },[text]);
  const Tag=as;
- return <Tag id={id} ref={(node:HTMLElement|null)=>{root.current=node;}} className={'sx-word-reveal '+className} aria-label={text}>
+ return <Tag id={id} ref={(node:HTMLElement|null)=>{root.current=node;}}
+   className={'sx-word-reveal '+className}>
   <span className="sx-word-a11y">{text}</span>
   <span className="sx-word-pieces" aria-hidden="true">
-   {words.map((word,i)=><span data-reveal-word="" className="sx-word-piece" key={i}>{word}{i<words.length-1?' ':''}</span>)}
+   {words.map((word,i)=><span data-reveal-word="" className="sx-word-piece" key={i}>
+    {word}{i<words.length-1?' ':''}
+   </span>)}
   </span>
  </Tag>;
 }
