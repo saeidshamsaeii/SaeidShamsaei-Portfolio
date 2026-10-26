@@ -14,6 +14,19 @@ function findStops():Stop[]{
  }));
 }
 function scrollDestination(stop:Stop){
+ const panel=stop.element.closest<HTMLElement>('[data-frame-index]');
+ const horizontal=panel?.closest<HTMLElement>('[data-horizontal-chapter]');
+ if(panel&&horizontal){
+  // Frames live inside one sticky viewport; their physical top coordinates
+  // are identical. Map frame identity back onto the chapter's real vertical
+  // scroll travel so autoplay actually traverses the 20 horizontal panels.
+  const count=Math.max(1,Number(horizontal.dataset.frameCount||'1'));
+  const index=Math.max(0,Number(panel.dataset.frameIndex||'0'));
+  const rect=horizontal.getBoundingClientRect();
+  const top=rect.top+window.scrollY;
+  const travel=Math.max(0,rect.height-window.innerHeight);
+  return top+travel*clamp((index+.68)/count);
+ }
  const box=stop.element.getBoundingClientRect(),top=box.top+window.scrollY;
  if(stop.fraction!==null){
   const stage=stop.element.closest<HTMLElement>('#top')||stop.element;
@@ -32,13 +45,13 @@ function scrollDestination(stop:Stop){
  */
 export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
  const [paused,setPaused]=useState(false);
- const [speed,setSpeed]=useState<1|1.5|2>(1);
+ const [speed,setSpeed]=useState<1|1.5|2>(2);
  const [step,setStep]=useState(0);
  const [percent,setPercent]=useState(0);
  const [label,setLabel]=useState('Introduction');
  const [count,setCount]=useState(0);
  const pausedRef=useRef(false);
- const speedRef=useRef<number>(1);
+ const speedRef=useRef<number>(2);
  const onExitRef=useRef(onExit);
  onExitRef.current=onExit;
  useEffect(()=>{
@@ -49,7 +62,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   if(!stops.length){onExitRef.current();return;}
   setStep(0);setPercent(0);setCount(stops.length);setLabel(stops[0].label);
   pausedRef.current=false;setPaused(false);
-  speedRef.current=1;setSpeed(1);
+  speedRef.current=2;setSpeed(2);
   const root=document.documentElement;
   root.dataset.portfolioTour='running';
   let raf=0;
@@ -115,19 +128,19 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   };
  },[active]);
  if(!active)return null;
- return <aside className="sx-guided-tour sx-v10-tour" role="region" aria-label="Guided portfolio tour">
-  <span className="sx-tour-kicker">AUTOMATIC STORY <b>{format(step+1)} / {format(count)}</b></span>
-  <div className="sx-tour-status"><strong>{label}</strong><span>{paused?'PAUSED':'PLAYING'}</span></div>
-  <div className="sx-tour-track" role="progressbar" aria-label="Tour progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(percent*100)}>
-   <span style={{width:percent*100+'%'}}/>
+ return <aside className="sx-guided-tour sx-v11-tour" role="region" aria-label="Guided portfolio tour">
+  <span className="sx-v11-top-label" title={label}>AUTO STORY · {format(step+1)}/{format(count)} · {label}</span>
+  <div className="sx-v11-top-progress" role="progressbar" aria-label="Tour progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(percent*100)}>
+   <i style={{width:percent*100+'%'}}/>
   </div>
-  <div className="sx-tour-actions">
-   <button type="button" onClick={()=>{pausedRef.current=!pausedRef.current;setPaused(pausedRef.current);}} aria-label={paused?'Resume tour':'Pause tour'}>{paused?'▶ RESUME':'Ⅱ PAUSE'}</button>
-   <button type="button" onClick={onExit} aria-label="Exit guided tour">✕ EXPLORE MANUALLY</button>
-  </div>
-  <button type="button" className="sx-tour-speed" onClick={()=>{const next=speed===1?1.5:speed===1.5?2:1;setSpeed(next);speedRef.current=next;}} aria-label="Change tour speed">
-   PLAYBACK / {speed}×
-  </button>
-  <small>Scroll, touch or press Esc to take control. All chapters stay readable.</small>
+  <button type="button" className="sx-v11-top-button sx-v11-speed" onClick={()=>{
+   const next=speed===1?1.5:speed===1.5?2:1;
+   setSpeed(next);speedRef.current=next;
+  }} aria-label="Change tour speed" title="Playback speed">{speed}×</button>
+  <button type="button" className="sx-v11-top-button" onClick={()=>{
+   pausedRef.current=!pausedRef.current;setPaused(pausedRef.current);
+  }} aria-label={paused?'Resume tour':'Pause tour'} title={paused?'Resume':'Pause'}>{paused?'▶':'Ⅱ'}</button>
+  <button type="button" className="sx-v11-top-button sx-v11-top-exit" onClick={onExit}
+   aria-label="Exit guided tour" title="Exit to manual scrolling">×</button>
  </aside>;
 }
