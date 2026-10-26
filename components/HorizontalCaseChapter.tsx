@@ -19,6 +19,12 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
  const count=8;
  const next=projects[index+1];
  const narrative=caseNarratives[project.id];
+ const closingTitle={
+  gartal:'From an idea to a product foundation.',
+  factory:'When provenance becomes the workflow.',
+  digirezhim:'Precision lives in the clinical details.',
+  petiwoo:'A storefront designed for living needs.'
+ }[project.id];
  const [current,setCurrent]=useState(0);
  useEffect(()=>{
   const node=section.current,viewport=stage.current,track=rail.current;
@@ -109,7 +115,7 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
      data-tour-stop data-tour-pace="1.36"
      data-tour-label={project.brand+' / continue'} data-tour-duration="8">
      <WordReveal as="span" className="sx-v10-counter" text={project.brand+' / BEYOND THE OVERVIEW'}/>
-     <WordReveal as="h3" text="The detail is in the system."/>
+     <WordReveal as="h3" text={closingTitle}/>
      <WordReveal text={project.outcome.en}/>
      <div className="sx-v11-end-links">
       <Link href={'/work/'+project.id+'/'}><WordReveal as="span" text="EXPLORE THE FULL TECHNICAL STORY ↗"/></Link>
