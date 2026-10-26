@@ -89,8 +89,13 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.start=from;
    state.end=target(index);
    // The destination and chapter pacing are recalculated from current scrollY.
-   state.duration=stops[index].seconds*1000;
    targetSpeed=BASE_SPEED*stops[index].pace;
+   // Natural narration cannot reveal fifty words in a three-second drive-by.
+   // Give long source-backed passages actual reading time, but bound a large
+   // About section so a single stop does not monopolize the whole tour.
+   const words=stops[index].element.querySelectorAll('[data-reveal-word]').length;
+   const readingMs=Math.min(18000,(words/4.5)*1000);
+   state.duration=Math.max(stops[index].seconds*1000,readingMs*targetSpeed);
    setStep(index);
    setLabel(stops[index].label);
   };
