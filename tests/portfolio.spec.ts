@@ -42,10 +42,10 @@ test('Edition 08 opens with purpose-only slides, then a portrait bio and four fi
  for(const id of projectIds){
   const section=page.locator('#project-'+id);
   await expect(section.locator('.sx-slide')).toHaveCount(5);
-  const art=section.locator('.sx-slide--overview .sx-v4-project-art img');
-  await expect(art).toHaveAttribute('src','/assets/hires/project-'+id+'.webp');
-  const dimensions=await art.evaluate(async(img:HTMLImageElement)=>{await img.decode();return{width:img.naturalWidth,height:img.naturalHeight}});
-  expect(dimensions).toEqual({width:1448,height:1086});
+  const preview=section.locator('.sx-slide--overview .sx-source-app--compact');
+  await expect(preview).toHaveCount(1);
+  await expect(preview).toContainText('RECONSTRUCTED FROM CHECKED-IN SOURCE');
+  await expect(section.locator('.sx-slide--overview img')).toHaveCount(0);
   await expect(section.locator('.sx-architecture-list>div')).toHaveCount(3);
   await expect(section.locator('.sx-capability-list>div')).toHaveCount(3);
   await expect(section.locator('.sx-slide-dots button')).toHaveCount(5);
@@ -127,16 +127,11 @@ test('mobile viewport containment, no typography/image overlap and useful scroll
    const noOverflow=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1);
    expect(noOverflow,'page overflow after horizontal scroll '+id+' '+width).toBe(true);
    await progressTo(page,id,0);
-   const img=chapter.locator('.sx-slide--overview .sx-v4-project-art img');
-   const decoded=await img.evaluate(async(image:HTMLImageElement)=>{
-    await image.decode();
-    const box=image.getBoundingClientRect();
-    return {naturalWidth:image.naturalWidth,display:getComputedStyle(image).display,opacity:getComputedStyle(image).opacity,width:box.width,height:box.height};
-   });
-   expect(decoded.naturalWidth,'visual did not load '+id).toBe(1448);
-   expect(decoded.display,'visual is hidden '+id).not.toBe('none');
-   expect(decoded.width,'visual is zero width '+id).toBeGreaterThan(150);
-   expect(decoded.height,'visual is zero height '+id).toBeGreaterThan(150);
+   const ui=chapter.locator('.sx-slide--overview .sx-source-app--compact');
+   const displayed=await ui.evaluate(e=>{const box=e.getBoundingClientRect();return{display:getComputedStyle(e).display,width:box.width,height:box.height};});
+   expect(displayed.display,'source-based UI is hidden '+id).not.toBe('none');
+   expect(displayed.width,'source-based UI is zero width '+id).toBeGreaterThan(150);
+   expect(displayed.height,'source-based UI is zero height '+id).toBeGreaterThan(150);
    if(width===390&&id==='gartal')await page.screenshot({path:'artifacts/v4-project-mobile.png',animations:'disabled'});
   }
   if(width===390){
@@ -165,17 +160,31 @@ test('real contact actions and real logo remain available',async({page})=>{
  await page.screenshot({path:'artifacts/v4-contact-desktop.png',animations:'disabled'});
 });
 
-test('independent case routes show conceptual art and truthful interactive source studies',async({page})=>{
+test('Linux code is composed as real DOM text driven by native scroll position',async({page})=>{
+ await suppressIntro(page);
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
+ await expect(page.locator('#top img')).toHaveCount(0);
+ const code=page.locator('#top .sx-linux-code');
+ const initial=await code.innerText();
+ const hero=page.locator('#top');
+ const coordinates=await hero.evaluate(e=>({top:e.getBoundingClientRect().top+scrollY,distance:e.getBoundingClientRect().height-innerHeight}));
+ await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),coordinates.top+coordinates.distance*.96);
+ await expect.poll(async()=>await code.innerText(),{timeout:5000}).toContain('return { ...system, mission };');
+ expect((await code.innerText()).length).toBeGreaterThan(initial.length);
+ await expect(page.locator('.sx-linux-scene')).toHaveAttribute('data-complete','true');
+});
+
+test('independent case routes use source-derived interface scenes without simulated screenshots',async({page})=>{
  await suppressIntro(page);
  for(const id of projectIds){
   await page.goto('/work/'+id+'/',{waitUntil:'domcontentloaded'});
-  const img=page.locator('.sx-v4-case-hero-art img');
-  await expect(img).toHaveCount(1);
-  await expect(img).toHaveAttribute('src','/assets/hires/project-'+id+'.webp');
-  await expect(page.locator('.sx-v4-case-hero-art')).toContainText('NOT A LIVE CAPTURE');
-  await expect(page.locator('.sx-v4-case-source .sx-v3-source-preview')).toHaveCount(1);
-  await page.locator('.sx-v4-case-source').getByRole('button',{name:'Architecture'}).click();
-  await expect(page.locator('.sx-v4-case-source').getByRole('button',{name:'Architecture'})).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('.sx-v4-case-hero-art img')).toHaveCount(0);
+  await expect(page.locator('.sx-v4-case-hero-art .sx-source-app')).toHaveCount(1);
+  await expect(page.locator('.sx-v4-case-hero-art')).toContainText('NOT A SCREENSHOT');
+  await expect(page.locator('.sx-v4-case-source .sx-source-app')).toHaveCount(1);
+  await page.locator('.sx-v4-case-source').getByRole('button',{name:'System'}).click();
+  await expect(page.locator('.sx-v4-case-source').getByRole('button',{name:'System'})).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('.case-section')).toHaveCount(2);
   await expect(page.locator('.case-capabilities>div')).toHaveCount(6);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
@@ -211,7 +220,7 @@ test('Edition 07 visual parity holds on dark case pages without losing authentic
   await page.goto('/work/'+id+'/',{waitUntil:'domcontentloaded'});
   const color=await page.locator('.case-study').evaluate(e=>getComputedStyle(e).backgroundColor);
   expect(color).toBe('rgb(10, 12, 14)');
-  await expect(page.locator('.sx-v4-case-hero-art small')).toContainText('NOT A LIVE CAPTURE');
+  await expect(page.locator('.sx-v4-case-hero-art .sx-source-app-credit')).toContainText('NOT A SCREENSHOT');
   await expect(page.locator('.case-nav')).toBeVisible();
  }
 });
