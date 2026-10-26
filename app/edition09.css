@@ -28,8 +28,9 @@
 .sx-linux-editor-body{display:grid;grid-template-columns:49px minmax(0,1fr);gap:18px;flex:1;min-height:0;padding:26px 24px 10px 12px;overflow:hidden;font:500 clamp(10px,.91vw,14px)/1.85 ui-monospace,SFMono-Regular,Consolas,monospace;}
 .sx-linux-gutter{display:flex;flex-direction:column;align-items:flex-end;color:#51635d;user-select:none;}
 .sx-linux-gutter span{height:1.85em;}
-.sx-linux-code{margin:0;white-space:pre;overflow:hidden;color:#cbd8d0;font:inherit;text-align:left;direction:ltr;tab-size:2;}
+.sx-linux-code{margin:0;white-space:pre;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;color:#cbd8d0;font:inherit;text-align:left;direction:ltr;tab-size:2;}
 .sx-linux-code code{font:inherit;}
+.sx-linux-code::-webkit-scrollbar{display:none;}
 .sx-linux-code-line{display:block;height:1.85em;opacity:0;transition:opacity .12s ease;color:#c8d6d0;}
 .sx-linux-code-line.is-visible{opacity:1;}
 .sx-linux-code-line.is-cursor{color:#e9e3d5;}
