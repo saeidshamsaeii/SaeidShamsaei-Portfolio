@@ -56,8 +56,8 @@ test('automatic tour is shared by home and case pages and always allows manual t
  assert.match(director,/querySelectorAll<HTMLElement>\('\[data-tour-stop\]'\)/);
  assert.match(director,/requestAnimationFrame\(frame\)/);
  assert.match(director,/window\.scrollTo/);
- assert.match(director,/window\.addEventListener\('wheel',leave/);
- assert.match(director,/window\.addEventListener\('touchstart',leave/);
+ assert.match(director,/window\.addEventListener\('wheel',onManual/);
+ assert.match(director,/window\.addEventListener\('touchstart',onManual/);
  assert.match(director,/Pause tour/);
  assert.match(director,/Resume tour/);
  assert.match(director,/Change tour speed/);
