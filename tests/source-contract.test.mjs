@@ -51,26 +51,35 @@ test('readable word reveal is linked to native scroll and respects reduced motio
  assert.match(css,/sx-word-piece/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 });
-test('automatic tour is shared by home and case pages and always allows manual takeover',()=>{
+test('fixed 2x auto-tour is on by default, yields to manual scroll and resumes after idle',()=>{
  const director=read('components/GuidedTour.tsx');
  const horizontal=read('components/HorizontalCaseChapter.tsx');
  const homepage=read('components/PortfolioExperience.tsx');
  const cases=read('components/CaseStudy.tsx');
- assert.match(director,/querySelectorAll<HTMLElement>\('\[data-tour-stop\]'\)/);
- assert.match(director,/requestAnimationFrame\(frame\)/);
- assert.match(director,/window\.scrollTo/);
- assert.match(director,/window\.addEventListener\('wheel',onManual/);
- assert.match(director,/window\.addEventListener\('touchstart',onManual/);
- assert.match(director,/Pause tour/);
+ assert.match(director,/querySelectorAll<HTMLElement>\\('\\[data-tour-stop\\]'\\)/);
+ assert.match(director,/const AUTO_SPEED=2/);
+ assert.match(director,/const IDLE_RESUME_MS=3500/);
+ assert.match(director,/findNextFromScroll/);
+ assert.match(director,/resumeFromHere/);
+ assert.match(director,/scheduleResume/);
+ assert.match(director,/window\\.addEventListener\\('wheel',manualInput/);
+ assert.match(director,/window\\.addEventListener\\('touchstart',onTouchStart/);
+ assert.match(director,/window\\.addEventListener\\('keydown',onKey/);
+ assert.match(director,/window\\.addEventListener\\('scroll',onScroll/);
+ assert.match(director,/data-playback=\\{mode\\}/);
  assert.match(director,/sx-v11-tour/);
+ assert.match(director,/Fixed playback speed/);
+ assert.doesNotMatch(director,/Change tour speed/);
+ assert.match(director,/Pause tour/);
+ assert.match(director,/Resume tour/);
+ assert.match(director,/Exit guided tour/);
  assert.match(director,/frameIndex/);
  assert.match(horizontal,/data-horizontal-chapter/);
  assert.match(horizontal,/data-frame-index/);
- assert.match(director,/Resume tour/);
- assert.match(director,/Change tour speed/);
- assert.match(director,/Exit guided tour/);
- assert.match(homepage,/window\.setTimeout\(\(\)=>\{if\(!tourDismissed&&!interacted\)setTour\(true\);\},1800\)/);
- assert.match(cases,/window\.setTimeout\(\(\)=>\{if\(!dismissed&&!interacted\)setTour\(true\);\},1800\)/);
+ assert.match(homepage,/useState\\(true\\)/);
+ assert.match(cases,/useState\\(true\\)/);
+ assert.doesNotMatch(homepage,/Restart guided site tour|sx-tour-trigger/);
+ assert.doesNotMatch(cases,/RESTART TOUR/);
 });
 test('pinned long-form chapters convert scrollY into twenty horizontal frames, then release naturally',()=>{
  const home=read('components/PortfolioExperience.tsx');
