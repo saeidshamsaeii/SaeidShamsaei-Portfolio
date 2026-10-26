@@ -37,12 +37,12 @@
 /* The old bottom-left boxed director is retired. Only a transparent slim
    floating control line is shown above content, below the main navigation. */
 .sx-guided-tour.sx-v11-tour{position:fixed!important;inset:auto clamp(16px,3vw,45px) auto auto!important;top:clamp(78px,9svh,110px)!important;width:auto!important;max-width:min(640px,calc(100vw - 32px))!important;padding:8px 0!important;min-height:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;display:flex!important;align-items:center;flex-direction:row!important;justify-content:flex-end;gap:14px!important;color:#f4eee3;}
-.sx-v11-tour .sx-v11-top-label{color:#d8c4a5;font:600 9px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.11em;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 8px #000;}
+.sx-v11-tour .sx-v11-top-label{color:#d8c4a5;font:600 9px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.11em;max-width:245px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 8px #000;}
 .sx-v11-tour .sx-v11-top-progress{width:clamp(38px,7vw,105px);height:2px;background:#ded2bd39;flex-shrink:0;}
 .sx-v11-tour .sx-v11-top-progress i{height:100%;display:block;background:#d0ae80;}
 .sx-v11-tour .sx-v11-top-button{border:0;background:transparent;color:#ead7b8;font:700 10px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.07em;cursor:pointer;padding:7px 3px;min-height:35px;text-shadow:0 1px 8px #000;}
 .sx-v11-tour .sx-v11-top-button:hover,.sx-v11-tour .sx-v11-top-button:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:5px;}
-.sx-v11-tour .sx-v11-speed{color:#dcb47f;border-bottom:1px solid #d0ae805d;font-size:11px;}
+.sx-v11-tour .sx-v11-top-speed{color:#dcb47f;font:750 11px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.07em;white-space:nowrap;user-select:none;}
 .sx-v11-tour .sx-v11-top-exit{font-size:14px;color:#b8c1bb;}
 @media(max-width:900px){
  .sx-site .sx-v11-slide{padding-inline:clamp(22px,5vw,55px);}
@@ -90,4 +90,14 @@
  .sx-v11-project-status{display:none;}
  .sx-guided-tour.sx-v11-tour{display:none!important;}
  .sx-site .sx-v11-story-content>p{font-size:clamp(17px,2vw,24px);}
+}
+
+/* Edition 12: automatic resume is a status, never a boxed overlay. */
+.sx-guided-tour.sx-v11-tour[data-playback="manual"] .sx-v11-top-label{color:#e1bb84;}
+.sx-guided-tour.sx-v11-tour[data-playback="manual"] .sx-v11-top-progress i{background:#e1bb84;}
+.sx-guided-tour.sx-v11-tour[data-playback="paused"] .sx-v11-top-label{color:#b6c3bd;}
+.sx-v11-tour .sx-v11-top-speed{pointer-events:none;}
+@media(max-width:760px){
+ .sx-v11-tour .sx-v11-top-speed{font-size:10px;}
+ .sx-v11-tour .sx-v11-top-label{max-width:125px;}
 }
