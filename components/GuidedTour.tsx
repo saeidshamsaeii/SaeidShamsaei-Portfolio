@@ -84,7 +84,13 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    raf=requestAnimationFrame(frame);
   };
   const leave=()=>onExitRef.current();
+  const onManual=(e:WheelEvent|TouchEvent)=>{
+   // A tap or wheel on playback controls is not an exit gesture.
+   if(e.target instanceof Element&&e.target.closest('.sx-guided-tour'))return;
+   leave();
+  };
   const onKey=(e:KeyboardEvent)=>{
+   if(e.target instanceof Element&&e.target.closest('.sx-guided-tour')&&e.key!=='Escape')return;
    if(e.key==='Escape'||['ArrowDown','ArrowUp','PageDown','PageUp',' ','Home','End'].includes(e.key))leave();
   };
   const onPointer=(e:PointerEvent)=>{
@@ -93,16 +99,16 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const onVisibility=()=>{
    if(document.hidden&&!pausedRef.current){pausedRef.current=true;setPaused(true);}
   };
-  window.addEventListener('wheel',leave,{passive:true});
-  window.addEventListener('touchstart',leave,{passive:true});
+  window.addEventListener('wheel',onManual,{passive:true});
+  window.addEventListener('touchstart',onManual,{passive:true});
   window.addEventListener('keydown',onKey);
   document.addEventListener('pointerdown',onPointer);
   document.addEventListener('visibilitychange',onVisibility);
   raf=requestAnimationFrame(frame);
   return()=>{
    cancelAnimationFrame(raf);delete root.dataset.portfolioTour;
-   window.removeEventListener('wheel',leave);
-   window.removeEventListener('touchstart',leave);
+   window.removeEventListener('wheel',onManual);
+   window.removeEventListener('touchstart',onManual);
    window.removeEventListener('keydown',onKey);
    document.removeEventListener('pointerdown',onPointer);
    document.removeEventListener('visibilitychange',onVisibility);
