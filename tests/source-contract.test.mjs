@@ -75,7 +75,7 @@ test('fixed 2x auto-tour starts immediately, yields to manual input and resumes 
  assert.ok(!director.includes('Fixed playback speed'));
  assert.ok(director.includes('displaySpeed.toFixed(1)'));
  assert.ok(director.includes('setDisplaySpeed'));
- assert.match(read('app/edition13.css'),/@media \\(scripting:enabled\\)/);
+ assert.ok(read('app/edition13.css').includes('@media (scripting:enabled)'));
  assert.ok(!director.includes('Change tour speed'));
  assert.ok(director.includes('Pause tour'));
  assert.ok(director.includes('Resume tour'));
@@ -103,9 +103,9 @@ test('edited eight-frame chapters stay horizontal and release naturally with scr
  assert.match(css,/overflow:visible!important/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.match(word,/chapter\.dataset\.frameProgress/);
- assert.match(word,/opacity=String\\(fraction\\)/);
- assert.match(word,/clipPath='inset\\(0 '/);
- assert.match(read('app/layout.tsx'),/edition13\\.css/);
+ assert.ok(word.includes('opacity=String(fraction)'));
+ assert.ok(word.includes("clipPath='inset(0 '"));
+ assert.ok(read('app/layout.tsx').includes("import './edition13.css';"));
  assert.match(read('app/layout.tsx'),/edition11\.css/);
 });
 test('personal portrait is preserved and public-facing case narrative is English',()=>{
