@@ -261,3 +261,17 @@
  .sx-gartal-site-hero h3{font-size:clamp(19px,4.5vw,32px);}
  .sx-gartal-service-row span{font-size:7px;padding:8px;}
 }
+
+/* Keep the case-study source screen inside the editorial hero at every size. */
+.case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase{border:1px solid #d0ae8030;border-radius:11px;min-width:0;padding:12px;overflow:hidden;}
+.case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase>.sx-source-app{height:100%;max-height:100%;min-height:0;flex:1;}
+.sx-site .sx-ed7-image-detail.sx-source-detail::after{display:none;}
+@media(max-width:760px){
+ .case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase{height:clamp(390px,57svh,490px);min-height:390px;padding:9px;}
+ .case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase>.sx-source-app{min-height:0;max-height:100%;height:100%;}
+ .case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase .sx-app-two-cols>.sx-app-module:nth-child(2){display:none;}
+ .case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase .sx-source-app-layout{grid-template-columns:95px minmax(0,1fr);}
+ .case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase .sx-source-app-primary{padding:7px;}
+ .case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase .sx-app-metric-row span{padding:8px 4px;}
+ .case-study .case-hero-art.sx-v4-case-hero-art.sx-source-showcase .sx-app-screen--gartal-site{padding:0;}
+}
