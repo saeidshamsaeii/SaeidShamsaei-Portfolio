@@ -62,8 +62,8 @@ test('automatic tour is shared by home and case pages and always allows manual t
  assert.match(director,/Resume tour/);
  assert.match(director,/Change tour speed/);
  assert.match(director,/Exit guided tour/);
- assert.match(homepage,/window\.setTimeout\(\(\)=>\{if\(!tourDismissed\)setTour\(true\);\},1800\)/);
- assert.match(cases,/window\.setTimeout\(\(\)=>\{if\(!dismissed\)setTour\(true\);\},1800\)/);
+ assert.match(homepage,/window\.setTimeout\(\(\)=>\{if\(!tourDismissed&&!interacted\)setTour\(true\);\},1800\)/);
+ assert.match(cases,/window\.setTimeout\(\(\)=>\{if\(!dismissed&&!interacted\)setTour\(true\);\},1800\)/);
 });
 test('personal portrait is preserved and public-facing case narrative is English',()=>{
  const homepage=read('components/PortfolioExperience.tsx');
