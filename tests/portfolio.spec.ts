@@ -21,7 +21,7 @@ test('full portfolio pins four image-free, five distinct editorial horizontal sc
   await expect(section.locator('.sx-v14-editorial-copy>p')).toHaveCount(3);
   await expect(section.locator('img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
-  await expect(section.locator('.sx-v11-slide--end')).toHaveCount(1);
+  await expect(section.locator('.sx-v14-ending')).toHaveCount(1);
   await expect(section.getByRole('link',{name:/FULL CASE STUDY/i})).toHaveAttribute('href','/work/'+id+'/');
  }
  expect(errors).toEqual([]);
@@ -148,7 +148,7 @@ test('reduced-motion readers receive full text and no automatic movement',async(
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
- const word=page.locator('#project-gartal-origin .sx-word-piece').first();
+ const word=page.locator('#project-gartal .sx-v14-scene--statement .sx-word-piece').first();
  const style=await word.evaluate(el=>({opacity:getComputedStyle(el).opacity,transform:getComputedStyle(el).transform}));
  expect(style.opacity).toBe('1');
  expect(style.transform).toBe('none');
