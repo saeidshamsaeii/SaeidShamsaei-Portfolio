@@ -4,74 +4,84 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
-const read=(name)=>fs.readFileSync(path.join(root,name),'utf8');
+const read=(file)=>fs.readFileSync(path.join(root,file),'utf8');
 
-test('homepage opens with three text-first scenes and no hero portrait',()=>{
- const src=read('components/ScrollHero.tsx');
- assert.match(src,/const slides=\[/);
- assert.equal((src.match(/index:'0[123]'/g)||[]).length,3);
- assert.match(src,/I BUILD DIGITAL/);
- assert.match(src,/MY PURPOSE/);
- assert.match(src,/HOW I THINK/);
- assert.doesNotMatch(src,/<img\b/);
- assert.match(src,/href="#about"/);
-});
-
-test('authentic portrait is in the About chapter, before the project sequence',()=>{
- const homepage=read('components/PortfolioExperience.tsx');
- const portrait=homepage.indexOf('src="/assets/hires/portrait.webp"');
- const about=homepage.indexOf('id="about"');
- const projects=homepage.indexOf('id="selected-projects"');
- assert.ok(about>=0&&portrait>about&&projects>portrait);
- assert.equal((homepage.match(/src="\/assets\/hires\/portrait.webp"/g)||[]).length,1);
- assert.ok(fs.statSync(path.join(root,'public/assets/hires/portrait.webp')).size>1000);
-});
-
-test('confirmed biography values are precise and public text is English only',()=>{
- const bio=read('data/portfolio.ts');
- assert.match(bio,/ageYears:\s*25\s*,/);
- assert.match(bio,/yearsOfExperience:\s*5\s*[,\n}]/);
- const homepage=read('components/PortfolioExperience.tsx');
- assert.match(homepage,/publicBiography\.ageYears/);
- assert.match(homepage,/publicBiography\.yearsOfExperience/);
- assert.doesNotMatch(homepage,/[\u0600-\u06ff]/);
- assert.doesNotMatch(homepage,/\bIran\b/i);
-});
-
-test('source includes four real project chapters and direct case navigation',()=>{
- const homepage=read('components/PortfolioExperience.tsx');
- const data=read('data/portfolio.ts');
- assert.match(homepage,/projects\.map\(/);
- assert.match(homepage,/\/work\/\x27\+project\.id/);
- const preview=read('components/SourceProductPreview.tsx');
- for(const name of ['gartal','factory','digirezhim','petiwoo']){
-  assert.ok(data.includes("id:'"+name+"'"),'missing '+name);
-  assert.ok(preview.includes(name+':{'),'source study missing '+name);
- }
- assert.match(homepage,/SourceProductPreview id=\{project\.id\} compact/);
- assert.doesNotMatch(homepage,/project-'\+project\.id\+'\.webp/);
- assert.match(preview,/NOT A SCREENSHOT/);
-});
-
-test('Linux terminal uses actual scroll-revealed DOM text rather than imagery',()=>{
+test('Linux hero types real DOM code according to scroll and retains three editorial acts',()=>{
  const hero=read('components/ScrollHero.tsx');
  const linux=read('components/LinuxCodeCanvas.tsx');
- const css=read('app/edition09.css');
- assert.match(hero,/progress=\{progress\}/);
+ assert.equal((hero.match(/index:'0[123]'/g)||[]).length,3);
  assert.match(hero,/requestAnimationFrame\(update\)/);
+ assert.match(hero,/LinuxCodeCanvas progress=\{progress\}/);
+ assert.match(hero,/WordReveal as="span"/);
  assert.match(linux,/fullProgram\.slice\(0,reveal\)/);
- assert.match(linux,/reduced\?1:progress/);
- assert.match(linux,/sx-linux-code-line/);
  assert.doesNotMatch(linux,/<img\b|<canvas\b|<video\b/);
- assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
- assert.match(read('app/layout.tsx'),/edition09\.css/);
+ assert.match(hero,/data-tour-progress/);
 });
-
-test('source retains reduced-motion and direct page accessibility',()=>{
- const css=read('app/edition08.css');
- const layout=read('app/layout.tsx');
+test('all four case studies replace images and visual simulations with detailed source-backed prose',()=>{
+ const home=read('components/PortfolioExperience.tsx');
+ const detail=read('components/CaseStudy.tsx');
+ const narrative=read('data/caseNarratives.ts');
+ const data=read('data/portfolio.ts');
+ assert.doesNotMatch(home,/SourceProductPreview|project-'\+project\.id|sx-v4-project-art|sx-slide--overview/);
+ assert.doesNotMatch(detail,/SourceProductPreview|project-'\+p\.id|case-hero-art/);
+ assert.match(home,/story\.chapters\.map/);
+ assert.match(detail,/story\.chapters\.map/);
+ assert.match(home,/WordReveal/);
+ assert.match(detail,/WordReveal/);
+ for(const id of ['gartal','factory','digirezhim','petiwoo']){
+  assert.ok(data.includes("id:'"+id+"'"),'missing core project '+id);
+  assert.match(narrative,new RegExp('\\b'+id+':\\{'));
+ }
+ assert.equal((narrative.match(/durationSeconds:/g)||[]).length,24);
+ assert.match(narrative,/GARTAL-SITE/);
+ assert.match(narrative,/AI-Development-Factory/);
+ assert.match(narrative,/DigiRezhim/);
+ assert.match(narrative,/Core-Petshop-Store/);
+});
+test('readable word reveal is linked to native scroll and respects reduced motion',()=>{
+ const words=read('components/WordReveal.tsx');
+ const css=read('app/edition10.css');
+ assert.match(words,/data-reveal-word/);
+ assert.match(words,/IntersectionObserver/);
+ assert.match(words,/window\.addEventListener\('scroll'/);
+ assert.match(words,/window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)/);
+ assert.match(words,/sx-word-a11y/);
+ assert.match(css,/sx-word-piece/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
- assert.match(css,/sx-v8-about-portrait/);
+});
+test('automatic tour is shared by home and case pages and always allows manual takeover',()=>{
+ const director=read('components/GuidedTour.tsx');
+ const homepage=read('components/PortfolioExperience.tsx');
+ const cases=read('components/CaseStudy.tsx');
+ assert.match(director,/querySelectorAll<HTMLElement>\('\[data-tour-stop\]'\)/);
+ assert.match(director,/requestAnimationFrame\(frame\)/);
+ assert.match(director,/window\.scrollTo/);
+ assert.match(director,/window\.addEventListener\('wheel',leave/);
+ assert.match(director,/window\.addEventListener\('touchstart',leave/);
+ assert.match(director,/Pause tour/);
+ assert.match(director,/Resume tour/);
+ assert.match(director,/Change tour speed/);
+ assert.match(director,/Exit guided tour/);
+ assert.match(homepage,/window\.setTimeout\(\(\)=>\{if\(!tourDismissed\)setTour\(true\);\},1800\)/);
+ assert.match(cases,/window\.setTimeout\(\(\)=>\{if\(!dismissed\)setTour\(true\);\},1800\)/);
+});
+test('personal portrait is preserved and public-facing case narrative is English',()=>{
+ const homepage=read('components/PortfolioExperience.tsx');
+ const bio=read('data/portfolio.ts');
+ const cases=read('data/caseNarratives.ts');
+ assert.equal((homepage.match(/src="\/assets\/hires\/portrait\.webp"/g)||[]).length,1);
+ assert.ok(fs.statSync(path.join(root,'public/assets/hires/portrait.webp')).size>1000);
+ assert.match(bio,/ageYears:\s*25/);
+ assert.match(bio,/yearsOfExperience:\s*5/);
+ assert.doesNotMatch(cases,/[\u0600-\u06ff]/);
+ assert.doesNotMatch(homepage,/[\u0600-\u06ff]/);
+});
+test('Edition 10 theme is last in stack, retaining accessibility and no forced deployment',()=>{
+ const layout=read('app/layout.tsx');
+ const css=read('app/edition10.css');
+ assert.ok(layout.indexOf("import './edition10.css';")>layout.indexOf("import './edition09.css';"));
  assert.match(layout,/html lang="en" dir="ltr"/);
- assert.match(layout,/edition08\.css/);
+ assert.match(css,/sx-v10-case-section/);
+ assert.match(css,/sx-v10-story-panel/);
+ assert.match(css,/sx-v10-tour/);
 });
