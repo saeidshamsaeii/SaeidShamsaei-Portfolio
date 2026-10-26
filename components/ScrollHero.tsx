@@ -33,11 +33,12 @@ export function ScrollHero(){
   let frame=0;
   const update=()=>{
    frame=0;
-   if(media.matches){setReduced(true);setEnhanced(false);setScene(0);setProgress(1);return;}
+   if(media.matches){root.dataset.heroProgress='1';setReduced(true);setEnhanced(false);setScene(0);setProgress(1);return;}
    setReduced(false);setEnhanced(true);
    const rect=root.getBoundingClientRect();
    const distance=Math.max(1,rect.height-window.innerHeight);
    const fraction=Math.max(0,Math.min(1,-rect.top/distance));
+   root.dataset.heroProgress=String(fraction);
    setProgress(previous=>Math.abs(previous-fraction)>.001?fraction:previous);
    const next=Math.min(slides.length-1,Math.floor(fraction*slides.length));
    setScene(previous=>previous===next?previous:next);
