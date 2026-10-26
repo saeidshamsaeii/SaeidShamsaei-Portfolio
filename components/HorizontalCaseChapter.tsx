@@ -1,132 +1,127 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
-import {caseNarratives} from '@/data/caseNarratives';
+import {homeStories} from '@/data/homeStories';
 import {projects,type Project} from '@/data/portfolio';
 import {WordReveal} from '@/components/WordReveal';
 
-const clamp=(v:number)=>Math.min(1,Math.max(0,v));
+const clamp=(v:number)=>Math.max(0,Math.min(1,v));
+
 /**
- * The homepage is a curated visual index, NOT a duplicate of the long case.
- * 8 frames per project: brand, six unique source-grounded chapters, handoff.
- * Normal vertical scroll drives the horizontally pinned rail; the next
- * product enters vertically once the final frame releases.
+ * A short horizontal editorial sequence, not a gallery of identical cards.
+ * 5 scenes (identity / question / mechanism / human value / next chapter)
+ * replace the old 20 and 8-panel loops.
+ * Only native vertical document scroll controls the pinned horizontal track.
  */
 export function HorizontalCaseChapter({project,index}:{project:Project;index:number}){
  const section=useRef<HTMLElement>(null);
- const stage=useRef<HTMLDivElement>(null);
  const rail=useRef<HTMLDivElement>(null);
- const count=8;
+ const count=5;
+ const story=homeStories[project.id];
  const next=projects[index+1];
- const narrative=caseNarratives[project.id];
- const closingTitle={
-  gartal:'From an idea to a product foundation.',
-  factory:'When provenance becomes the workflow.',
-  digirezhim:'Precision lives in the clinical details.',
-  petiwoo:'A storefront designed for living needs.'
- }[project.id];
  const [current,setCurrent]=useState(0);
+
  useEffect(()=>{
-  const node=section.current,viewport=stage.current,track=rail.current;
-  if(!node||!viewport||!track)return;
-  const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const node=section.current,track=rail.current;
+  if(!node||!track)return;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let raf=0;
   const update=()=>{
    raf=0;
-   if(motion.matches)return;
+   if(reduced.matches)return;
    const rect=node.getBoundingClientRect();
-   const progress=clamp(-rect.top/Math.max(1,rect.height-window.innerHeight));
+   const available=Math.max(1,rect.height-window.innerHeight);
+   const progress=clamp(-rect.top/available);
    const scaled=Math.min(count-.00001,progress*count);
-   const index=Math.min(count-1,Math.floor(scaled));
-   const phase=scaled-index;
-   const t=clamp((phase-.72)/.28);
-   const glide=t*t*(3-2*t);
-   track.style.transform='translate3d('+(-Math.min(count-1,index+glide)*window.innerWidth)+'px,0,0)';
+   const position=Math.min(count-1,Math.floor(scaled));
+   const fraction=scaled-position;
+   // Differentiate reading from movement: leave time for words to reveal,
+   // then a gentle tracking glide connects the next scene without a hard cut.
+   const departure=clamp((fraction-.67)/.33);
+   const glide=departure*departure*(3-2*departure);
+   const offset=Math.min(count-1,position+glide);
+   track.style.transform='translate3d('+(-offset*window.innerWidth)+'px,0,0)';
    node.dataset.frameProgress=String(scaled);
-   node.dataset.activeFrame=String(index);
-   setCurrent(previous=>previous===index?previous:index);
+   node.dataset.activeFrame=String(position);
+   setCurrent(previous=>previous===position?previous:position);
   };
   const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const measure=()=>{
-   if(motion.matches){
-    node.style.height='';
+   if(reduced.matches){
+    node.style.removeProperty('height');
     node.dataset.frameProgress=String(count);
-    track.style.transform='';
+    track.style.removeProperty('transform');
     track.style.removeProperty('--sx-horizontal-width');
     return;
    }
-   const perFrame=Math.max(440,Math.round(window.innerHeight*(window.innerWidth<761?.85:.94)));
-   node.style.height=(window.innerHeight+perFrame*count)+'px';
+   const frameDistance=Math.max(360,Math.round(window.innerHeight*(window.innerWidth<761?.93:1.09)));
+   node.style.height=(window.innerHeight+frameDistance*count)+'px';
    track.style.setProperty('--sx-horizontal-width',window.innerWidth+'px');
    request();
   };
   window.addEventListener('scroll',request,{passive:true});
   window.addEventListener('resize',measure);
-  motion.addEventListener('change',measure);
+  reduced.addEventListener('change',measure);
   measure();
   return()=>{
    if(raf)cancelAnimationFrame(raf);
    window.removeEventListener('scroll',request);
    window.removeEventListener('resize',measure);
-   motion.removeEventListener('change',measure);
-   node.style.height='';track.style.transform='';
+   reduced.removeEventListener('change',measure);
+   node.style.removeProperty('height');
+   track.style.removeProperty('transform');
   };
  },[]);
- return <section ref={section} id={'project-'+project.id}
-  className={'sx-v10-chapter sx-v10-chapter--'+project.id+' sx-v11-horizontal-chapter sx-v12-curated'}
+
+ return <section id={'project-'+project.id} ref={section}
+  className={'sx-v10-chapter sx-v10-chapter--'+project.id+' sx-v11-horizontal-chapter sx-v14-story'}
   data-horizontal-chapter="" data-frame-count={count} data-frame-progress="0"
   aria-labelledby={'title-'+project.id}>
-  <div className="sx-v11-sticky" ref={stage}>
+  <div className="sx-v11-sticky">
    <div className="sx-v11-rail" ref={rail}>
-    <article className="sx-v11-slide sx-v11-slide--intro" data-frame-index="0" data-tour-stop
-     data-tour-pace="0.76" data-tour-label={project.brand+' / opening'} data-tour-duration="8">
-     <div className="sx-v11-intro-layout">
-      <WordReveal as="span" className="sx-v10-counter" text={project.index+' / SELECTED ENGINEERING WORK'}/>
+    <article className="sx-v11-slide sx-v14-scene sx-v14-opening" data-frame-index="0"
+     data-tour-stop data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
+     <div className="sx-v14-scene-index"><span>{project.index} / 04</span><span>SELECTED ENGINEERING WORK</span></div>
+     <div className="sx-v14-opening-inner">
       <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
-      <WordReveal as="p" className="sx-v10-thesis" text={narrative.thesis}/>
-      <div className="sx-v10-techline">{project.stack.map(technology=><WordReveal as="span" key={technology} text={technology}/>)}</div>
-      <Link className="sx-v10-case-link" href={'/work/'+project.id+'/'}><WordReveal as="span" text="READ THE COMPLETE CASE STUDY ↗"/></Link>
+      <WordReveal as="p" text={story.signature}/>
+     </div>
+     <div className="sx-v14-opening-foot">
+      <span>{project.kicker.en}</span>
+      <a href={'/work/'+project.id+'/'}>FULL CASE STUDY ↗</a>
      </div>
     </article>
-    {narrative.chapters.map((chapter,i)=><article key={chapter.id}
-     className={'sx-v11-slide sx-v11-slide--story sx-v12-chapter-scene sx-v12-chapter-scene--'+(i%3)}
-     id={'project-'+project.id+'-'+chapter.id}
-     data-frame-index={i+1} data-tour-stop
-     data-tour-pace={String([1.12,.82,.7,1.25,.92,1.48][i])}
-     data-tour-label={project.brand+' / '+chapter.title}
-     data-tour-duration={String(Math.max(7,chapter.durationSeconds))}>
-     <div className="sx-v11-story-meta">
-      <WordReveal as="span" className="sx-v10-counter" text={project.index+' / '+chapter.eyebrow}/>
-      <span className="sx-v11-story-sequence">{String(i+1).padStart(2,'0')} / 06</span>
+    {story.beats.map((beat,i)=><article key={beat.eyebrow} id={'project-'+project.id+'-'+['origin','architecture','experience'][i]}
+     className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+beat.mode}
+     data-frame-index={i+1} data-tour-stop data-tour-label={project.brand+' / '+beat.eyebrow}
+     data-tour-duration={String(beat.duration)} data-tour-pace={String(beat.pace)}>
+     <div className="sx-v14-scene-index"><span>{project.index} / {String(i+1).padStart(2,'0')}</span><span>{beat.eyebrow}</span></div>
+     <div className="sx-v14-editorial-copy">
+      <WordReveal as="h3" text={beat.headline}/>
+      <WordReveal as="p" text={beat.copy}/>
      </div>
-     <div className="sx-v11-story-content">
-      <WordReveal as="h3" text={chapter.title}/>
-      <WordReveal text={chapter.paragraphs[0]}/>
-      <div className="sx-v11-story-points" aria-label="Documented engineering characteristics">
-       {chapter.details.map((note,j)=><WordReveal as="span" key={note} text={String(j+1).padStart(2,'0')+' / '+note}/>)}
-      </div>
-     </div>
-     <div className="sx-v11-frame-footer">
-      <WordReveal as="span" text={'STORY '+String(i+1).padStart(2,'0')+' / 06'}/>
-      <span>CONTINUE TO DISCOVER <b aria-hidden="true">→</b></span>
-     </div>
+     <aside className="sx-v14-observations" aria-label="Implementation notes">
+      {beat.notes.map((note,j)=><div key={note}><small>{String(j+1).padStart(2,'0')}</small><WordReveal as="span" text={note}/></div>)}
+     </aside>
     </article>)}
-    <article className="sx-v11-slide sx-v11-slide--end" data-frame-index={count-1}
-     data-tour-stop data-tour-pace="1.36"
-     data-tour-label={project.brand+' / continue'} data-tour-duration="8">
-     <WordReveal as="span" className="sx-v10-counter" text={project.brand+' / BEYOND THE OVERVIEW'}/>
-     <WordReveal as="h3" text={closingTitle}/>
-     <WordReveal text={project.outcome.en}/>
-     <div className="sx-v11-end-links">
-      <Link href={'/work/'+project.id+'/'}><WordReveal as="span" text="EXPLORE THE FULL TECHNICAL STORY ↗"/></Link>
-      <a href={next?'#project-'+next.id:'#contact'}><WordReveal as="span" text={next?'NEXT / '+next.brand+' ↓':'LET’S TALK ↓'}/></a>
+    <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="4"
+     data-tour-stop data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
+     <div className="sx-v14-scene-index"><span>{project.index} / FIN</span><span>WHAT REMAINS</span></div>
+     <div className="sx-v14-ending-inner"><WordReveal as="h3" text={story.ending}/>
+      <WordReveal as="p" text={project.outcome.en}/>
+      <div className="sx-v14-ending-actions">
+       <Link href={'/work/'+project.id+'/'}>READ THE CASE STUDY ↗</Link>
+       <a href={next?'#project-'+next.id:'#contact'}>{next?'NEXT / '+next.brand:'LET’S TALK'} ↓</a>
+      </div>
      </div>
     </article>
    </div>
    <div className="sx-v11-project-status" aria-label={project.brand+' chapter progress'}>
     <span>{project.index} / {project.brand}</span>
-    <div className="sx-v11-project-meter" aria-hidden="true"><i style={{width:((current+1)/count*100)+'%'}}/></div>
-    <span>{String(current+1).padStart(2,'0')} / {count}</span>
+    <div className="sx-v11-project-meter" aria-hidden="true">
+     <i style={{width:((current+1)/count*100)+'%'}}/>
+    </div>
+    <span>{String(current+1).padStart(2,'0')} / 05</span>
    </div>
   </div>
  </section>;
