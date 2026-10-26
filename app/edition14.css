@@ -106,3 +106,18 @@
  .sx-site .sx-v14-story .sx-v14-scene{min-height:68svh;height:auto;overflow:visible;}
  .sx-v14-observations{align-self:stretch;}
 }
+
+/* Let the words appear on their baseline rather than bouncing upward.
+   Keep scroll as the only animation timeline; remove theatrical typewriter
+   bars from editorial copy while retaining the meaningful Linux cursor. */
+.sx-site .sx-word-piece,.sx-v10-case-page .sx-word-piece{
+ transform:none!important;
+ transition:opacity .1s linear,clip-path .1s linear!important;
+}
+.sx-v10-case-page .sx-v14-case-chapter-head{width:100%;min-width:0;}
+.sx-v10-case-page .sx-v14-case-chapter-head h2{margin:0 0 clamp(10px,1svh,16px);}
+.sx-v14-story .sx-v14-editorial-copy .sx-word-reveal,
+.sx-v14-story .sx-v14-ending-inner .sx-word-reveal{max-width:100%;}
+@media(max-width:760px){
+ .sx-v10-case-page .sx-v14-case-chapter-head h2{margin-bottom:8px;}
+}
