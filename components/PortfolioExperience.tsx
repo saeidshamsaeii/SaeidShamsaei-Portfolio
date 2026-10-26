@@ -1,67 +1,18 @@
 'use client';
-import {useCallback,useEffect,useRef,useState} from 'react';
+import {useEffect,useState} from 'react';
 import Link from 'next/link';
 import {ScrollHero} from '@/components/ScrollHero';
 import {GuidedTour} from '@/components/GuidedTour';
 import {WordReveal} from '@/components/WordReveal';
-import {caseNarratives} from '@/data/caseNarratives';
+import {HorizontalCaseChapter} from '@/components/HorizontalCaseChapter';
 
-import {projects,publicContact,publicBiography,type Project} from '@/data/portfolio';
-
-const themes:{[key in Project['id']]:{sector:string;accent:string;tagline:string}}={
- gartal:{sector:'ENTERPRISE PLATFORM',accent:'gold',tagline:'One foundation. Multiple businesses.'},
- factory:{sector:'AI ENGINEERING',accent:'blue',tagline:'From repository to governed delivery.'},
- digirezhim:{sector:'HEALTHTECH',accent:'mint',tagline:'Physician knowledge. Structured decisions.'},
- petiwoo:{sector:'VERTICAL COMMERCE',accent:'peach',tagline:'Thoughtful technology for pet care.'}
-};
+import {projects,publicContact,publicBiography} from '@/data/portfolio';
 
 function Brand({footer=false}:{footer?:boolean}){
  return <Link className={'sx-brand'+(footer?' sx-brand--footer':'')} href="/" aria-label="Saeid Shamsaei — home">
   <img src="/assets/hires/logo.webp" width={44} height={44} alt="" decoding="async"/>
   <span>SAEID <strong>SHAMSAEI</strong>{footer&&<small>Product architecture & engineering</small>}</span>
  </Link>;
-}
-
-function ProjectChapter({project,index}:{project:Project;index:number}){
- const story=caseNarratives[project.id];
- const meta=themes[project.id];
- const next=projects[index+1];
- return <section className={'sx-v10-chapter sx-v10-chapter--'+project.id} id={'project-'+project.id}
-  aria-labelledby={'title-'+project.id}>
-  <div className="sx-v10-chapter-intro" data-tour-stop data-tour-label={project.brand+' / overview'} data-tour-duration="8">
-   <span className="sx-v10-counter">{project.index} / 04 — {meta.sector}</span>
-   <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
-   <WordReveal as="p" className="sx-v10-thesis" text={story.thesis}/>
-   <div className="sx-v10-techline" aria-label="Source-documented technology">
-    {project.stack.map(technology=><span key={technology}>{technology}</span>)}
-   </div>
-   <a className="sx-v10-case-link" href={'/work/'+project.id+'/'}>FULL TECHNICAL CASE STUDY ↗</a>
-  </div>
-  {story.chapters.map((chapter,i)=><article key={chapter.id} id={'project-'+project.id+'-'+chapter.id}
-   className="sx-v10-story-panel" data-tour-stop data-tour-label={project.brand+' / '+chapter.title}
-   data-tour-duration={String(chapter.durationSeconds)}>
-   <div className="sx-v10-story-mark"><span>{project.index} / {String(i+1).padStart(2,'0')}</span><span>{chapter.eyebrow}</span></div>
-   <div className="sx-v10-story-text">
-    <WordReveal as="h3" text={chapter.title}/>
-    {chapter.paragraphs.map((paragraph,j)=><WordReveal key={j} text={paragraph}/>)}
-   </div>
-   <aside className="sx-v10-story-aside" aria-label="Documented focus areas">
-    <span>ARCHITECTURAL NOTES</span>
-    {chapter.details.map((detail,j)=><div key={detail}><small>{String(j+1).padStart(2,'0')}</small><WordReveal as="span" text={detail}/></div>)}
-   </aside>
-   <span className="sx-v10-panel-end" aria-hidden="true">{String(i+1).padStart(2,'0')} / 06</span>
-  </article>)}
-  <div className="sx-v10-chapter-end" data-tour-stop data-tour-label={project.brand+' / evidence and next'} data-tour-duration="7">
-   <div><span className="sx-v10-counter">SOURCE / NOT A SIMULATED SCREENSHOT</span>
-    <WordReveal as="h3" text="Evidence over decoration."/>
-    <WordReveal text={project.outcome.en}/>
-    <p className="sx-v10-source-line">Checked-in evidence: {project.source}</p>
-   </div>
-   <div className="sx-v10-chapter-nav"><Link href={'/work/'+project.id+'/'}>Explore every technical detail ↗</Link>
-    <a href={next?'#project-'+next.id:'#contact'}>{next?'NEXT / '+next.brand:'LET’S TALK'} ↓</a>
-   </div>
-  </div>
- </section>;
 }
 
 export default function PortfolioExperience(){
@@ -133,7 +84,7 @@ export default function PortfolioExperience(){
     <span className="sx-kicker">SELECTED WORK / FOUR STORIES</span>
     <span className="sx-work-intro-hint">SCROLL DOWN · EXPLORE SIDEWAYS ↘</span>
    </div>
-   {projects.map((project,index)=><ProjectChapter key={project.id} project={project} index={index}/>)}
+   {projects.map((project,index)=><HorizontalCaseChapter key={project.id} project={project} index={index}/>)}
 
    <section className="sx-contact sx-editorial-frame" id="contact" data-tour-stop data-tour-label="Start a conversation" data-tour-duration="10" aria-labelledby="sx-contact-title">
     <p className="sx-kicker">04 / DIRECT CONTACT</p>
