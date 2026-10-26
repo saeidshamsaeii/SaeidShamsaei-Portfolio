@@ -31,7 +31,12 @@ export default function CaseStudy({id}:{id:ProjectId}){
      data-tour-pace={String([.92,.68,1.23,.83,1.12,.74][i])}>
     <div className="sx-v10-story-mark"><WordReveal as="span" text={String(i+1).padStart(2,"0")+" / 06"}/><WordReveal as="span" text={chapter.eyebrow}/></div>
     <div className="sx-v10-story-text"><WordReveal as="h2" text={chapter.title}/>
-     {chapter.paragraphs.map((paragraph,j)=><WordReveal key={j} text={paragraph}/>)}
+     {chapter.paragraphs.map((paragraph,j)=><div key={j} className="sx-v13-paragraph"
+      data-tour-stop data-tour-label={p.brand+' / '+chapter.title+' / passage '+(j+1)}
+      data-tour-duration={String([8,10,9][j])}
+      data-tour-pace={String([.82,1.24,.7][j])}>
+      <WordReveal text={paragraph}/>
+     </div>)}
     </div>
     <aside className="sx-v10-story-aside"><WordReveal as="span" text="DOCUMENTED CONSIDERATIONS"/>
      {chapter.details.map((detail,j)=><div key={detail}><WordReveal as="small" text={String(j+1).padStart(2,"0")}/><WordReveal as="span" text={detail}/></div>)}
