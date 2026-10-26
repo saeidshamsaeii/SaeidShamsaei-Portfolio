@@ -105,7 +105,7 @@ test('case pages are text-only with source links and auto-tour',async({page})=>{
   await page.goto('/work/'+id+'/',{waitUntil:'domcontentloaded'});
   const body=page.locator('.sx-v10-case-page');
   await expect(body.locator('.sx-v10-case-section')).toHaveCount(6);
-  await expect(body.locator('.sx-v10-case-section .sx-v10-story-text>p')).toHaveCount(6);
+  await expect(body.locator('.sx-v10-case-section .sx-v13-paragraph>p')).toHaveCount(6);
   await expect(body.locator('img,canvas,video')).toHaveCount(0);
   await expect(body.locator('.sx-source-app')).toHaveCount(0);
   await expect(body.locator('.sx-v10-reference-list>a').first()).toHaveAttribute('href',/github.com/);
