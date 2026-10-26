@@ -28,11 +28,23 @@ export function WordReveal({text,as='p',className='',id}:{
    frame=0;
    if(media.matches){clear();return;}
    host.dataset.motion='on';
-   const box=host.getBoundingClientRect();
-   // Start as the block enters lower viewport; complete before its exit.
-   // Long paragraphs are deliberately paced so every word has a scroll beat.
-   const travel=Math.max(window.innerHeight*.48,Math.min(window.innerHeight*.95,box.height+window.innerHeight*.27));
-   const progress=clamp((window.innerHeight*.91-box.top)/travel);
+   const chapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
+   const panel=host.closest<HTMLElement>('[data-frame-index]');
+   let progress=0;
+   if(chapter&&panel){
+    // While the project is pinned, the word animation must follow its
+    // own horizontal frame's vertical scroll interval. BoundingClientRect
+    // alone would remain stationary and stop the typography from typing.
+    const sectionProgress=Number(chapter.dataset.frameProgress||'0');
+    const frameIndex=Number(panel.dataset.frameIndex||'0');
+    const blocks=Array.from(panel.querySelectorAll<HTMLElement>('.sx-word-reveal'));
+    const ordinal=Math.max(0,blocks.indexOf(host));
+    progress=clamp((sectionProgress-frameIndex-.05-ordinal*.07)/Math.max(.17,.63-ordinal*.06));
+   }else{
+    const box=host.getBoundingClientRect();
+    const travel=Math.max(window.innerHeight*.48,Math.min(window.innerHeight*.95,box.height+window.innerHeight*.27));
+    progress=clamp((window.innerHeight*.91-box.top)/travel);
+   }
    const reached=progress*(pieces.length+2);
    for(let i=0;i<pieces.length;i++){
     const fade=clamp((reached-i)*1.65);
