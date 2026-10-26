@@ -1,4 +1,5 @@
 'use client';
+import {useEffect,useRef} from 'react';
 
 /**
  * A real DOM-based Linux editor scene. Scroll progress reveals the characters
@@ -33,6 +34,13 @@ export function LinuxCodeCanvas({progress=0,reduced=false}:{progress?:number;red
  const reveal=Math.min(fullProgram.length,Math.floor(Math.min(1,amount/.88)*fullProgram.length));
  const lines=fullProgram.slice(0,reveal).split('\n');
  const completion=reveal===fullProgram.length;
+ const editorScroll=useRef<HTMLPreElement>(null);
+ useEffect(()=>{
+  // On compact screens Neovim follows the caret as the real DOM text grows.
+  // This never changes the page's native scroll position.
+  const viewport=editorScroll.current;
+  if(viewport&&viewport.scrollHeight>viewport.clientHeight)viewport.scrollTop=viewport.scrollHeight;
+ },[reveal]);
  return <div className="sx-linux-scene" aria-hidden="true" data-complete={completion?'true':'false'}>
   <div className="sx-linux-ambient sx-linux-ambient--one"/>
   <div className="sx-linux-ambient sx-linux-ambient--two"/>
@@ -42,7 +50,7 @@ export function LinuxCodeCanvas({progress=0,reduced=false}:{progress?:number;red
     <div className="sx-linux-editor-header"><span className="sx-linux-dots"><i/><i/><i/></span><span>nvim ~/work/portfolio/vision.ts</span><span className="sx-linux-mode">NORMAL</span></div>
     <div className="sx-linux-editor-body">
      <div className="sx-linux-gutter">{codeStory.map((_,i)=><span key={i}>{String(i+1).padStart(2,'0')}</span>)}</div>
-     <pre className="sx-linux-code"><code>{codeStory.map((line,i)=>{
+     <pre className="sx-linux-code" ref={editorScroll}><code>{codeStory.map((line,i)=>{
       const current=lines[i]??'';
       const isCursor=i===lines.length-1&&!completion;
       const visible=lines.length>i;
