@@ -83,7 +83,7 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
 
  return <section ref={section} id={'project-'+project.id}
    className={'sx-v10-chapter sx-v10-chapter--'+project.id+' sx-v11-horizontal-chapter'}
-   data-horizontal-chapter data-frame-count={count} data-frame-progress="0"
+   data-horizontal-chapter="" data-frame-count={count} data-frame-progress="0"
    aria-labelledby={'title-'+project.id}>
   <div className="sx-v11-sticky" ref={stage}>
    <div className="sx-v11-rail" ref={rail}>
