@@ -57,7 +57,7 @@ export function WordReveal({text,as='p',className='',id}:{
   return()=>{observer.disconnect();window.removeEventListener('scroll',request);window.removeEventListener('resize',request);media.removeEventListener('change',onMotion);if(frame)cancelAnimationFrame(frame);};
  },[text]);
  const Tag=as;
- return <Tag id={id} ref={root as React.Ref<never>} className={'sx-word-reveal '+className} aria-label={text}>
+ return <Tag id={id} ref={(node:HTMLElement|null)=>{root.current=node;}} className={'sx-word-reveal '+className} aria-label={text}>
   <span className="sx-word-a11y">{text}</span>
   <span className="sx-word-pieces" aria-hidden="true">
    {words.map((word,i)=><span data-reveal-word="" className="sx-word-piece" key={i}>{word}{i<words.length-1?' ':''}</span>)}
