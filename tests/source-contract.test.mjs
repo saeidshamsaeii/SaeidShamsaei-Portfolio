@@ -32,7 +32,7 @@ test('all four case studies replace images and visual simulations with detailed 
   assert.ok(data.includes("id:'"+id+"'"),'missing core project '+id);
   assert.match(narrative,new RegExp('\\b'+id+':\\{'));
  }
- assert.equal((narrative.match(/durationSeconds:/g)||[]).length,24);
+ assert.equal((narrative.match(/durationSeconds:\d+/g)||[]).length,24);
  assert.match(narrative,/GARTAL-SITE/);
  assert.match(narrative,/AI-Development-Factory/);
  assert.match(narrative,/DigiRezhim/);
