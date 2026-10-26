@@ -181,13 +181,14 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    if(playback==='playing'&&!document.hidden){
     const delta=state.last?Math.min(100,time-state.last):0;
     state.last=time;
-    // Ease between different scene speeds instead of a robotic hard switch.
-    currentSpeed+=(targetSpeed-currentSpeed)*Math.min(1,delta/650);
+    // Continuously ramp velocity across narrative beats without instant changes.
+    currentSpeed+=(targetSpeed-currentSpeed)*Math.min(1,delta/800);
     state.elapsed+=delta*currentSpeed;
     const fraction=clamp(state.elapsed/state.duration);
-    const move=clamp(fraction/.83);
-    const eased=move*move*(3-2*move);
-    scriptedScroll=state.start+(state.end-state.start)*eased;
+    // One continuous camera move, not the old repeated stop/ease/hold pattern
+    // that appeared fake at every chapter. Variation comes from the smoothed
+    // physical scroll pace, not from restarting a CSS easing on each panel.
+    scriptedScroll=state.start+(state.end-state.start)*fraction;
     window.scrollTo({top:scriptedScroll,behavior:'instant'});
     if(time-hudAt>100){
      hudAt=time;setPercent((state.index+fraction)/stops.length);
