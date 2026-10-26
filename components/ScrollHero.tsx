@@ -69,15 +69,16 @@ export function ScrollHero(){
    <LinuxCodeCanvas progress={progress} reduced={reduced}/>
    <div className="sx-v8-hero-frame">
     <div className="sx-v8-hero-head">
-     <span>PORTFOLIO / SAEID SHAMSAEI</span>
-     <span>CODE AS A CANVAS / 01—03</span>
+     <WordReveal as="span" text="PORTFOLIO / SAEID SHAMSAEI"/>
+     <WordReveal as="span" text="CODE AS A CANVAS / 01—03"/>
     </div>
     <div className="sx-v8-hero-slides">
      {slides.map((slide,index)=><div key={slide.index} className="sx-v8-hero-slide"
       data-active={scene===index?'true':'false'} aria-hidden={enhanced&&scene!==index}
-      data-tour-stop data-tour-label={'Introduction / '+slide.eyebrow} data-tour-duration="7"
+      data-tour-stop data-tour-label={'Introduction / '+slide.eyebrow} data-tour-duration="9"
+      data-tour-pace={String([.72,1.28,.88][index])}
       data-tour-progress={String((index+.18)/slides.length)}>
-       <p className="sx-kicker">{slide.eyebrow}</p>
+       <WordReveal className="sx-kicker" text={slide.eyebrow}/>
        {index===0?<h1 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h1>:
         <h2>{index===1?<><WordReveal as="span" text="COMPLEX IDEAS."/><br/><em><WordReveal as="span" text="CLEAR EXPERIENCES."/></em></>:
          <><WordReveal as="span" text="ARCHITECTURE."/><br/><em><WordReveal as="span" text="PRODUCT. PEOPLE."/></em></>}</h2>}
@@ -85,7 +86,7 @@ export function ScrollHero(){
       </div>)}
     </div>
     <div className="sx-v8-hero-bottom">
-     <a href="#about" className="sx-v8-next">MEET THE PERSON BEHIND THE WORK <span aria-hidden="true">↘</span></a>
+     <a href="#about" className="sx-v8-next"><WordReveal as="span" text="MEET THE PERSON BEHIND THE WORK ↘"/></a>
      <div className="sx-v8-hero-controls" aria-label="Introduction slides">
       {slides.map((slide,index)=><button type="button" key={slide.index}
        className={scene===index?'is-active':''} aria-label={'Show introduction slide '+slide.index}
