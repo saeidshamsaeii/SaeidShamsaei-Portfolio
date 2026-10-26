@@ -16,22 +16,7 @@ function Brand({footer=false}:{footer?:boolean}){
 }
 
 export default function PortfolioExperience(){
- const [tour,setTour]=useState(false);
- const [tourDismissed,setTourDismissed]=useState(false);
- useEffect(()=>{
-  // The site launches as a narrated, timed scroll tour after hydration.
-  // A reduced-motion visitor receives static, fully readable content.
-  const media=window.matchMedia('(prefers-reduced-motion: reduce)');
-  if(media.matches)return;
-  let interacted=window.scrollY>80;
-  const cancel=()=>{interacted=true;};
-  const kickoff=window.setTimeout(()=>{if(!tourDismissed&&!interacted)setTour(true);},1800);
-  window.addEventListener('wheel',cancel,{passive:true});
-  window.addEventListener('touchstart',cancel,{passive:true});
-  window.addEventListener('keydown',cancel);
-  return()=>{window.clearTimeout(kickoff);window.removeEventListener('wheel',cancel);
-   window.removeEventListener('touchstart',cancel);window.removeEventListener('keydown',cancel);};
- },[tourDismissed]);
+ const [tour,setTour]=useState(true); // Begin the 2x director on initial hydration; no start button.
  useEffect(()=>{
   const sections=Array.from(document.querySelectorAll('#about,#contact'));
   if(!sections.length||!('IntersectionObserver' in window))return;
@@ -43,12 +28,12 @@ export default function PortfolioExperience(){
   return()=>io.disconnect();
  },[]);
  return <div className="sx-site">
-  <GuidedTour active={tour} onExit={()=>{setTour(false);setTourDismissed(true);}}/>
+  <GuidedTour active={tour} onExit={()=>setTour(false)}/>
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
   <header className="sx-header">
    <Brand/>
    <nav aria-label="Primary navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#contact">Contact</a></nav>
-   <div className="sx-header-actions"><button type="button" className="sx-tour-trigger" onClick={()=>{setTourDismissed(false);setTour(true);}} aria-label="Restart guided site tour">▶ TOUR</button><a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a></div>
+   <div className="sx-header-actions"><a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a></div>
   </header>
   <main>
    <ScrollHero/>
