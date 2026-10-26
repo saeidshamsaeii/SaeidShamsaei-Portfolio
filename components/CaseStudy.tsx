@@ -26,11 +26,13 @@ export default function CaseStudy({id}:{id:ProjectId}){
    <a href="#case-story" className="sx-v10-case-link"><WordReveal as="span" text="READ THE ENGINEERING STORY ↓"/></a>
   </header>
   <div id="case-story">
-   {story.chapters.map((chapter,i)=><article className="sx-v10-case-section" key={chapter.id} id={'chapter-'+chapter.id}
-     data-tour-stop data-tour-label={p.brand+' / '+chapter.title} data-tour-duration={String(chapter.durationSeconds)}
-     data-tour-pace={String([.92,.68,1.23,.83,1.12,.74][i])}>
+   {story.chapters.map((chapter,i)=><article className="sx-v10-case-section" key={chapter.id} id={'chapter-'+chapter.id}>
     <div className="sx-v10-story-mark"><WordReveal as="span" text={String(i+1).padStart(2,"0")+" / 06"}/><WordReveal as="span" text={chapter.eyebrow}/></div>
-    <div className="sx-v10-story-text"><WordReveal as="h2" text={chapter.title}/>
+    <div className="sx-v10-story-text"><div className="sx-v14-case-chapter-head"
+      data-tour-stop data-tour-label={p.brand+' / '+chapter.title}
+      data-tour-duration="6" data-tour-pace={String([.92,.68,1.23,.83,1.12,.74][i])}>
+       <WordReveal as="h2" text={chapter.title}/>
+      </div>
      {chapter.paragraphs.map((paragraph,j)=><div key={j} className="sx-v13-paragraph"
       data-tour-stop data-tour-label={p.brand+' / '+chapter.title+' / passage '+(j+1)}
       data-tour-duration={String([8,10,9][j])}
