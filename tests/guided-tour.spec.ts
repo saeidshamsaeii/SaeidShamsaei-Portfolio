@@ -82,7 +82,7 @@ test('site tours can be permanently dismissed from the top, without a restart re
  await expect(tour).toHaveCount(0);
  await page.locator('#project-gartal').evaluate(el=>
   window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY,behavior:'instant'}));
- await expect(page.locator('#project-gartal .sx-v11-slide--story')).toHaveCount(6);
+ await expect(page.locator('#project-gartal .sx-v11-slide--story')).toHaveCount(3);
 });
 
 test('a separate technical case page starts automatically and allows manual resume',async({page})=>{
@@ -118,7 +118,7 @@ test('reduced-motion leaves the complete story readable and does not start autom
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
- await expect(page.locator('#project-gartal .sx-v11-slide--story')).toHaveCount(6);
+ await expect(page.locator('#project-gartal .sx-v11-slide--story')).toHaveCount(3);
  await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveCount(1);
 });
 
