@@ -76,3 +76,32 @@
   font-size:clamp(15px,3.75vw,18px);line-height:1.73;
  }
 }
+
+/* Legacy selectors targeted every descendant span. Per-word markup must not
+   turn each individual word into a separate skill chip or tiny label. Only
+   the semantic WordReveal root inherits the existing layout treatment. */
+.sx-site .sx-word-reveal>.sx-word-pieces,
+.sx-site .sx-word-reveal .sx-word-piece,
+.sx-v10-case-page .sx-word-reveal>.sx-word-pieces,
+.sx-v10-case-page .sx-word-reveal .sx-word-piece{
+ font:inherit!important;
+ color:inherit!important;
+ letter-spacing:inherit!important;
+ line-height:inherit!important;
+ text-transform:inherit!important;
+ padding:0!important;
+ margin:0!important;
+ border:0!important;
+ background:transparent!important;
+ box-shadow:none!important;
+ grid-column:auto!important;
+ width:auto!important;
+ min-width:0!important;
+ max-width:none!important;
+ min-height:0!important;
+ height:auto!important;
+}
+.sx-site .sx-word-reveal>.sx-word-pieces,
+.sx-v10-case-page .sx-word-reveal>.sx-word-pieces{display:inline!important;white-space:normal!important;}
+.sx-site .sx-word-reveal .sx-word-piece,
+.sx-v10-case-page .sx-word-reveal .sx-word-piece{display:inline-block!important;white-space:pre!important;}
