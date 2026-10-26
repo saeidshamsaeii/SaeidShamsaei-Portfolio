@@ -22,7 +22,7 @@ export function WordReveal({text,as='p',className='',id}:{
   const pieces=Array.from(host.querySelectorAll<HTMLElement>('[data-reveal-word]'));
   const clear=()=>{
    host.dataset.motion='off';
-   for(const node of pieces){node.style.opacity='';node.style.transform='';}
+   for(const node of pieces){node.style.opacity='';node.style.transform='';node.classList.remove('is-typing');}
   };
   const update=()=>{
    frame=0;
@@ -38,6 +38,7 @@ export function WordReveal({text,as='p',className='',id}:{
     const fade=clamp((reached-i)*1.65);
     pieces[i].style.opacity=String(.13+.87*fade);
     pieces[i].style.transform='translateY('+((1-fade)*.34)+'em)';
+    pieces[i].classList.toggle('is-typing',i===Math.floor(reached)&&progress>0&&progress<1);
    }
   };
   const request=()=>{if(!frame)frame=requestAnimationFrame(update);};
@@ -47,7 +48,7 @@ export function WordReveal({text,as='p',className='',id}:{
    else{window.removeEventListener('scroll',request);window.removeEventListener('resize',request);
     // Keep previously passed blocks fully revealed instead of hiding them.
     if(host.getBoundingClientRect().bottom<=0){
-     pieces.forEach(node=>{node.style.opacity='1';node.style.transform='none';});
+     pieces.forEach(node=>{node.style.opacity='1';node.style.transform='none';node.classList.remove('is-typing');});
     }}
   },{rootMargin:'130px 0px 130px 0px'});
   observer.observe(host);
