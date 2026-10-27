@@ -137,5 +137,16 @@ export const engineeringEvidence:EngineeringRecord[]=[
  }
 ];
 
+// Immutable evidence references: never silently change the proof when main moves.
+// SHA values were read from the repositories' GitHub main branches during the
+// October 2026 portfolio research audit. Deployment verification is separate.
+export const sourceSnapshots:Record<string,string>={
+ 'GARTAL-SITE':'f0a98cae736d19f20ba6b4b1d879c1c9a172a666',
+ 'Gartal-Platform':'1169fa3c862a942899aa49c96bdeeabc838f5b57',
+ 'AI-Development-Factory':'6813e65f9709ef1be83be62511dd75f4468d6f8b',
+ 'DigiRezhim':'c9b35ca732d8fe8957b1b2e75337b6bb227a4c56',
+ 'Core-Petshop-Store':'92e613ad1e51f94ec694a7b51971a86ca6c2a38b'
+};
 export const fileUrl=(file:SourceFile)=>
- 'https://github.com/saeidshamsaeii/'+file.repo+'/blob/main/'+file.path;
+ 'https://github.com/saeidshamsaeii/'+file.repo+'/blob/'+
+ (sourceSnapshots[file.repo]??'main')+'/'+file.path;
