@@ -8,9 +8,11 @@ test('full portfolio pins four image-free, five distinct editorial horizontal sc
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(page.locator('#intro .sx-v18-portrait-frame')).toHaveCount(1);
+ await expect(page.locator('#intro .sx-v18-portrait-frame img')).toHaveCSS('object-fit','contain');
  await expect(page.locator('#intro h1')).toHaveCount(1);
  await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveAttribute('src','/assets/hires/portrait.webp');
- await expect(page.locator('#work-index .sx-v16-index-entry')).toHaveCount(4);
+ await expect(page.locator('#work-index .sx-v18-index-entry')).toHaveCount(4);
  await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
  await expect(page.locator('#top img')).toHaveCount(0);
  await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
@@ -90,11 +92,11 @@ test('automatic tour varies speed by scene but allows temporary manual interrupt
  await expect(tour).toHaveCount(0);
 });
 
-test('unwritten story words begin fully invisible and reveal as native scroll advances',async({page})=>{
+test('unwritten lines begin fully invisible and reveal in order as native scroll advances',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  if(await tour.isVisible())await tour.getByRole('button',{name:'Exit guided tour'}).click();
- const future=page.locator('#project-gartal-architecture .sx-v14-editorial-copy h3 .sx-word-piece').first();
+ const future=page.locator('#project-gartal-architecture .sx-v14-editorial-copy h3 [data-reveal-line]').first();
  expect(await future.evaluate(el=>getComputedStyle(el).opacity)).toBe('0');
  const chapter=page.locator('#project-gartal');
  const info=await chapter.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,travel:el.getBoundingClientRect().height-innerHeight}));
