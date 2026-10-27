@@ -40,9 +40,10 @@ export default function CaseStudy({id}:{id:ProjectId}){
       <WordReveal text={paragraph}/>
      </div>)}
     </div>
-    <aside className="sx-v10-story-aside"><WordReveal as="span" text="DOCUMENTED CONSIDERATIONS"/>
-     {chapter.details.map((detail,j)=><div key={detail}><WordReveal as="small" text={String(j+1).padStart(2,"0")}/><WordReveal as="span" text={detail}/></div>)}
-    </aside>
+    <details className="sx-v18-case-details">
+     <summary>Technical considerations <span aria-hidden="true">+</span></summary>
+     <ul>{chapter.details.map(detail=><li key={detail}>{detail}</li>)}</ul>
+    </details>
    </article>)}
   </div>
   <section className="sx-v10-case-evidence" data-tour-stop data-tour-label={p.brand+' / evidence and current state'} data-tour-duration="13" data-tour-pace="0.73">
