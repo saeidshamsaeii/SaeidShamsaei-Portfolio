@@ -1,41 +1,57 @@
 'use client';
-import {useEffect,useRef} from 'react';
+import {useEffect,useMemo,useRef} from 'react';
 
 type Tag='p'|'h1'|'h2'|'h3'|'span'|'small'|'strong';
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 
-/** Scroll-scripted typography: nothing is ghosted before its first word.
- * Every sentence exists unbroken in semantic HTML for assistive technology.
- * The visible word layer starts at zero opacity/fully clipped, then writes
- * from left to right as native scroll advances. Reverse scrolling rewinds.
- * The CSS scripting media query keeps no-JS and reduced-motion fully legible.
+/** Editorial line sequencing, not individual ghosted letters.
+ * Each visible visual line is revealed only when the preceding line has
+ * completed. The semantic text remains intact and read once by AT.
+ * source scroll progress is pinned-panel / Linux hero / natural document.
  */
-export function WordReveal({text,as='p',className='',id}:{
- text:string;as?:Tag;className?:string;id?:string
+export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0}:{
+ text:string;as?:Tag;className?:string;id?:string;
+ mode?:'lines'|'words';stagger?:number
 }){
  const root=useRef<HTMLElement>(null);
- const words=text.trim().split(/\s+/).filter(Boolean);
+ const lines=useMemo(()=>{
+  const chunks=text.split(/\n/g).map(chunk=>chunk.trim()).filter(Boolean);
+  const limit=mode==='words'?1:as==='h1'||as==='h2'||as==='h3'?5:as==='p'?9:12;
+  const groups:string[][]=[];
+  for(const chunk of chunks){
+   const words=chunk.split(/\s+/).filter(Boolean);
+   for(let offset=0;offset<words.length;offset+=limit)groups.push(words.slice(offset,offset+limit));
+  }
+  return groups.length?groups:[[]];
+ },[text,as,mode]);
+
  useEffect(()=>{
   const host=root.current;if(!host)return;
   const media=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const lineNodes=Array.from(host.querySelectorAll<HTMLElement>('[data-reveal-line]'));
   const nodes=Array.from(host.querySelectorAll<HTMLElement>('[data-reveal-word]'));
-  let raf=0,observing=false;
-  const render=(progress:number)=>{
+  let raf=0;
+  const render=(value:number)=>{
    host.dataset.motion='on';
-   const position=clamp(progress)*(nodes.length+.5);
-   const active=Math.floor(position);
-   for(let i=0;i<nodes.length;i++){
+   const progress=clamp((value-stagger)/Math.max(.05,1-stagger));
+   const position=progress*lineNodes.length;
+   for(let i=0;i<lineNodes.length;i++){
     const fraction=clamp(position-i);
-    // Unlike the old 13% opacity treatment, zero means truly blank.
-    nodes[i].style.opacity=String(fraction);
-    nodes[i].style.clipPath='inset(0 '+((1-fraction)*100)+'% 0 0)';
-    nodes[i].style.transform='translateY('+((1-fraction)*.18)+'em)';
-    nodes[i].classList.toggle('is-typing',i===active&&progress>0&&progress<1);
+    // No animation on the next line until the current line is complete.
+    lineNodes[i].style.opacity=String(fraction);
+    lineNodes[i].style.clipPath='inset(0 '+((1-fraction)*100)+'% 0 0)';
+    lineNodes[i].style.transform='none';
+   }
+   for(const node of nodes){
+    node.style.opacity='1';
+    node.style.clipPath='none';
+    node.style.transform='none';
+    node.classList.remove('is-typing');
    }
   };
   const clear=()=>{
    host.dataset.motion='off';
-   for(const node of nodes){
+   for(const node of [...lineNodes,...nodes]){
     node.style.removeProperty('opacity');
     node.style.removeProperty('clip-path');
     node.style.removeProperty('transform');
@@ -54,8 +70,8 @@ export function WordReveal({text,as='p',className='',id}:{
     const blocks=Array.from(panel.querySelectorAll<HTMLElement>('.sx-word-reveal'));
     const ordinal=Math.max(0,blocks.indexOf(host));
     const total=blocks.length;
-    const start=.035+(ordinal/Math.max(1,total))*.46;
-    const duration=Math.max(.11,.58/Math.max(1,total)+.09);
+    const start=.02+(ordinal/Math.max(1,total))*.48;
+    const duration=Math.max(.13,.62/Math.max(1,total)+.09);
     progress=clamp((scaled-index-start)/duration);
    }else{
     const hero=host.closest<HTMLElement>('.sx-v8-hero-slide');
@@ -75,23 +91,20 @@ export function WordReveal({text,as='p',className='',id}:{
   };
   const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const observer=new IntersectionObserver(entries=>{
-   observing=entries.some(e=>e.isIntersecting);
-   if(observing){
+   if(entries.some(e=>e.isIntersecting)){
     window.addEventListener('scroll',request,{passive:true});
     window.addEventListener('resize',request);
     request();
    }else{
     window.removeEventListener('scroll',request);
     window.removeEventListener('resize',request);
-    // The past remains fully written; future chapters stay truly blank.
     if(host.getBoundingClientRect().bottom<0&&!host.closest('[data-horizontal-chapter]'))render(1);
    }
   },{rootMargin:'160px 0px 160px 0px',threshold:0});
   observer.observe(host);
   const onMotion=()=>media.matches?clear():request();
   media.addEventListener('change',onMotion);
-  if(media.matches)clear();
-  else request();
+  if(media.matches)clear();else request();
   return()=>{
    observer.disconnect();
    window.removeEventListener('scroll',request);
@@ -99,14 +112,17 @@ export function WordReveal({text,as='p',className='',id}:{
    media.removeEventListener('change',onMotion);
    if(raf)cancelAnimationFrame(raf);
   };
- },[text]);
+ },[text,stagger,lines.length]);
+
  const Tag=as;
- return <Tag id={id} ref={(node:HTMLElement|null)=>{root.current=node;}}
-   className={'sx-word-reveal '+className}>
+ return <Tag id={id} ref={node=>{root.current=node;}}
+   className={'sx-word-reveal sx-v18-line-reveal '+className}>
   <span className="sx-word-a11y">{text}</span>
   <span className="sx-word-pieces" aria-hidden="true">
-   {words.map((word,i)=><span data-reveal-word="" className="sx-word-piece" key={i}>
-    {word}{i<words.length-1?' ':''}
+   {lines.map((words,line)=><span key={line} data-reveal-line="" className="sx-v18-reveal-line">
+    {words.map((word,i)=><span data-reveal-word="" className="sx-word-piece" key={i}>
+     {word}{i<words.length-1?' ':''}
+    </span>)}
    </span>)}
   </span>
  </Tag>;
