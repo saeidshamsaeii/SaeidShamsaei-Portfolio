@@ -8,10 +8,13 @@ test('full portfolio pins four image-free, five distinct editorial horizontal sc
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(page.locator('#intro h1')).toHaveCount(1);
+ await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#work-index .sx-v16-index-entry')).toHaveCount(4);
  await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
  await expect(page.locator('#top img')).toHaveCount(0);
  await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
- await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveAttribute('src','/assets/hires/portrait.webp');
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
  for(const id of ids){
   const section=page.locator('#project-'+id);
@@ -152,7 +155,7 @@ test('reduced-motion readers receive full text and no automatic movement',async(
  const style=await word.evaluate(el=>({opacity:getComputedStyle(el).opacity,transform:getComputedStyle(el).transform}));
  expect(style.opacity).toBe('1');
  expect(style.transform).toBe('none');
- await expect(page.locator('#about .sx-v8-about-portrait img')).toBeVisible();
+ await expect(page.locator('#intro .sx-v16-cover-image img')).toBeVisible();
 });
 
 test('public contact links and original owner portrait remain intact',async({page})=>{
@@ -165,5 +168,5 @@ test('public contact links and original owner portrait remain intact',async({pag
   'https://www.linkedin.com/in/saeidshamsaei/',
   'https://t.me/sd_shms'
  ]);
- await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveAttribute('src','/assets/hires/portrait.webp');
 });
