@@ -75,7 +75,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let currentSpeed=BASE_SPEED,targetSpeed=BASE_SPEED;
   const refreshSurface=()=>{
    const sampleY=window.innerHeight*.45;
-   const light=['intro','work-index'].some(id=>{
+   const light=['intro','about','work-index','selected-projects','contact'].some(id=>{
     const element=document.getElementById(id);if(!element)return false;
     const rect=element.getBoundingClientRect();
     return rect.top<=sampleY&&rect.bottom>=sampleY;
