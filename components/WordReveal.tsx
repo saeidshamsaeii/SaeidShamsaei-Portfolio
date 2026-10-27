@@ -73,6 +73,14 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0}:
     const start=.02+(ordinal/Math.max(1,total))*.48;
     const duration=Math.max(.13,.62/Math.max(1,total)+.09);
     progress=clamp((scaled-index-start)/duration);
+   }else if(host.closest<HTMLElement>('#intro')){
+    // Intro uses document travel, not viewport entrance: at scrollY=0 the
+    // name starts blank, then line 1 completes before line 2 begins.
+    // The short role statement follows only after the name is written.
+    const cover=host.closest<HTMLElement>('#intro')!;
+    const rect=cover.getBoundingClientRect();
+    const base=clamp(-rect.top/Math.max(1,rect.height*.80));
+    progress=host.closest('h1')?clamp(base*1.43):clamp((base-.70)/.30);
    }else{
     const hero=host.closest<HTMLElement>('.sx-v8-hero-slide');
     const heroRoot=hero?.closest<HTMLElement>('#top');
