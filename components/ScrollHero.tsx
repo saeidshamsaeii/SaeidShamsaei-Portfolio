@@ -1,5 +1,5 @@
 'use client';
-import {useCallback,useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {LinuxCodeCanvas} from '@/components/LinuxCodeCanvas';
 import {WordReveal} from '@/components/WordReveal';
 
@@ -55,44 +55,24 @@ export function ScrollHero(){
    if(frame)cancelAnimationFrame(frame);
   };
  },[]);
- const goTo=useCallback((index:number)=>{
-  const root=host.current;if(!root)return;
-  const top=root.getBoundingClientRect().top+window.scrollY;
-  const travel=Math.max(0,root.getBoundingClientRect().height-window.innerHeight);
-  const position=top+travel*(index+.1)/slides.length;
-  window.scrollTo({top:position,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
- },[]);
  return <section id="top" ref={host} className="sx-work-hero sx-v3-hero sx-v4-hero sx-v8-hero sx-v9-hero"
   data-scene={String(scene)} data-ready={enhanced?'true':'false'}
   aria-label="Introduction and professional purpose">
   <div className="sx-v8-hero-stage">
    <LinuxCodeCanvas progress={progress} reduced={reduced}/>
    <div className="sx-v8-hero-frame">
-    <div className="sx-v8-hero-head">
-     <WordReveal as="span" text="PORTFOLIO / SAEID SHAMSAEI"/>
-     <WordReveal as="span" text="CODE AS A CANVAS / 01—03"/>
-    </div>
     <div className="sx-v8-hero-slides">
      {slides.map((slide,index)=><div key={slide.index} className="sx-v8-hero-slide"
       data-active={scene===index?'true':'false'} aria-hidden={enhanced&&scene!==index}
       data-tour-stop data-tour-label={'Introduction / '+slide.eyebrow} data-tour-duration="9"
       data-tour-pace={String([.72,1.28,.88][index])}
       data-tour-progress={String((index+.18)/slides.length)}>
-       <WordReveal className="sx-kicker" text={slide.eyebrow}/>
+
        {index===0?<h2 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h2>:
         <h2>{index===1?<><WordReveal as="span" text="COMPLEX IDEAS."/><br/><em><WordReveal as="span" text="CLEAR EXPERIENCES."/></em></>:
          <><WordReveal as="span" text="ARCHITECTURE."/><br/><em><WordReveal as="span" text="PRODUCT. PEOPLE."/></em></>}</h2>}
        <WordReveal className="sx-v8-hero-desc" text={slide.description}/>
       </div>)}
-    </div>
-    <div className="sx-v8-hero-bottom">
-     <a href="#about" className="sx-v8-next"><WordReveal as="span" text="MEET THE PERSON BEHIND THE WORK ↘"/></a>
-     <div className="sx-v8-hero-controls" aria-label="Introduction slides">
-      {slides.map((slide,index)=><button type="button" key={slide.index}
-       className={scene===index?'is-active':''} aria-label={'Show introduction slide '+slide.index}
-       aria-current={enhanced&&scene===index?'step':undefined}
-       onClick={()=>goTo(index)}><span>{slide.index}</span><i/></button>)}
-     </div>
     </div>
    </div>
   </div>
