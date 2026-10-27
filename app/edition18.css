@@ -273,6 +273,11 @@
  .sx-v18-site .sx-v18-contact .sx-contact-link span{text-align:left;}
  .sx-v18-site .sx-footer.sx-v18-footer{align-items:flex-start;flex-direction:column;gap:22px;}
 }
+/* Without client JavaScript the entire portfolio must remain navigable. */
+@media(scripting:none){
+ .sx-v18-loader{display:none!important;}
+ .sx-v18-line-reveal .sx-v18-reveal-line{opacity:1!important;clip-path:none!important;}
+}
 @media(prefers-reduced-motion:reduce){
  .sx-v18-loader-word{animation:none!important;}
  .sx-v18-loader.is-leaving{transition:none!important;}
