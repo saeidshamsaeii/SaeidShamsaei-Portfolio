@@ -9,15 +9,16 @@ const clamp=(v:number)=>Math.max(0,Math.min(1,v));
 
 /**
  * A short horizontal editorial sequence, not a gallery of identical cards.
- * 5 scenes (identity / question / mechanism / human value / next chapter)
- * replace the old 20 and 8-panel loops.
+ * 3 distinct scenes: identity, one verified idea, and the case-study handoff.
+ * Detailed technical chapters remain in the dedicated work page.
  * Only native vertical document scroll controls the pinned horizontal track.
  */
 export function HorizontalCaseChapter({project,index}:{project:Project;index:number}){
  const section=useRef<HTMLElement>(null);
  const rail=useRef<HTMLDivElement>(null);
- const count=5;
+ const count=3;
  const story=homeStories[project.id];
+ const lead=story.beats[0];
  const next=projects[index+1];
 
  useEffect(()=>{
@@ -87,19 +88,18 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
       <a href={'/work/'+project.id+'/'}>FULL CASE STUDY ↗</a>
      </div>
     </article>
-    {story.beats.map((beat,i)=><article key={beat.eyebrow} id={'project-'+project.id+'-'+['origin','architecture','experience'][i]}
-     className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+beat.mode}
-     data-frame-index={i+1} data-tour-stop data-tour-label={project.brand+' / '+beat.eyebrow}
-     data-tour-duration={String(beat.duration)} data-tour-pace={String(beat.pace)}>
+    <article id={'project-'+project.id+'-origin'}
+     className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+lead.mode}
+     data-frame-index="1" data-tour-stop data-tour-label={project.brand+' / core idea'}
+     data-tour-duration={String(lead.duration)} data-tour-pace={String(lead.pace)}>
      <div className="sx-v14-editorial-copy">
-      <WordReveal as="h3" text={beat.headline}/>
-      <WordReveal as="p" text={beat.copy}/>
+      <WordReveal as="h3" text={lead.headline}/>
+      <WordReveal as="p" text={lead.copy}/>
      </div>
-    </article>)}
-    <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="4"
+    </article>
+    <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="2"
      data-tour-stop data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
      <div className="sx-v14-ending-inner"><WordReveal as="h3" text={story.ending}/>
-      <WordReveal as="p" text={project.outcome.en}/>
       <div className="sx-v14-ending-actions">
        <Link href={'/work/'+project.id+'/'}>READ THE CASE STUDY ↗</Link>
        <a href={next?'#project-'+next.id:'#contact'}>{next?'NEXT / '+next.brand:'LET’S TALK'} ↓</a>
