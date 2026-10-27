@@ -119,6 +119,17 @@ test('case pages are text-only with source links and auto-tour',async({page})=>{
  }
 });
 
+test('technical details stay available but closed until requested',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
+ const details=page.locator('.sx-v18-case-details');
+ await expect(details).toHaveCount(6);
+ await expect(details.first()).not.toHaveAttribute('open');
+ await details.first().locator('summary').click();
+ await expect(details.first()).toHaveAttribute('open','');
+ expect(await details.first().locator('li').count()).toBeGreaterThan(0);
+});
+
 test('mobile text chapters fit without horizontal overflow',async({browser})=>{
  for(const [width,height] of [[360,740],[390,844],[430,932],[768,1024]]){
   const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
