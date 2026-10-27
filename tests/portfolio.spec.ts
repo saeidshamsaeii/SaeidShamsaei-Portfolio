@@ -20,10 +20,10 @@ test('full portfolio pins four image-free, five distinct editorial horizontal sc
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
  for(const id of ids){
   const section=page.locator('#project-'+id);
-  await expect(section.locator('.sx-v11-slide')).toHaveCount(5);
-  await expect(section.locator('.sx-v14-scene--statement, .sx-v14-scene--system, .sx-v14-scene--experience')).toHaveCount(3);
+  await expect(section.locator('.sx-v11-slide')).toHaveCount(3);
+  await expect(section.locator('.sx-v14-editorial-copy')).toHaveCount(1);
   await expect(section).toHaveAttribute('data-horizontal-chapter','');
-  await expect(section.locator('.sx-v14-editorial-copy>p')).toHaveCount(3);
+  await expect(section.locator('.sx-v14-editorial-copy>p')).toHaveCount(1);
   await expect(section.locator('img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
   await expect(section.locator('.sx-v14-ending')).toHaveCount(1);
@@ -52,7 +52,7 @@ test('vertical scrolling advances each project sideways, then releases to the ne
   const horizontal=await track.evaluate(e=>getComputedStyle(e).transform);
   expect(horizontal).not.toBe('none');
   await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.top+info.distance*.97);
-  await expect(chapter).toHaveAttribute('data-active-frame','4');
+  await expect(chapter).toHaveAttribute('data-active-frame','2');
  }
  const last=page.locator('#project-petiwoo');
  const bottom=await last.evaluate(e=>e.getBoundingClientRect().bottom+window.scrollY);
@@ -96,12 +96,12 @@ test('unwritten lines begin fully invisible and reveal in order as native scroll
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  if(await tour.isVisible())await tour.getByRole('button',{name:'Exit guided tour'}).click();
- const future=page.locator('#project-gartal-architecture .sx-v14-editorial-copy h3 [data-reveal-line]').first();
+ const future=page.locator('#project-gartal-origin .sx-v14-editorial-copy h3 [data-reveal-line]').first();
  expect(await future.evaluate(el=>getComputedStyle(el).opacity)).toBe('0');
  const chapter=page.locator('#project-gartal');
  const info=await chapter.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,travel:el.getBoundingClientRect().height-innerHeight}));
- // Frame index 2 is the project-specific system/architecture scene.
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),info.top+info.travel*(2.49/5));
+ // Frame index 1 is the project's distinct core idea.
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),info.top+info.travel*(1.49/3));
  await expect.poll(()=>future.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:5000}).toBeGreaterThan(.5);
 });
 
