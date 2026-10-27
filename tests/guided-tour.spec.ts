@@ -119,7 +119,7 @@ test('reduced-motion leaves the complete story readable and does not start autom
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
  await expect(page.locator('#project-gartal .sx-v14-scene--statement, #project-gartal .sx-v14-scene--system, #project-gartal .sx-v14-scene--experience')).toHaveCount(3);
- await expect(page.locator('#about .sx-v8-about-portrait img')).toHaveCount(1);
+ await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveCount(1);
 });
 
 test('authentic original personal portrait remains unchanged',()=>{
