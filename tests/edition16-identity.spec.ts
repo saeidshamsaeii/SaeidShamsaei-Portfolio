@@ -63,3 +63,37 @@ test('no horizontal overflow on narrow phones for the new cover and directory',a
   await page.close();
  }
 });
+
+test('project identity and focus word respond to direct keyboard navigation',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const directory=page.locator('#work-index');
+ await expect(directory).toHaveAttribute('data-active-project','gartal');
+ await expect(directory.locator('.sx-v17-index-watermark')).toContainText('SYSTEMS');
+ await page.locator('.sx-v16-index-entry').nth(2).locator('.sx-v16-index-row').focus();
+ await expect(directory).toHaveAttribute('data-active-project','digirezhim');
+ await expect(directory.locator('.sx-v17-index-watermark')).toContainText('PRECISION');
+ await expect(directory.locator('.sx-v17-index-current')).toContainText('Healthtech / Platforms');
+});
+
+test('cover scroll typography uses computed pixel displacement instead of an unsupported CSS multiplier',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const cover=page.locator('#intro');
+ await expect(cover).toBeVisible();
+ const before=await cover.evaluate(el=>el.style.getPropertyValue('--sx-cover-left'));
+ await page.evaluate(()=>window.scrollTo({top:Math.min(innerHeight*.45,document.documentElement.scrollHeight-innerHeight),behavior:'instant'}));
+ await expect.poll(()=>cover.evaluate(el=>el.style.getPropertyValue('--sx-cover-left')),{timeout:5000}).not.toBe(before);
+ const now=await cover.evaluate(el=>el.style.getPropertyValue('--sx-cover-left'));
+ expect(now).toMatch(/^-?\d+(?:\.\d+)?px$/);
+});
+
+test('top progress controls are dark over light identity and return to light over Linux',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ await expect(tour).toBeVisible({timeout:6000});
+ await expect(tour).toHaveAttribute('data-surface','light');
+ await tour.getByRole('button',{name:'Pause tour'}).click();
+ await page.locator('#top').evaluate(el=>window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY+innerHeight*.3,behavior:'instant'}));
+ await expect(tour).toHaveAttribute('data-surface','dark',{timeout:4000});
+});
