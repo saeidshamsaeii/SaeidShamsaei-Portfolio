@@ -2,6 +2,8 @@
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
 import {ScrollHero} from '@/components/ScrollHero';
+import {SignatureOpening} from '@/components/SignatureOpening';
+import {SelectedWorkIndex} from '@/components/SelectedWorkIndex';
 import {GuidedTour} from '@/components/GuidedTour';
 import {WordReveal} from '@/components/WordReveal';
 import {HorizontalCaseChapter} from '@/components/HorizontalCaseChapter';
@@ -32,17 +34,19 @@ export default function PortfolioExperience(){
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
   <header className="sx-header">
    <Brand/>
-   <nav aria-label="Primary navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><Link href="/engineering/">Engineering Index</Link><a href="#contact">Contact</a></nav>
+   <nav aria-label="Primary navigation"><a href="#intro">Home</a><a href="#work-index">Work</a><a href="#about">About</a><Link href="/engineering/">Engineering</Link><a href="#contact">Contact</a></nav>
    <div className="sx-header-actions"><a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a></div>
   </header>
   <main>
+   <SignatureOpening/>
    <ScrollHero/>
 
    <section className="sx-profile sx-editorial-frame sx-v8-about" id="about" data-tour-stop data-tour-label="Meet Saeid" data-tour-duration="17" data-tour-pace="0.65" aria-labelledby="sx-profile-title">
     <div className="sx-v8-about-inner">
-     <div className="sx-v8-about-portrait">
-      <img src="/assets/hires/portrait.webp" alt="Portrait of Saeid Shamsaei in a black suit and sunglasses" width={1122} height={1402} loading="eager" decoding="async"/>
-      <div className="sx-v8-portrait-note"><WordReveal as="span" text="SAEID SHAMSAEI"/><WordReveal as="span" text="THE PERSON BEHIND THE WORK"/></div>
+     <div className="sx-v16-about-statement" aria-hidden="true">
+      <span className="sx-v16-about-statement-label">THE THINKING BEHIND THE WORK / 03</span>
+      <span className="sx-v16-about-statement-mark">S<span>—</span>S</span>
+      <span className="sx-v16-about-statement-note">GOOD SOFTWARE IS AN ACT OF CLARITY.</span>
      </div>
      <div className="sx-v8-about-content">
       <WordReveal className="sx-kicker" text="02 / ABOUT ME"/>
@@ -65,6 +69,7 @@ export default function PortfolioExperience(){
     </div>
    </section>
 
+   <SelectedWorkIndex/>
    <div className="sx-work-intro" id="selected-projects" data-tour-stop data-tour-label="Four engineering stories" data-tour-duration="7" data-tour-pace="1.25" aria-label="Selected projects">
     <WordReveal as="span" className="sx-kicker" text="SELECTED WORK / FOUR STORIES"/>
     <WordReveal as="span" className="sx-work-intro-hint" text="SCROLL DOWN · EXPLORE SIDEWAYS ↘"/>
@@ -101,7 +106,7 @@ export default function PortfolioExperience(){
     </div>
    </section>
   </main>
-  <footer className="sx-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><Link href="/engineering/">Engineering Index</Link><a href="#contact">Contact</a></nav>
+  <footer className="sx-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#intro">Home</a><a href="#work-index">Work</a><a href="#about">About</a><Link href="/engineering/">Engineering Index</Link><a href="#contact">Contact</a></nav>
    <div className="sx-footer-social"><a href={publicContact.github} rel="noreferrer noopener" target="_blank">GitHub ↗</a><a href={publicContact.linkedin} rel="noreferrer noopener" target="_blank">LinkedIn ↗</a><a href={publicContact.telegram} rel="noreferrer noopener" target="_blank">Telegram ↗</a><a href={'mailto:'+publicContact.email}>Email ↗</a></div></footer>
  </div>;
 }
