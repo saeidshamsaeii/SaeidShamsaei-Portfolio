@@ -191,7 +191,7 @@
 .sx-v18-site .sx-v18-footer nav a{color:#ddd!important;font:450 13px Inter,Arial,sans-serif;text-decoration:none;}
 /* True sequential lines: each logical line follows the previous one.
    Unrevealed lines have zero ink; no grey 'ghost' preview. */
-.sx-v18-line-reveal .sx-word-pieces{display:block!important;white-space:normal!important;}
+.sx-site .sx-v18-line-reveal>.sx-word-pieces,.sx-v10-case-page .sx-v18-line-reveal>.sx-word-pieces{display:block!important;white-space:normal!important;}
 .sx-v18-line-reveal .sx-v18-reveal-line{display:block!important;
  width:fit-content;max-width:100%;overflow:visible;
  transition:opacity .22s ease-out,clip-path .32s ease-out!important;
