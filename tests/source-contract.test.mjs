@@ -26,7 +26,7 @@ test('all four case studies replace images and visual simulations with detailed 
  assert.doesNotMatch(home,/SourceProductPreview|project-'\+project\.id|sx-v4-project-art|sx-slide--overview/);
  assert.doesNotMatch(detail,/SourceProductPreview|project-'\+p\.id|case-hero-art/);
  assert.match(home,/HorizontalCaseChapter/);
- assert.match(horizontal,/story\.beats\.map/);
+ assert.match(horizontal,/const lead=story\.beats\[0\]/);
  assert.match(detail,/story\.chapters\.map/);
  assert.match(horizontal,/WordReveal/);
  assert.match(detail,/WordReveal/);
@@ -94,8 +94,8 @@ test('five distinct scroll-pinned editorial scenes preserve source-backed contex
  const css=read('app/edition11.css');
  const word=read('components/WordReveal.tsx');
  assert.match(home,/HorizontalCaseChapter key=\{project\.id\}/);
- assert.match(chapter,/const count=5/);
- assert.match(chapter,/story\.beats\.map/);
+ assert.match(chapter,/const count=3/);
+ assert.match(chapter,/const lead=story\.beats\[0\]/);
  assert.match(chapter,/window\.addEventListener\('scroll',request/);
  assert.match(chapter,/translate3d\(/);
  assert.match(chapter,/data-frame-count=\{count\}/);
