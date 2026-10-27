@@ -1,75 +1,32 @@
 'use client';
-import {useEffect,useRef} from 'react';
 import Link from 'next/link';
 import {WordReveal} from '@/components/WordReveal';
 
-/** Edition 16: an editorial portrait cover using the actual checked-in owner
- * photograph. No artificial headshot, location metadata or client metrics.
- * Pure DOM scroll parallax (no canvas, WebGL or continuous timer).
+/** A genuinely split portrait composition: the authentic image never sits
+ * behind any text. Only native scrolling and line-by-line text reveal.
  */
 export function SignatureOpening(){
- const root=useRef<HTMLElement>(null);
- useEffect(()=>{
-  const el=root.current;if(!el)return;
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  let raf=0;
-  const update=()=>{
-   raf=0;
-   if(reduced.matches){
-    el.style.setProperty('--sx-cover-scroll','0');
-    el.style.setProperty('--sx-cover-left','0px');
-    el.style.setProperty('--sx-cover-right','0px');
-    el.style.setProperty('--sx-cover-photo-up','0px');
-    el.style.setProperty('--sx-cover-rule','1');
-    return;
-   }
-   const rect=el.getBoundingClientRect();
-   const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,rect.height)));
-   el.style.setProperty('--sx-cover-scroll',String(progress));
-   // Resolve pixels in JS so motion never depends on CSS Level-4
-   // length multiplication support. One passive scroll observer, one RAF.
-   el.style.setProperty('--sx-cover-left',(-progress*Math.min(innerWidth*.028,45)).toFixed(2)+'px');
-   el.style.setProperty('--sx-cover-right',(progress*Math.min(innerWidth*.034,50)).toFixed(2)+'px');
-   el.style.setProperty('--sx-cover-photo-up',(-progress*innerHeight*.025).toFixed(2)+'px');
-   el.style.setProperty('--sx-cover-rule',(1-progress*.55).toFixed(3));
-  };
-  const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
-  window.addEventListener('scroll',request,{passive:true});
-  window.addEventListener('resize',request);
-  reduced.addEventListener('change',request);
-  request();
-  return()=>{
-   window.removeEventListener('scroll',request);
-   window.removeEventListener('resize',request);
-   reduced.removeEventListener('change',request);
-   if(raf)cancelAnimationFrame(raf);
-  };
- },[]);
- return <section ref={root} id="intro" className="sx-v16-cover"
-  data-tour-stop data-tour-label="Introduction / Saeid Shamsaei"
-  data-tour-duration="14" data-tour-pace=".67" aria-labelledby="sx-v16-name">
-  <div className="sx-v16-cover-meta" aria-hidden="true">
-   <span>INDEPENDENT / SOFTWARE ARCHITECTURE</span>
-   <span>PORTFOLIO · 2026</span>
-  </div>
-  <div className="sx-v16-cover-image">
-   <img src="/assets/hires/portrait.webp" width={1122} height={1402}
-    alt="Saeid Shamsaei — personal portrait" decoding="async" fetchPriority="high"/>
-   <div className="sx-v16-cover-image-glaze" aria-hidden="true"/>
-   <div className="sx-v16-cover-photo-note" aria-hidden="true">PORTRAIT / PERSONAL IDENTITY</div>
-  </div>
-  <div className="sx-v16-cover-identity">
-   <div className="sx-v16-cover-intro">
-    <WordReveal as="span" text="CODE, DESIGN AND ENGINEERING."/>
-    <WordReveal as="p" text="I make complex digital systems feel considered, useful and human."/>
+ return <section id="intro" className="sx-v16-cover sx-v18-cover"
+  data-tour-stop data-tour-label="Introducing Saeid" data-tour-duration="13" data-tour-pace=".77"
+  aria-labelledby="sx-v16-name">
+  <div className="sx-v18-cover-layout">
+   <div className="sx-v18-cover-copy">
+    <p className="sx-v18-cover-eyebrow">Software architect · Product engineer</p>
+    <h1 id="sx-v16-name">
+     <WordReveal as="span" text="SAEID" mode="lines"/>
+     <WordReveal as="span" text="SHAMSAEI" mode="lines"/>
+    </h1>
+    <WordReveal className="sx-v18-cover-lead" text="Design. Code. Architecture." mode="lines"/>
+    <div className="sx-v18-cover-links">
+     <a href="#work-index">View work <span aria-hidden="true">↗</span></a>
+     <Link href="/engineering/">Engineering <span aria-hidden="true">↗</span></Link>
+    </div>
    </div>
-   <h1 id="sx-v16-name"><WordReveal as="span" text="SAEID"/><WordReveal as="span" text="SHAMSAEI."/></h1>
-   <div className="sx-v16-cover-bottom">
-    <WordReveal as="span" text="SOFTWARE ARCHITECT / PRODUCT ENGINEER"/>
-    <Link href="/engineering/">EXPLORE ENGINEERING ↗</Link>
-    <a href="#top">SCROLL TO DISCOVER <span aria-hidden="true">↓</span></a>
-   </div>
+   <figure className="sx-v16-cover-image sx-v18-portrait-frame">
+    <img src="/assets/hires/portrait.webp" width={1122} height={1402}
+     alt="Portrait of Saeid Shamsaei" decoding="async" fetchPriority="high"/>
+   </figure>
   </div>
-  <div className="sx-v16-cover-edge" aria-hidden="true"><span>01 / 06</span><span>THE PERSON BEHIND THE SYSTEMS</span></div>
+  <div className="sx-v18-cover-rule" aria-hidden="true"/>
  </section>;
 }
