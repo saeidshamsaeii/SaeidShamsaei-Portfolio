@@ -135,3 +135,27 @@ test('Edition 10 theme is last in stack, retaining accessibility and no forced d
  assert.match(css,/sx-v10-story-panel/);
  assert.match(css,/sx-v10-tour/);
 });
+
+test('engineering evidence mode is source-anchored, searchable and outside the cinematic tour',()=>{
+ const data=read('data/engineeringEvidence.ts');
+ const view=read('components/EngineeringIndex.tsx');
+ const route=read('app/engineering/page.tsx');
+ const css=read('app/engineering.css');
+ const home=read('components/PortfolioExperience.tsx');
+ const detail=read('components/CaseStudy.tsx');
+ const sitemap=read('app/sitemap.ts');
+ assert.equal((data.match(/id:'(gartal|factory|digirezhim|petiwoo)',scope:/g)||[]).length,4);
+ assert.equal((data.match(/discipline:'(architecture|experience|delivery)'/g)||[]).length,12);
+ assert.match(data,/Not independently verified|unverified:/);
+ assert.match(data,/https:\/\/github.com\/saeidshamsaeii/);
+ assert.match(view,/setQuery/);
+ assert.match(view,/setFilter/);
+ assert.match(view,/setProject/);
+ assert.match(view,/fileUrl\(entry\.files\[i\]\)/);
+ assert.doesNotMatch(view,/GuidedTour|SourceProductPreview/);
+ assert.match(route,/EngineeringIndex/);
+ assert.match(css,/sx-ei-project/);
+ assert.match(home,/href="\/engineering\/"/);
+ assert.match(detail,/engineering\/\#evidence-/);
+ assert.match(sitemap,/engineering/);
+});
