@@ -15,10 +15,23 @@ export function SignatureOpening(){
   let raf=0;
   const update=()=>{
    raf=0;
-   if(reduced.matches){el.style.setProperty('--sx-cover-scroll','0');return;}
+   if(reduced.matches){
+    el.style.setProperty('--sx-cover-scroll','0');
+    el.style.setProperty('--sx-cover-left','0px');
+    el.style.setProperty('--sx-cover-right','0px');
+    el.style.setProperty('--sx-cover-photo-up','0px');
+    el.style.setProperty('--sx-cover-rule','1');
+    return;
+   }
    const rect=el.getBoundingClientRect();
    const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,rect.height)));
    el.style.setProperty('--sx-cover-scroll',String(progress));
+   // Resolve pixels in JS so motion never depends on CSS Level-4
+   // length multiplication support. One passive scroll observer, one RAF.
+   el.style.setProperty('--sx-cover-left',(-progress*Math.min(innerWidth*.028,45)).toFixed(2)+'px');
+   el.style.setProperty('--sx-cover-right',(progress*Math.min(innerWidth*.034,50)).toFixed(2)+'px');
+   el.style.setProperty('--sx-cover-photo-up',(-progress*innerHeight*.025).toFixed(2)+'px');
+   el.style.setProperty('--sx-cover-rule',(1-progress*.55).toFixed(3));
   };
   const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   window.addEventListener('scroll',request,{passive:true});
