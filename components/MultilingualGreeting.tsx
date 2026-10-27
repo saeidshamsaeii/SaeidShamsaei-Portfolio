@@ -24,6 +24,11 @@ export function MultilingualGreeting({onComplete}:{onComplete:()=>void}){
  const [index,setIndex]=useState(0);
  const [leaving,setLeaving]=useState(false);
  useEffect(()=>{
+  const previous=document.documentElement.style.overflow;
+  document.documentElement.style.overflow='hidden';
+  return()=>{document.documentElement.style.overflow=previous;};
+ },[]);
+ useEffect(()=>{
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduced){
    // Do not trap readers with a long animated overlay.
