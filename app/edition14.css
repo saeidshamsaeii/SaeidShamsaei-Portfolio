@@ -121,3 +121,42 @@
 @media(max-width:760px){
  .sx-v10-case-page .sx-v14-case-chapter-head h2{margin-bottom:8px;}
 }
+
+/* Evidence-first secondary route. The cinematic page is a short introduction;
+   detailed technical records get an inspectable, accessible navigation path. */
+.sx-site .sx-ei-home-bridge{
+ display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto;
+ align-items:center;gap:clamp(22px,4vw,60px);
+ padding:clamp(65px,8vw,120px) clamp(23px,7vw,120px);
+ background:#141819;border-top:1px solid #d2b78c37;border-bottom:1px solid #d2b78c37;color:#f0ede4;
+}
+.sx-site .sx-ei-home-bridge>span{
+ align-self:start;color:#d2b78c;font:650 10px/1.5 ui-monospace,Consolas,monospace;
+ letter-spacing:.13em;white-space:nowrap;
+}
+.sx-site .sx-ei-home-bridge>p{
+ margin:0;font:450 clamp(19px,2vw,33px)/1.48 Georgia,serif;letter-spacing:-.023em;
+ max-width:840px;
+}
+.sx-site .sx-ei-home-bridge>a{
+ color:#e6c99d;text-decoration:none;border-bottom:1px solid #d2b78c;padding:13px 0;
+ font:650 11px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.06em;white-space:nowrap;
+}
+.sx-site .sx-ei-home-bridge>a:hover,.case-study .sx-ei-case-link:hover{color:#fff;}
+.case-study .sx-ei-case-link{
+ display:inline-flex;align-self:flex-start;margin-top:16px;
+ padding:13px 0;border-bottom:1px solid #d2b78c;
+ font:650 11px/1.45 ui-monospace,Consolas,monospace;letter-spacing:.06em;
+ color:#e0c99e;text-decoration:none;
+}
+.sx-site .sx-header nav a[href="/engineering/"]{color:#dfc598;}
+@media(max-width:1100px){
+ .sx-site .sx-ei-home-bridge{grid-template-columns:1fr 2fr;}
+ .sx-site .sx-ei-home-bridge>a{grid-column:2;justify-self:start;}
+}
+@media(max-width:760px){
+ .sx-site .sx-ei-home-bridge{display:flex;flex-direction:column;align-items:flex-start;gap:20px;}
+ .sx-site .sx-ei-home-bridge>p{font-size:clamp(22px,5.3vw,32px);}
+ .sx-site .sx-ei-home-bridge>a{font-size:10px;white-space:normal;}
+ .case-study .sx-ei-case-link{font-size:10px;}
+}
