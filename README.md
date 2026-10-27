@@ -1,5 +1,8 @@
 # Saeid Shamsaei — Creative Software Architecture Portfolio
 
+> **Current source snapshot — Edition 15, October 2026 (supersedes historical design notes below):** The immersive homepage uses a scroll-written Linux editor and four curated horizontal project stories, with the owner's existing real portrait. Individual `/work/{gartal,factory,digirezhim,petiwoo}/` pages contain long-form source-informed prose. The new `/engineering/` route is a **no-autoplay, searchable evidence index** with twelve documented decisions and GitHub source references. Real browser, typecheck, static-export, accessibility, performance, local Worker sync and production deployment are **not verified merely by this GitHub update**. No new automatic Factory CI, build or preview was activated. Historical claims below about older visuals, localization, and CI may describe superseded iterations; confirm against current source before repeating them.
+
+
 **Status: Implementation and automated QA maintained on GitHub `main`; not a declaration of public deployment, configured domain, or final owner acceptance. Check latest exact-SHA GitHub Actions run before release.**
 
 Public React / Next.js + GSAP portfolio featuring four first-class case studies:
