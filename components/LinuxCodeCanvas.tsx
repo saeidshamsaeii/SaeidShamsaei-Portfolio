@@ -70,7 +70,5 @@ export function LinuxCodeCanvas({progress=0,reduced=false}:{progress?:number;red
     </div>
    </div>
   </div>
-  <div className="sx-linux-side-note"><span>01 / INPUT</span><span>02 / DESIGN</span><span>03 / SYSTEM</span><span>04 / PRODUCT</span></div>
-  <div className="sx-linux-foot"><span>INTERACTIVE CODE COMPOSITION</span><span>{String(Math.round(amount*100)).padStart(2,'0')}% / SCROLL TO WRITE</span></div>
  </div>;
 }
