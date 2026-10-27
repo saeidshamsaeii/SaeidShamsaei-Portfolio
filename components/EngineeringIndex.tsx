@@ -92,7 +92,7 @@ export default function EngineeringIndex(){
  }),[filter,project,safeQuery]);
  const count=visible.reduce((sum,entry)=>sum+entry.decisions.filter(item=>
   (filter==='all'||item.discipline===filter)&&
-  (!safeQuery||normalized([entry.scope,entry.differentiator,item.question,item.design,
+  (!safeQuery||normalized([entry.id,entry.scope,entry.differentiator,item.question,item.design,
    item.tradeoff,item.evidence,...item.files.map(i=>entry.files[i].label+' '+entry.files[i].path)].join(' ')).includes(safeQuery))
  ).length,0);
 
