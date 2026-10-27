@@ -20,6 +20,7 @@ import './edition11.css';
 import './edition13.css';
 import './edition14.css';
 import './edition16.css';
+import './edition18.css';
 
 const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL;
 const validUrl=typeof configuredUrl==='string'&&/^https:\/\/[^/]+\.[^/]+/.test(configuredUrl)&&!configuredUrl.includes('example.invalid');
