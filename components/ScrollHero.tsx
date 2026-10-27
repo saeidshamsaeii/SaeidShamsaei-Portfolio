@@ -79,7 +79,7 @@ export function ScrollHero(){
       data-tour-pace={String([.72,1.28,.88][index])}
       data-tour-progress={String((index+.18)/slides.length)}>
        <WordReveal className="sx-kicker" text={slide.eyebrow}/>
-       {index===0?<h1 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h1>:
+       {index===0?<h2 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h2>:
         <h2>{index===1?<><WordReveal as="span" text="COMPLEX IDEAS."/><br/><em><WordReveal as="span" text="CLEAR EXPERIENCES."/></em></>:
          <><WordReveal as="span" text="ARCHITECTURE."/><br/><em><WordReveal as="span" text="PRODUCT. PEOPLE."/></em></>}</h2>}
        <WordReveal className="sx-v8-hero-desc" text={slide.description}/>
