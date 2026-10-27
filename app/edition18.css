@@ -87,7 +87,7 @@
 .sx-v18-site .sx-linux-scene{
  background:#090909!important;color:#fff!important;
 }
-.sx-v18-site .sx-v9-hero .sx-v8-hero-stage{filter:grayscale(1);}
+.sx-v18-site .sx-linux-scene{filter:grayscale(1);}
 .sx-v18-site .sx-linux-ambient,
 .sx-v18-site .sx-linux-side-note,
 .sx-v18-site .sx-linux-foot,
@@ -148,7 +148,7 @@
  letter-spacing:-.075em;margin:0;max-width:950px;text-align:center;
 }
 /* Project horizontal stories: neutral materials and deliberately spare copy. */
-.sx-v18-site .sx-v11-sticky{filter:grayscale(1);}
+.sx-v18-site .sx-v11-horizontal-chapter{--sx-v10-accent:#fff!important;}
 .sx-v18-site .sx-v14-scene{
  background:#101010!important;color:#fff!important;
  border-right:1px solid #ffffff35!important;
@@ -210,7 +210,7 @@
 /* Keep the original Linux cursor because it represents code progress. */
 .sx-v18-site .sx-linux-caret{background:#fff!important;box-shadow:none!important;}
 /* Transparent tour, legible over black and white backgrounds. */
-.sx-v18-site .sx-guided-tour.sx-v11-tour{z-index:100!important;filter:grayscale(1);}
+.sx-v18-site .sx-guided-tour.sx-v11-tour{z-index:100!important;}
 .sx-v18-site .sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-label,
 .sx-v18-site .sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-button,
 .sx-v18-site .sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-speed{color:#000!important;}
