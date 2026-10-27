@@ -33,6 +33,7 @@ test('source registers link to actual repo paths and disclose non-verified runti
    anchors=>anchors.map(a=>(a as HTMLAnchorElement).href));
   expect(urls.length).toBeGreaterThanOrEqual(4);
   expect(urls.every(url=>url.startsWith('https://github.com/saeidshamsaeii/'))).toBe(true);
+  expect(urls.every(url=>/\/blob\/[0-9a-f]{40}\//.test(url))).toBe(true);
  }
 });
 
