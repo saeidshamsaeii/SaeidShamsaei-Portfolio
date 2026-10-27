@@ -1,7 +1,7 @@
 'use client';
 import {useMemo,useState} from 'react';
 import Link from 'next/link';
-import {engineeringEvidence,fileUrl,type Discipline,type EngineeringRecord} from '@/data/engineeringEvidence';
+import {engineeringEvidence,fileUrl,sourceSnapshots,type Discipline,type EngineeringRecord} from '@/data/engineeringEvidence';
 import {projects} from '@/data/portfolio';
 
 type Filter='all'|Discipline;
@@ -17,9 +17,9 @@ function EvidenceProject({entry,filter,query}:{entry:EngineeringRecord;filter:Fi
  const project=projects.find(item=>item.id===entry.id)!;
  const decisions=entry.decisions.filter(item=>{
   if(filter!=='all'&&item.discipline!==filter)return false;
-  const corpus=[item.question,item.design,item.tradeoff,item.evidence,
+  const corpus=[entry.id,item.question,item.design,item.tradeoff,item.evidence,
    entry.scope,entry.differentiator,project.brand,
-   ...item.files.map(index=>entry.files[index].label)].join(' ');
+   ...item.files.map(index=>entry.files[index].label+' '+entry.files[index].path)].join(' ');
   return !query||normalized(corpus).includes(query);
  });
  if(!decisions.length)return null;
@@ -58,12 +58,12 @@ function EvidenceProject({entry,filter,query}:{entry:EngineeringRecord;filter:Fi
    </article>)}
   </div>
   <section id={'source-'+entry.id} className="sx-ei-register" aria-label={project.brand+' source register'}>
-   <div className="sx-ei-register-head"><h3>Source register</h3><p>Links open GitHub; repository access may be required.</p></div>
+   <div className="sx-ei-register-head"><h3>Source register</h3><p>References are pinned to checked Git commit SHAs; GitHub access may be required.</p></div>
    <div className="sx-ei-source-list">{entry.files.map((file,i)=><a
     href={fileUrl(file)} key={file.repo+'/'+file.path} target="_blank" rel="noopener noreferrer">
     <span>{String(i+1).padStart(2,'0')} / {file.label}</span>
     <small>{file.why}</small>
-    <em>{file.repo} / {file.path} ↗</em>
+    <em>{file.repo} @ {(sourceSnapshots[file.repo]||"main").slice(0,10)} / {file.path} ↗</em>
    </a>)}</div>
    <div className="sx-ei-unknown">
     <span className="sx-ei-label">Not independently verified</span>
@@ -84,8 +84,8 @@ export default function EngineeringIndex(){
   if(!safeQuery&&filter==='all')return true;
   return entry.decisions.some(item=>{
    if(filter!=='all'&&item.discipline!==filter)return false;
-   const corpus=[entry.scope,entry.differentiator,entry.boundary,
-    ...item.files.map(i=>entry.files[i].label),item.question,item.design,
+   const corpus=[entry.id,entry.scope,entry.differentiator,entry.boundary,
+    ...item.files.map(i=>entry.files[i].label+' '+entry.files[i].path),item.question,item.design,
     item.tradeoff,item.evidence].join(' ');
    return !safeQuery||normalized(corpus).includes(safeQuery);
   });
@@ -93,7 +93,7 @@ export default function EngineeringIndex(){
  const count=visible.reduce((sum,entry)=>sum+entry.decisions.filter(item=>
   (filter==='all'||item.discipline===filter)&&
   (!safeQuery||normalized([entry.scope,entry.differentiator,item.question,item.design,
-   item.tradeoff,item.evidence,...item.files.map(i=>entry.files[i].label)].join(' ')).includes(safeQuery))
+   item.tradeoff,item.evidence,...item.files.map(i=>entry.files[i].label+' '+entry.files[i].path)].join(' ')).includes(safeQuery))
  ).length,0);
 
  return <main className="sx-ei">
