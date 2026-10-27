@@ -229,6 +229,13 @@
  .sx-site .sx-v16-cover-intro>p{font-size:18px;}
  .sx-v16-cover-bottom>a{font-size:8px;}
 }
+/* Coarse-pointer visitors should never need hover to read source-focused
+   project descriptions or reach the case study and evidence actions. */
+@media(hover:none){
+ .sx-v16-index-entry .sx-v16-index-expansion{
+  max-height:340px;opacity:1;padding:0 clamp(10px,1vw,16px) 20px;
+ }
+}
 @media(prefers-reduced-motion:reduce){
  .sx-site .sx-v16-cover-image,.sx-site .sx-v16-cover-image img{transform:none!important;}
  .sx-v16-index-entry:before,.sx-v16-index-name,.sx-v16-index-arrow,.sx-v16-index-expansion,
