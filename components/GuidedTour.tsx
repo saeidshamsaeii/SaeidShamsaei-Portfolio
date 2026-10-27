@@ -52,6 +52,7 @@ function scrollDestination(stop:Stop){
 export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
  const [mode,setMode]=useState<Mode>('playing');
  const [displaySpeed,setDisplaySpeed]=useState<number>(2);
+ const [surface,setSurface]=useState<'light'|'dark'>('light');
  const [step,setStep]=useState(0);
  const [percent,setPercent]=useState(0);
  const [label,setLabel]=useState('Introduction');
@@ -72,6 +73,15 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, hudAt=0, touchActive=false, disposed=false;
   let currentSpeed=BASE_SPEED,targetSpeed=BASE_SPEED;
+  const refreshSurface=()=>{
+   const sampleY=window.innerHeight*.45;
+   const light=['intro','work-index'].some(id=>{
+    const element=document.getElementById(id);if(!element)return false;
+    const rect=element.getBoundingClientRect();
+    return rect.top<=sampleY&&rect.bottom>=sampleY;
+   });
+   setSurface(previous=>previous===(light?'light':'dark')?previous:(light?'light':'dark'));
+  };
 
   const setPlayback=(next:Mode)=>{
    if(playback===next)return;
@@ -150,6 +160,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    if(playback==='manual')scheduleResume();
   };
   const onScroll=()=>{
+   refreshSurface();
    // Catch scroll-bar dragging and other genuine scroll commands as well as
    // wheel/keyboard gestures. Ignore our own scrollTo-generated events.
    if(playback==='paused'||playback==='finished')return;
@@ -198,6 +209,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
     if(time-hudAt>100){
      hudAt=time;setPercent((state.index+fraction)/stops.length);
      setDisplaySpeed(Math.round(currentSpeed*10)/10);
+     refreshSurface();
     }
     if(fraction>=1){
      if(state.index===stops.length-1){
@@ -210,6 +222,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   };
 
   setStep(0);setCount(stops.length);setPercent(0);setLabel(stops[0].label);
+  refreshSurface();
   root.dataset.portfolioTour='playing';
   const first=findNextFromScroll();
   if(first>=0){goTo(first);scriptedScroll=window.scrollY;}
@@ -241,7 +254,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
 
  if(!active)return null;
  return <aside className="sx-guided-tour sx-v11-tour" role="region" aria-label="Guided portfolio tour"
-  data-playback={mode}>
+  data-playback={mode} data-surface={surface}>
   <span className="sx-v11-top-label" title={label}>
    {mode==='manual'?'EXPLORING — AUTO RESUMES':mode==='paused'?'TOUR PAUSED':'AUTO STORY'} · {format(step+1)}/{format(count)} · {label}
   </span>
