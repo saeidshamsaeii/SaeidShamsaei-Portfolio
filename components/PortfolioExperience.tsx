@@ -32,7 +32,7 @@ export default function PortfolioExperience(){
   <a className="skip-link" href="#selected-projects">Skip to projects</a>
   <header className="sx-header">
    <Brand/>
-   <nav aria-label="Primary navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#contact">Contact</a></nav>
+   <nav aria-label="Primary navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><Link href="/engineering/">Engineering Index</Link><a href="#contact">Contact</a></nav>
    <div className="sx-header-actions"><a className="sx-header-cta" href={'mailto:'+publicContact.email}>Let’s Talk ↗</a></div>
   </header>
   <main>
@@ -70,6 +70,7 @@ export default function PortfolioExperience(){
     <WordReveal as="span" className="sx-work-intro-hint" text="SCROLL DOWN · EXPLORE SIDEWAYS ↘"/>
    </div>
    {projects.map((project,index)=><HorizontalCaseChapter key={project.id} project={project} index={index}/>)}
+   <aside className="sx-ei-home-bridge" aria-label="Explore the engineering behind the work"><span>BEYOND THE STORY</span><p>Read the decisions, constraints and source files behind the four projects — without the automatic tour.</p><Link href="/engineering/">OPEN THE ENGINEERING INDEX ↗</Link></aside>
 
    <section className="sx-contact sx-editorial-frame" id="contact" data-tour-stop data-tour-label="Start a conversation" data-tour-duration="12" data-tour-pace="0.82" aria-labelledby="sx-contact-title">
     <WordReveal className="sx-kicker" text="04 / DIRECT CONTACT"/>
@@ -100,7 +101,7 @@ export default function PortfolioExperience(){
     </div>
    </section>
   </main>
-  <footer className="sx-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><a href="#contact">Contact</a></nav>
+  <footer className="sx-footer"><Brand footer/><nav aria-label="Footer navigation"><a href="#top">Home</a><a href="#about">About</a><a href="#selected-projects">Projects</a><Link href="/engineering/">Engineering Index</Link><a href="#contact">Contact</a></nav>
    <div className="sx-footer-social"><a href={publicContact.github} rel="noreferrer noopener" target="_blank">GitHub ↗</a><a href={publicContact.linkedin} rel="noreferrer noopener" target="_blank">LinkedIn ↗</a><a href={publicContact.telegram} rel="noreferrer noopener" target="_blank">Telegram ↗</a><a href={'mailto:'+publicContact.email}>Email ↗</a></div></footer>
  </div>;
 }
