@@ -321,3 +321,15 @@
  .sx-site .sx-v16-cover:after{transform:none!important;will-change:auto;}
  .sx-v17-index-watermark>span{animation:none!important;transform:none!important;filter:none!important;opacity:.04;}
 }
+
+/* Contrast-aware autoplay controls: tiny floating text, no footer box.
+   The bright identity and work-directory surfaces need charcoal controls. */
+.sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-label,
+.sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-button{
+ color:#202d27!important;text-shadow:none!important;
+}
+.sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-progress{background:#28372c36;}
+.sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-progress i{background:#253d30;}
+.sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-speed{color:#253d30!important;}
+.sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-button:hover{color:#667353!important;}
+.sx-guided-tour.sx-v11-tour[data-surface="light"][data-playback="manual"] .sx-v11-top-label{color:#4a5e48!important;}
