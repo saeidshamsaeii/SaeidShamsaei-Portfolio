@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef} from 'react';
 import Link from 'next/link';
 import {homeStories} from '@/data/homeStories';
 import {projects,type Project} from '@/data/portfolio';
@@ -19,7 +19,6 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
  const count=5;
  const story=homeStories[project.id];
  const next=projects[index+1];
- const [current,setCurrent]=useState(0);
 
  useEffect(()=>{
   const node=section.current,track=rail.current;
@@ -43,7 +42,6 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
    track.style.transform='translate3d('+(-offset*window.innerWidth)+'px,0,0)';
    node.dataset.frameProgress=String(scaled);
    node.dataset.activeFrame=String(position);
-   setCurrent(previous=>previous===position?previous:position);
   };
   const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const measure=()=>{
@@ -81,13 +79,11 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
    <div className="sx-v11-rail" ref={rail}>
     <article className="sx-v11-slide sx-v14-scene sx-v14-opening" data-frame-index="0"
      data-tour-stop data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
-     <div className="sx-v14-scene-index"><span>{project.index} / 04</span><span>SELECTED ENGINEERING WORK</span></div>
      <div className="sx-v14-opening-inner">
       <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
       <WordReveal as="p" text={story.signature}/>
      </div>
      <div className="sx-v14-opening-foot">
-      <span>{project.kicker.en}</span>
       <a href={'/work/'+project.id+'/'}>FULL CASE STUDY ↗</a>
      </div>
     </article>
@@ -95,18 +91,13 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
      className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+beat.mode}
      data-frame-index={i+1} data-tour-stop data-tour-label={project.brand+' / '+beat.eyebrow}
      data-tour-duration={String(beat.duration)} data-tour-pace={String(beat.pace)}>
-     <div className="sx-v14-scene-index"><span>{project.index} / {String(i+1).padStart(2,'0')}</span><span>{beat.eyebrow}</span></div>
      <div className="sx-v14-editorial-copy">
       <WordReveal as="h3" text={beat.headline}/>
       <WordReveal as="p" text={beat.copy}/>
      </div>
-     <aside className="sx-v14-observations" aria-label="Implementation notes">
-      {beat.notes.map((note,j)=><div key={note}><small>{String(j+1).padStart(2,'0')}</small><WordReveal as="span" text={note}/></div>)}
-     </aside>
     </article>)}
     <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="4"
      data-tour-stop data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
-     <div className="sx-v14-scene-index"><span>{project.index} / FIN</span><span>WHAT REMAINS</span></div>
      <div className="sx-v14-ending-inner"><WordReveal as="h3" text={story.ending}/>
       <WordReveal as="p" text={project.outcome.en}/>
       <div className="sx-v14-ending-actions">
@@ -115,13 +106,6 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
       </div>
      </div>
     </article>
-   </div>
-   <div className="sx-v11-project-status" aria-label={project.brand+' chapter progress'}>
-    <span>{project.index} / {project.brand}</span>
-    <div className="sx-v11-project-meter" aria-hidden="true">
-     <i style={{width:((current+1)/count*100)+'%'}}/>
-    </div>
-    <span>{String(current+1).padStart(2,'0')} / 05</span>
    </div>
   </div>
  </section>;
