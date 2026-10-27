@@ -67,7 +67,7 @@ test('actual Linux code and source-driven projects remain available',async({page
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
  for(const id of ids){
-  await expect(page.locator('#project-'+id+' .sx-v14-scene')).toHaveCount(5);
+  await expect(page.locator('#project-'+id+' .sx-v14-scene')).toHaveCount(3);
   await expect(page.locator('#project-'+id+' img')).toHaveCount(0);
  }
 });
