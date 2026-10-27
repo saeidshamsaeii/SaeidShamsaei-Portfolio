@@ -24,9 +24,13 @@
 - `app/edition18.css` (new) and `app/layout.tsx`
 - `tests/edition16-identity.spec.ts` (now updated to Edition 18 behavior), `tests/portfolio.spec.ts`, `tests/guided-tour.spec.ts`, `tests/source-contract.test.mjs`
 
+- Native manual navigation can still pause the tour and resume after 3.5 seconds; the tour HUD now switches contrast on every light section.
+- Deep case-study engineering considerations are retained behind semantic expandable `<details>` controls rather than floating side notes.
+- With JavaScript disabled, the welcome overlay is hidden so the static site is not trapped behind it.
+
 ## Verification boundary and acceptance
 
-**21 GitHub source structure checks** were inspected after implementing the main design changes; those are not real Playwright, CSS rendering or build results.
+**25 GitHub source structure checks** were inspected after implementing the main design changes; those are not real Playwright, CSS rendering or build results.
 
 Before calling this premium or deployable, run the owner-approved Next.js typecheck/build and inspect Chrome/WebKit at 320, 360, 390, 430, 768, 1024 and 1440 px:
 - Image fully inside frame at every breakpoint and **no rectangle overlap** with any text
