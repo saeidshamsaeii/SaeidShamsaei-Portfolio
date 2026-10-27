@@ -103,8 +103,11 @@ test('five distinct scroll-pinned editorial scenes preserve source-backed contex
  assert.match(css,/overflow:visible!important/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.match(word,/chapter\.dataset\.frameProgress/);
- assert.ok(word.includes('opacity=String(fraction)'));
+ assert.ok(word.includes('lineNodes[i].style.opacity=String(fraction)'));
  assert.ok(word.includes("clipPath='inset(0 '"));
+ assert.ok(word.includes('[data-reveal-line]'));
+ assert.ok(word.includes('progress*lineNodes.length'));
+ assert.ok(read('app/layout.tsx').includes("import './edition18.css';"));
  assert.ok(read('app/layout.tsx').includes("import './edition13.css';"));
  assert.match(read('app/layout.tsx'),/edition11\.css/);
  assert.ok(read('app/layout.tsx').includes("import './edition14.css';"));
@@ -163,4 +166,26 @@ test('engineering evidence mode is source-anchored, searchable and outside the c
  assert.match(home,/href="\/engineering\/"/);
  assert.match(detail,/engineering\/\#evidence-/);
  assert.match(sitemap,/engineering/);
+});
+
+test('Edition 18 renders a black/white greeting-first readable homepage with strictly framed original portrait',()=>{
+ const home=read('components/PortfolioExperience.tsx');
+ const opening=read('components/SignatureOpening.tsx');
+ const greeting=read('components/MultilingualGreeting.tsx');
+ const directory=read('components/SelectedWorkIndex.tsx');
+ const css=read('app/edition18.css');
+ assert.match(home,/MultilingualGreeting onComplete=\{finishGreeting\}/);
+ assert.match(home,/active=\{loaded&&tour\}/);
+ assert.match(opening,/sx-v18-portrait-frame/);
+ assert.match(css,/object-fit:contain!important/);
+ assert.doesNotMatch(opening,/sx-v16-cover-photo-note|sx-v16-cover-edge|sx-v16-cover-meta/);
+ const ordered=['سلام','Hello','مرحباً','こんにちは','Привет','नमस्ते','Ciao'];
+ for(let i=1;i<ordered.length;i++)assert.ok(greeting.indexOf(ordered[i-1])<greeting.indexOf(ordered[i]));
+ assert.match(directory,/sx-v18-index-entry/);
+ assert.doesNotMatch(directory,/sx-v17-index-watermark|PROJECT NOTE/);
+ assert.match(css,/sx-v18-loader/);
+ assert.match(css,/sx-v18-cover-layout/);
+ assert.match(css,/sx-v18-reveal-line/);
+ assert.match(css,/sx-v10-case-page/);
+ assert.match(css,/sx-ei/);
 });
