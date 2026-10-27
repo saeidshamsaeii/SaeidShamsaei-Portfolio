@@ -13,8 +13,7 @@ export function SignatureOpening(){
    <div className="sx-v18-cover-copy">
     <p className="sx-v18-cover-eyebrow">Software architect · Product engineer</p>
     <h1 id="sx-v16-name">
-     <WordReveal as="span" text="SAEID" mode="lines"/>
-     <WordReveal as="span" text="SHAMSAEI" mode="lines"/>
+     <WordReveal as="span" text={'SAEID\nSHAMSAEI'} mode="lines"/>
     </h1>
     <WordReveal className="sx-v18-cover-lead" text="Design. Code. Architecture." mode="lines"/>
     <div className="sx-v18-cover-links">
