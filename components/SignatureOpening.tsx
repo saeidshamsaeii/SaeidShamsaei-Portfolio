@@ -11,7 +11,6 @@ export function SignatureOpening(){
   aria-labelledby="sx-v16-name">
   <div className="sx-v18-cover-layout">
    <div className="sx-v18-cover-copy">
-    <p className="sx-v18-cover-eyebrow">Software architect · Product engineer</p>
     <h1 id="sx-v16-name">
      <WordReveal as="span" text={'SAEID\nSHAMSAEI'} mode="lines"/>
     </h1>
