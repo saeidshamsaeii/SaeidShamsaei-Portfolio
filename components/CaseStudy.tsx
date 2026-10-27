@@ -14,7 +14,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
  return <main className={'case-study sx-v10-case-page scene-'+id}>
   <GuidedTour active={tour} onExit={()=>setTour(false)}/>
   <nav className="case-nav"><Link href="/">← SAEID SHAMSAEI</Link>
-   <span>CASE STUDY / {p.index} OF 04</span>
+   <span>CASE STUDY / {p.index} OF 04</span><Link href={"/engineering/#evidence-"+p.id}>SOURCE INDEX ↗</Link>
    
   </nav>
   <header className="sx-v10-case-cover" data-tour-stop data-tour-label={p.brand+' / introduction'} data-tour-duration="12" data-tour-pace="0.68">
@@ -52,6 +52,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
    <WordReveal text="Follow the source references for the documented implementation; verification of deployed behavior is a separate step."/>
    <WordReveal className="sx-v10-source-line" text={"Source context: "+p.source}/>
    <div className="sx-v10-reference-list">{story.references.map(reference=><a key={reference.href} target="_blank" rel="noreferrer noopener" href={reference.href}><WordReveal as="span" text={reference.label+" ↗"}/></a>)}</div>
+   <Link className="sx-ei-case-link" href={"/engineering/#evidence-"+p.id}>INSPECT ARCHITECTURE DECISIONS & VERIFIED SOURCE PATHS ↗</Link>
   </section>
   <section className="sx-v10-case-next" data-tour-stop data-tour-label={'Continue to '+next.brand} data-tour-duration="8" data-tour-pace="1.4">
    <WordReveal as="span" className="sx-v10-counter" text={"UP NEXT / "+next.index}/>
