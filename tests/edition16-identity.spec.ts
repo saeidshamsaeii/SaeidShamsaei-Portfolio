@@ -72,6 +72,26 @@ test('actual Linux code and source-driven projects remain available',async({page
  }
 });
 
+test('intro writes first line before second, then the keyphrase',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ const tour=page.getByRole('region',{name:'Guided portfolio tour'});
+ await expect(tour).toBeVisible();
+ await tour.getByRole('button',{name:'Pause tour'}).click();
+ const cover=page.locator('#intro');
+ const lines=cover.locator('h1 [data-reveal-line]');
+ const lead=cover.locator('.sx-v18-cover-lead [data-reveal-line]').first();
+ await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+ await expect.poll(()=>lines.nth(1).evaluate(el=>Number(getComputedStyle(el).opacity))).toBe(0);
+ const h=await cover.evaluate(el=>el.getBoundingClientRect().height);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),h*.20);
+ await expect.poll(()=>lines.first().evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.1);
+ expect(await lines.nth(1).evaluate(el=>Number(getComputedStyle(el).opacity))).toBe(0);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),h*.68);
+ await expect.poll(()=>lines.nth(1).evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.8);
+ await expect.poll(()=>lead.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.2);
+});
+
 test('new minimalist cover, directory and contact do not overflow narrow viewports',async({browser})=>{
  for(const width of [320,360,390,430,768,1440]){
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion:'reduce'});
