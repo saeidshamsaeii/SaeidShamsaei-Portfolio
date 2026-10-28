@@ -360,3 +360,26 @@ test('Edition 25 holds every horizontal panel 2 seconds after its text and befor
  assert.match(director,/IDLE_RESUME_MS=3500/);
  assert.match(director,/return null;/);
 });
+
+test('Edition 26 never previews the next block during its predecessor reading hold',()=>{
+ const chapter=read('components/HorizontalCaseChapter.tsx');
+ const word=read('components/WordReveal.tsx');
+ const director=read('components/GuidedTour.tsx');
+ const css=read('app/edition20.css');
+ assert.match(chapter,/panel\.dataset\.frameState!==state/);
+ assert.match(chapter,/panelIndex>position\?'upcoming'/);
+ assert.match(chapter,/new Event\('sx-horizontal-progress'\)/);
+ assert.equal((chapter.match(/data-frame-state="upcoming"/g)||[]).length,2);
+ assert.match(word,/horizontalChapter\.addEventListener\('sx-horizontal-progress',update\)/);
+ assert.match(word,/horizontalChapter\?\.removeEventListener\('sx-horizontal-progress',update\)/);
+ assert.match(word,/if\(host\.closest\('\[data-tour-awaiting="true"\]'\)\)progress=0/);
+ assert.match(director,/awaitingNext\.dataset\.tourAwaiting='true'/);
+ assert.match(director,/if\(awaitingNext\)delete awaitingNext\.dataset\.tourAwaiting/);
+ assert.match(director,/reserveNext\(index\)/);
+ assert.match(director,/clearAwaiting\(\)/);
+ assert.match(css,/\[data-frame-state="upcoming"\] \.sx-word-pieces/);
+ assert.match(css,/\[data-tour-awaiting="true"\] > \*/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(director,/HORIZONTAL_FRAME_PAUSE_MS=2000/);
+ assert.match(director,/return top\+travel\*clamp\(\(index\+\.66\)\/count\)/);
+});
