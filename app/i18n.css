@@ -95,3 +95,29 @@ html:not([lang=en]) .sx-v18-site #work-index .sx-v18-index-entry .sx-v16-index-r
 @media(prefers-reduced-motion:reduce){
  .sx-language-trigger,.sx-language-menu button{transition:none!important;}
 }
+
+/* Respect native letterforms where legacy Latin font shorthand would
+ * otherwise force Inter/Georgia/monospace onto Arabic and Chinese copy. */
+html:is([lang=fa],[lang=ar]) .sx-v18-site :is(
+ .sx-v18-cover-lead,.sx-v8-hero-slide h2,.sx-v8-hero-desc,
+ .sx-v18-about h2,.sx-v18-about-summary,.sx-v18-keywords,
+ #work-index .sx-v18-index-heading h2,
+ #work-index .sx-v18-index-entry .sx-v16-index-row>span:nth-child(2),
+ .sx-v18-work-intro h2,.sx-v14-scene h3,.sx-v14-scene p,
+ .sx-contact-link,.sx-v18-header nav a),
+html:is([lang=fa],[lang=ar]) .sx-v10-case-page :is(h2,p,summary,li),
+html:is([lang=fa],[lang=ar]) .sx-ei :is(h1,h2,h3,p,button,label,legend){
+ font-family:Tahoma,"Segoe UI","Noto Naskh Arabic",Arial,sans-serif!important;
+ letter-spacing:0!important;
+}
+html[lang=zh] .sx-v18-site :is(
+ .sx-v18-cover-lead,.sx-v8-hero-slide h2,.sx-v8-hero-desc,
+ .sx-v18-about h2,.sx-v18-about-summary,
+ #work-index .sx-v18-index-heading h2,.sx-v18-work-intro h2,
+ .sx-v14-scene h3,.sx-v14-scene p){
+ font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif!important;
+ letter-spacing:0!important;
+}
+html[dir=rtl] :is(.sx-v18-site .sx-v14-scene,.sx-v10-case-page .sx-v10-story-text,.sx-ei-project){
+ text-align:right;
+}
