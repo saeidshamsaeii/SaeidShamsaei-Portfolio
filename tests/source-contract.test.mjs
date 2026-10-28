@@ -377,6 +377,10 @@ test('Edition 26 never previews the next block during its predecessor reading ho
  assert.match(director,/if\(awaitingNext\)delete awaitingNext\.dataset\.tourAwaiting/);
  assert.match(director,/reserveNext\(index\)/);
  assert.match(director,/clearAwaiting\(\)/);
+ // All later beats must be reserved, not just the immediately upcoming one.
+ assert.match(director,/stops\.slice\(index\+2\)/);
+ assert.match(director,/awaitingLater\.push\(later\.element\)/);
+ assert.match(director,/for\(const later of awaitingLater\)delete later\.dataset\.tourAwaiting/);
  assert.match(css,/\[data-frame-state="upcoming"\] \.sx-word-pieces/);
  assert.match(css,/\[data-tour-awaiting="true"\] > \*/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
