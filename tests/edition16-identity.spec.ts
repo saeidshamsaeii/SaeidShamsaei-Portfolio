@@ -1,106 +1,81 @@
 import {test,expect} from '@playwright/test';
 
-const ids=['gartal','factory','digirezhim','petiwoo'];
-
-test('welcome starts with Persian and finishes before automatic page motion',async({page})=>{
+test('Hello... comes first, then the rest of the greeting sequence rapidly',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const greeting=page.locator('.sx-v18-loader');
- await expect(greeting).toHaveCount(1);
- await expect(greeting.locator('[lang="fa"]')).toContainText('سلام');
+ const loader=page.locator('.sx-v18-loader');
+ await expect(loader.locator('[lang="en"]')).toContainText('Hello...');
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
- await expect(greeting).toHaveCount(0,{timeout:9000});
+ await expect(loader).toHaveCount(0,{timeout:8500});
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toBeVisible({timeout:5000});
 });
 
-test('portrait remains fully inside its own frame with zero text intersection',async({page})=>{
+test('original portrait is crisp full bleed, high in the background and not boxed',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:5000});
- const frame=page.locator('#intro .sx-v18-portrait-frame');
- const photo=frame.locator('img');
- await expect(photo).toHaveAttribute('src','/assets/hires/portrait.webp');
- await expect(photo).toHaveCSS('object-fit','contain');
- await expect(photo).toHaveCSS('filter',/grayscale/);
- const bounds=await page.evaluate(()=>{
-  const f=document.querySelector('#intro .sx-v18-portrait-frame')!.getBoundingClientRect();
-  const n=document.querySelector('#intro h1')!.getBoundingClientRect();
-  return {overlap:f.left<n.right&&n.left<f.right&&f.top<n.bottom&&n.top<f.bottom,
-   photoInside:document.querySelector('#intro .sx-v18-portrait-frame img')!.getBoundingClientRect().width<=f.width+1};
- });
- expect(bounds.overlap).toBe(false);
- expect(bounds.photoInside).toBe(true);
- await expect(frame.locator('figcaption,.sx-v16-cover-photo-note')).toHaveCount(0);
- await expect(page.locator('#about img')).toHaveCount(0);
+ const photograph=page.locator('#intro .sx-v19-photo-background img');
+ await expect(photograph).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(photograph).toHaveCSS('object-fit','cover');
+ await expect(photograph).toHaveCSS('object-position','50% 7%');
+ await expect(photograph).toHaveCSS('filter',/grayscale\(1\)/);
+ await expect(page.locator('#intro figure')).toHaveCount(0);
+ await expect(page.locator('#intro .sx-v18-portrait-frame')).toHaveCount(0);
 });
 
-test('main visual identity is strict black and white with sparse work rows',async({page})=>{
+test('primary section backgrounds use exact rgb 0 or 255',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const colors=await page.evaluate(()=>{
-  const read=(selector:string)=>getComputedStyle(document.querySelector(selector)!).backgroundColor;
-  return {intro:read('#intro'),index:read('#work-index'),about:read('#about')};
+  const bg=(s:string)=>getComputedStyle(document.querySelector(s)!).backgroundColor;
+  return {cover:bg('#intro'),index:bg('#work-index'),about:bg('#about'),
+   contact:bg('#contact')};
  });
- expect(colors.intro).toBe('rgb(255, 255, 255)');
- expect(colors.index).toBe('rgb(8, 8, 8)');
- expect(colors.about).toBe('rgb(255, 255, 255)');
- await expect(page.locator('#work-index .sx-v18-index-entry')).toHaveCount(4);
- await expect(page.locator('#work-index .sx-v17-index-watermark')).toHaveCount(0);
- for(const id of ids){
-  await expect(page.locator('#work-index a[href="#project-'+id+'"]')).toHaveCount(1);
-  await expect(page.locator('#work-index a[href="/work/'+id+'/"]')).toHaveCount(1);
- }
+ expect(colors).toEqual({
+  cover:'rgb(0, 0, 0)',index:'rgb(0, 0, 0)',
+  about:'rgb(255, 255, 255)',contact:'rgb(255, 255, 255)'
+ });
 });
 
-test('owner name uses one ordered two-line visual sequence',async({page})=>{
+test('GARTAL reveals one title, then exactly two authored signature lines',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const title=page.locator('#intro h1');
- await expect(title.locator('[data-reveal-line]')).toHaveCount(2);
- await expect(title.locator('[data-reveal-line]').first()).toContainText('SAEID');
- await expect(title.locator('[data-reveal-line]').last()).toContainText('SHAMSAEI');
- expect(await title.locator('[data-reveal-line]').first().evaluate(el=>getComputedStyle(el).display)).toBe('block');
- await expect(title.locator('.sx-word-a11y')).toHaveCount(1);
+ const chapter=page.locator('#project-gartal .sx-v14-opening');
+ const title=chapter.locator('h2 [data-reveal-line]');
+ const lines=chapter.locator('p [data-reveal-line]');
+ await expect(title).toHaveCount(1);
+ await expect(title).toContainText('GARTAL');
+ await expect(lines).toHaveCount(2);
+ await expect(lines.first()).toContainText('A studio at the front. A platform');
+ await expect(lines.last()).toContainText('underneath.');
+ await expect(chapter.locator('p')).toContainText('A studio at the front. A platform');
+ await expect(page.locator('#intro h1 [data-reveal-line]')).toHaveCount(2);
 });
 
-test('actual Linux code and source-driven projects remain available',async({page})=>{
- await page.emulateMedia({reducedMotion:'reduce'});
+test('tour has no speed text or progress bar, while manual control is retained',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
- for(const id of ids){
-  await expect(page.locator('#project-'+id+' .sx-v14-scene')).toHaveCount(3);
-  await expect(page.locator('#project-'+id+' img')).toHaveCount(0);
- }
-});
-
-test('intro writes first line before second, then the keyphrase',async({page})=>{
- await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:8500});
  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
  await expect(tour).toBeVisible();
+ await expect(tour.locator('.sx-v11-top-progress,.sx-v11-top-speed')).toHaveCount(0);
  await tour.getByRole('button',{name:'Pause tour'}).click();
- const cover=page.locator('#intro');
- const lines=cover.locator('h1 [data-reveal-line]');
- const lead=cover.locator('.sx-v18-cover-lead [data-reveal-line]').first();
- await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
- await expect.poll(()=>lines.nth(1).evaluate(el=>Number(getComputedStyle(el).opacity))).toBe(0);
- const h=await cover.evaluate(el=>el.getBoundingClientRect().height);
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),h*.20);
- await expect.poll(()=>lines.first().evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.1);
- expect(await lines.nth(1).evaluate(el=>Number(getComputedStyle(el).opacity))).toBe(0);
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),h*.68);
- await expect.poll(()=>lines.nth(1).evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.8);
- await expect.poll(()=>lead.evaluate(el=>Number(getComputedStyle(el).opacity))).toBeGreaterThan(.2);
+ await expect(tour).toHaveAttribute('data-playback','paused');
+ await tour.getByRole('button',{name:'Resume tour'}).click();
+ await expect(tour).toHaveAttribute('data-playback','playing');
 });
 
-test('new minimalist cover, directory and contact do not overflow narrow viewports',async({browser})=>{
- for(const width of [320,360,390,430,768,1440]){
+test('mobile photo sits above copy, not beneath the text',async({browser})=>{
+ for(const width of [320,360,390,430,768,1024,1440]){
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion:'reduce'});
   await page.goto('/',{waitUntil:'domcontentloaded'});
-  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:6000});
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),
-   'horizontal overflow at '+width).toBeLessThanOrEqual(2);
-  await expect(page.locator('#intro .sx-v18-portrait-frame img')).toBeVisible();
-  await expect(page.locator('#work-index .sx-v18-index-entry')).toHaveCount(4);
+  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:5000});
+  const geometry=await page.evaluate(()=>{
+   const photo=document.querySelector('#intro .sx-v19-photo-background')!.getBoundingClientRect();
+   const name=document.querySelector('#intro h1')!.getBoundingClientRect();
+   return {overlap:photo.left<name.right&&name.left<photo.right&&
+     photo.top<name.bottom&&name.top<photo.bottom,
+    overflow:document.documentElement.scrollWidth-innerWidth};
+  });
+  expect(geometry.overlap,'portrait text overlap at '+width).toBe(false);
+  expect(geometry.overflow,'horizontal overflow at '+width).toBeLessThanOrEqual(2);
   await page.close();
  }
 });
