@@ -32,9 +32,9 @@ export const caseNarratives:Record<ProjectId,CaseNarrative>={
     paragraphs:[
      'The GARTAL-SITE repository contains a server-rendered Python WSGI application. Its content registry defines individual pages for website design, ecommerce, custom development, industry services and project inquiries instead of reusing the same sales copy everywhere.',
      'The code includes project request validation, escaping, administrative lead review, privacy and SEO metadata, canonical URLs and an indexing policy that remains conservative before deployment approval.',
-     'The visual identity is a charcoal foundation with energetic orange accents, high-contrast typography and a directional G mark. The layout should communicate movement and precision without invented client endorsements.'
+     'The GARTAL repository documents an owner-approved upward-arrow brand mark and wordmark, superseding earlier orange/G explorations. This portfolio presents that work in its own neutral black-and-white system; a visual identity does not prove a released service or a customer result.'
     ],
-    details:['Python WSGI and server-rendered HTML','Validated lead intake','Charcoal and orange identity'],durationSeconds:13},
+    details:['Python WSGI baseline; Next.js migration separately reviewed','Validated inquiry intake','Owner-approved current brand assets'],durationSeconds:13},
    {id:'platform',eyebrow:'04 / SYSTEM ARCHITECTURE',title:'Shared contracts. Separate applications.',
     paragraphs:[
      'The Gartal-Platform repository describes four independent runtime responsibilities: an API and persistence server, a shared administration interface, a tenant-facing storefront and a licensing or tenant-lifecycle control plane.',
