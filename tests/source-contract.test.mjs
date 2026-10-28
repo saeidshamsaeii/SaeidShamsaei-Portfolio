@@ -107,7 +107,7 @@ test('five distinct scroll-pinned editorial scenes preserve source-backed contex
  assert.ok(word.includes('.sx-v10-case-section'));
  assert.ok(read('app/layout.tsx').includes("import './edition20.css';"));
  assert.ok(word.includes('word.getBoundingClientRect().top'));
- assert.ok(word.includes("clipPath='inset(0 '"));
+ assert.ok(word.includes("const rtl=document.documentElement.dir==='rtl'"));
  assert.ok(word.includes('[data-reveal-line]'));
  assert.ok(word.includes('progress*lines.length'));
  assert.ok(read('app/layout.tsx').includes("import './edition18.css';"));
@@ -202,7 +202,7 @@ test('ordered opening animation never overlaps its next sentence beat',()=>{
  const mono=read('app/edition19.css');
  assert.match(component,/const count=3/);
  assert.ok(component.includes(String.raw`A studio at the front. A platform\nunderneath.`));
- assert.match(component,/text=\{signatureLines\[project\.id\]\}/);
+ assert.match(component,/locale==='en'\?signatureLines\[project\.id\]/);
  assert.match(word,/const before=sizes\.slice\(0,self\)/);
  assert.match(word,/return clamp\(\(clamp\(local\)\*total-before\)\/sizes\[self\]\)/);
  assert.match(word,/data-reveal-line/);
@@ -247,8 +247,8 @@ test('Edition 21 restores actual first-screen words and prevents simultaneous pa
  const style=read('app/edition20.css');
  const reveal=read('components/WordReveal.tsx');
  const director=read('components/GuidedTour.tsx');
- assert.match(cover,/I make complex digital systems/);
- assert.match(cover,/feel considered, useful and human\./);
+ assert.match(read('data/siteTranslations.ts'),/I make complex digital systems/);
+ assert.match(read('data/siteTranslations.ts'),/feel considered, useful and human\./);
  assert.match(cover,/ready=\{ready\}/);
  assert.match(style,/font-size:clamp\(45px,5\.8vw,90px\)/);
  assert.match(style,/transition:none!important/);
