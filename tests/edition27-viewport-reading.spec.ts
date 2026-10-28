@@ -99,3 +99,51 @@ test('black Selected Work freezes only AFTER all nine word blocks finish and fit
  expect(Math.abs((await page.evaluate(()=>scrollY))-frozen)).toBeLessThanOrEqual(2);
  await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','selected-work',{timeout:2700});
 });
+
+test('Selected Work copy rises and fades only while the black section departs',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await page.keyboard.press('Escape');
+ const section=page.locator('#work-index');
+ const top=await section.evaluate(node=>node.getBoundingClientRect().top+scrollY);
+ const read=()=>section.evaluate(node=>{
+  const heading=node.querySelector<HTMLElement>('.sx-v18-index-heading')!;
+  const first=node.querySelector<HTMLElement>('.sx-v18-index-entry')!;
+  return {
+   progress:Number(node.style.getPropertyValue('--sx-work-exit')||0),
+   headingOpacity:Number(getComputedStyle(heading).opacity),
+   rowOpacity:Number(getComputedStyle(first).opacity),
+   headingTransform:getComputedStyle(heading).transform
+  };
+ });
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top);
+ await expect.poll(async()=>(await read()).progress).toBe(0);
+ const still=await read();
+ expect(still.headingOpacity).toBe(1);
+ expect(still.rowOpacity).toBe(1);
+
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+130);
+ await expect.poll(async()=>(await read()).progress).toBeGreaterThan(.3);
+ const departing=await read();
+ expect(departing.headingOpacity).toBeLessThan(still.headingOpacity);
+ expect(departing.rowOpacity).toBeLessThan(still.rowOpacity);
+ expect(departing.headingTransform).not.toBe('none');
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top);
+ await expect.poll(async()=>(await read()).progress).toBe(0);
+ expect((await read()).headingOpacity).toBe(1);
+});
+
+test('Selected Work exit movement is disabled for reduced-motion readers',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const section=page.locator('#work-index');
+ const top=await section.evaluate(node=>node.getBoundingClientRect().top+scrollY);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+150);
+ const copy=await section.locator('.sx-v18-index-heading').evaluate(node=>({
+  opacity:getComputedStyle(node).opacity,
+  transform:getComputedStyle(node).transform
+ }));
+ expect(copy.opacity).toBe('1');
+ expect(copy.transform).toBe('none');
+});
