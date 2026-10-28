@@ -38,7 +38,7 @@ export default function PortfolioExperience(){
      <WordReveal className="sx-v18-about-summary"
       text="I build thoughtful digital products — from architecture to the experience people use."/>
      <div className="sx-v18-keywords" aria-label="Specialties">
-      <span>Architecture</span><span>Engineering</span><span>Experience</span>
+      <WordReveal as="span" text="Architecture"/><WordReveal as="span" text="Engineering"/><WordReveal as="span" text="Experience"/>
      </div>
     </div>
    </section>
@@ -55,16 +55,16 @@ export default function PortfolioExperience(){
     <WordReveal as="h2" id="sx-contact-title" text="Let's build something that matters."/>
     <div className="sx-contact-directory" aria-label="Contact channels">
      <a className="sx-contact-link" href={'mailto:'+publicContact.email}>
-      <strong>Email</strong><span>{publicContact.email} ↗</span>
+      <WordReveal as="strong" text="Email"/><WordReveal as="span" text={publicContact.email+" ↗"}/>
      </a>
      <a className="sx-contact-link" href={publicContact.phoneHref}>
-      <strong>Phone</strong><span>{publicContact.phone} ↗</span>
+      <WordReveal as="strong" text="Phone"/><WordReveal as="span" text={publicContact.phone+" ↗"}/>
      </a>
      <a className="sx-contact-link" href={publicContact.linkedin} target="_blank" rel="noreferrer noopener">
-      <strong>LinkedIn</strong><span>Profile ↗</span>
+      <WordReveal as="strong" text="LinkedIn"/><WordReveal as="span" text="Profile ↗"/>
      </a>
      <a className="sx-contact-link" href={publicContact.telegram} target="_blank" rel="noreferrer noopener">
-      <strong>Telegram</strong><span>Message ↗</span>
+      <WordReveal as="strong" text="Telegram"/><WordReveal as="span" text="Message ↗"/>
      </a>
     </div>
    </section>
