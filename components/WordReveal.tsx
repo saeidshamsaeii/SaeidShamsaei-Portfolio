@@ -4,6 +4,27 @@ import {useEffect,useMemo,useRef} from 'react';
 type Tag='p'|'h1'|'h2'|'h3'|'span'|'small'|'strong';
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 
+// Shared section-level clock. Without this, a large wheel step could jump
+// from paragraph one to paragraph three in a single frame, making unrelated
+// lines appear at the same moment. The clock advances at a readable bounded
+// rate, and reverse scrolling rewinds immediately.
+const sectionClocks=new WeakMap<HTMLElement,{position:number;at:number}>();
+function pacedSection(container:HTMLElement,goal:number,lineCount:number){
+ const now=performance.now(),previous=sectionClocks.get(container);
+ if(!previous){
+  const entry={position:0,at:now};
+  sectionClocks.set(container,entry);
+  return {value:0,pending:goal>.001};
+ }
+ const elapsed=Math.min(140,Math.max(0,now-previous.at))/1000;
+ const linesPerSecond=4.5;
+ const rate=Math.max(.34,Math.min(1.8,linesPerSecond/Math.max(1,lineCount)));
+ const next=goal<previous.position?goal:Math.min(goal,previous.position+rate*elapsed);
+ previous.position=next;
+ previous.at=now;
+ return {value:next,pending:goal-next>.001};
+}
+
 /**
  * Edition 20: Reveal real rendered lines, not arbitrary groups of 9 words.
  * Each preceding visual line must finish before the next line can begin.
@@ -84,16 +105,20 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
 
   // One scroll clock across a heading and ALL its paragraphs. A block's
   // window of time is proportional to its actual rendered line count.
+  let pending=false;
   const grouped=(container:HTMLElement,local:number)=>{
    const blocks=Array.from(container.querySelectorAll<HTMLElement>('.sx-word-reveal'))
     .filter(element=>element.getClientRects().length>0);
-   if(blocks.length<=1)return clamp(local);
+   if(!blocks.length)return clamp(local);
    const sizes=blocks.map(element=>Math.max(1,measureLines(element).length));
    const self=blocks.indexOf(host);
    if(self<0)return clamp(local);
    const total=Math.max(1,sizes.reduce((a,b)=>a+b,0));
+   const goal=clamp(local);
+   const result=pacedSection(container,goal,total);
+   pending=result.pending;
    const before=sizes.slice(0,self).reduce((a,b)=>a+b,0);
-   return clamp((clamp(local)*total-before)/sizes[self]);
+   return clamp((result.value*total-before)/sizes[self]);
   };
   const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const update=()=>{
@@ -139,6 +164,10 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     }
    }
    render(progress);
+   if(pending){
+    pending=false;
+    request();
+   }
   };
   const invalidate=()=>{
    layoutCache=new WeakMap<HTMLElement,HTMLElement[][]>();
@@ -152,7 +181,8 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    }else{
     window.removeEventListener('scroll',request);
     window.removeEventListener('resize',invalidate);
-    if(host.getBoundingClientRect().bottom<0&&!host.closest('[data-horizontal-chapter]'))render(1);
+    // Preserve the scroll-derived stage, never force all later paragraphs
+    // visible at once just because this paragraph leaves the viewport.
    }
   },{rootMargin:'200px 0px 200px 0px',threshold:0});
   observer.observe(host);
