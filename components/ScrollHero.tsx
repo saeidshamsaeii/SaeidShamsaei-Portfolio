@@ -66,7 +66,7 @@ export function ScrollHero(){
       data-active={scene===index?'true':'false'} aria-hidden={enhanced&&scene!==index}
       data-tour-stop data-tour-label={'Introduction / '+slide.eyebrow} data-tour-duration="9"
       data-tour-pace={String([.72,1.28,.88][index])}
-      data-tour-progress={String((index+.18)/slides.length)}>
+      data-tour-progress={String((index+.80)/slides.length)}>
 
        {index===0?<h2 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h2>:
         <h2>{index===1?<><WordReveal as="span" text="COMPLEX IDEAS."/><br/><em><WordReveal as="span" text="CLEAR EXPERIENCES."/></em></>:
