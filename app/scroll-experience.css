@@ -1,6 +1,6 @@
 /* Scroll-driven portfolio v2: independent engineering workspace, personal profile,
    and viewport-pinned horizontal case studies on desktop AND mobile. */
-:root{--sx-paper:#f7f3e9;--sx-gold:#ecc18a;}
+:root{--sx-paper:#f7f3e9;--sx-gold:#ffffff;}
 html{scroll-padding-top:76px;}
 .sx-site{background:#070a0e;color:var(--sx-paper);font-family:Inter,'DM Sans','Segoe UI',system-ui,sans-serif;overflow-x:clip;min-width:0;}
 .sx-site *{box-sizing:border-box;}
