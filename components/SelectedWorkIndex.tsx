@@ -5,8 +5,10 @@ import {WordReveal} from '@/components/WordReveal';
 import {projects,type ProjectId} from '@/data/portfolio';
 
 const keywords:Record<ProjectId,string>={
- gartal:'Digital systems',factory:'Engineering control',
- digirezhim:'Clinical technology',petiwoo:'Pet commerce'
+ gartal:'Service pages · project requests',
+ factory:'Git sync · Windows Worker',
+ digirezhim:'Doctor workspace · nutrition rules',
+ petiwoo:'Product search · cart · checkout'
 };
 export function SelectedWorkIndex(){
  const [active,setActive]=useState<ProjectId>('gartal');
