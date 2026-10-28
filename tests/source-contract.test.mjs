@@ -61,7 +61,7 @@ test('fixed 2x auto-tour starts immediately, yields to manual input and resumes 
  assert.ok(director.includes('paceBound'));
  assert.ok(director.includes('currentSpeed+=(targetSpeed-currentSpeed)'));
  assert.ok(director.includes('data-tour-pace')||director.includes('dataset.tourPace'));
- assert.ok(director.includes('Current cinematic playback pace'));
+ assert.ok(!director.includes('Current cinematic playback pace'));
  assert.ok(director.includes('const IDLE_RESUME_MS=3500'));
  assert.ok(director.includes('findNextFromScroll'));
  assert.ok(director.includes('resumeFromHere'));
@@ -73,8 +73,8 @@ test('fixed 2x auto-tour starts immediately, yields to manual input and resumes 
  assert.ok(director.includes('data-playback={mode}'));
  assert.ok(director.includes('sx-v11-tour'));
  assert.ok(!director.includes('Fixed playback speed'));
- assert.ok(director.includes('displaySpeed.toFixed(1)'));
- assert.ok(director.includes('setDisplaySpeed'));
+ assert.ok(!director.includes('displaySpeed.toFixed(1)'));
+ assert.ok(!director.includes('setDisplaySpeed'));
  assert.ok(read('app/edition13.css').includes('@media (scripting:enabled)'));
  assert.ok(!director.includes('Change tour speed'));
  assert.ok(director.includes('Pause tour'));
@@ -168,24 +168,47 @@ test('engineering evidence mode is source-anchored, searchable and outside the c
  assert.match(sitemap,/engineering/);
 });
 
-test('Edition 18 renders a black/white greeting-first readable homepage with strictly framed original portrait',()=>{
+test('Edition 19 starts Hello... and displays a high clear portrait with sequential authored project beats',()=>{
  const home=read('components/PortfolioExperience.tsx');
  const opening=read('components/SignatureOpening.tsx');
  const greeting=read('components/MultilingualGreeting.tsx');
  const directory=read('components/SelectedWorkIndex.tsx');
- const css=read('app/edition18.css');
+ const css=read('app/edition19.css');
  assert.match(home,/MultilingualGreeting onComplete=\{finishGreeting\}/);
  assert.match(home,/active=\{loaded&&tour\}/);
- assert.match(opening,/sx-v18-portrait-frame/);
- assert.match(css,/object-fit:contain!important/);
+ assert.match(opening,/sx-v19-photo-background/);
+ assert.match(css,/object-fit:cover/);
  assert.doesNotMatch(opening,/sx-v16-cover-photo-note|sx-v16-cover-edge|sx-v16-cover-meta/);
- const ordered=['سلام','Hello','مرحباً','こんにちは','Привет','नमस्ते','Ciao'];
+ const ordered=['Hello...','سلام','مرحباً','こんにちは','Привет','नमस्ते','Ciao'];
  for(let i=1;i<ordered.length;i++)assert.ok(greeting.indexOf(ordered[i-1])<greeting.indexOf(ordered[i]));
  assert.match(directory,/sx-v18-index-entry/);
  assert.doesNotMatch(directory,/sx-v17-index-watermark|PROJECT NOTE/);
  assert.match(css,/sx-v18-loader/);
- assert.match(css,/sx-v18-cover-layout/);
- assert.match(css,/sx-v18-reveal-line/);
+ assert.match(css,/sx-v19-cover-content/);
+ assert.match(read('app/edition18.css'),/sx-v18-reveal-line/);
  assert.match(css,/sx-v10-case-page/);
  assert.match(css,/sx-ei/);
+});
+
+test('ordered opening animation never overlaps its next sentence beat',()=>{
+ const component=read('components/HorizontalCaseChapter.tsx');
+ const word=read('components/WordReveal.tsx');
+ const director=read('components/GuidedTour.tsx');
+ const opening=read('components/SignatureOpening.tsx');
+ const loader=read('components/MultilingualGreeting.tsx');
+ const mono=read('app/edition19.css');
+ assert.match(component,/const count=3/);
+ assert.ok(component.includes(String.raw`A studio at the front. A platform\nunderneath.`));
+ assert.match(component,/text=\{signatureLines\[project\.id\]\}/);
+ assert.match(word,/const preceding=sizes\.slice\(0,own\)/);
+ assert.match(word,/const start=\.035\+\.58\*preceding\/total/);
+ assert.match(word,/data-reveal-line/);
+ assert.match(opening,/sx-v19-photo-background/);
+ assert.match(mono,/object-position:50% 7%/);
+ assert.match(mono,/background:#000!important/);
+ assert.match(mono,/color:#fff!important/);
+ assert.match(read('app/layout.tsx'),/themeColor:'#000000'/);
+ assert.doesNotMatch(director,/sx-v11-top-speed|sx-v11-top-progress|setDisplaySpeed/);
+ assert.match(loader,/index===0\?600:125/);
+ assert.match(director,/stop\.element\.id==='intro'/);
 });
