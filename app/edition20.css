@@ -376,3 +376,16 @@
   visibility:visible!important;
  }
 }
+
+/* While a chapter or black/white boundary is being read, the next
+ * section stays a blank background. The next text is not previewed
+ * below the current frame: it begins typing only when the director
+ * actually advances to that section. Manual scroll removes this state. */
+.sx-site [data-tour-awaiting="true"] > *{
+ visibility:hidden!important;
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-site [data-tour-awaiting="true"] > *{
+  visibility:visible!important;
+ }
+}
