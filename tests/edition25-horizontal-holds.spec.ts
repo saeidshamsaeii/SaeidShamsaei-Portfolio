@@ -37,6 +37,14 @@ test('first horizontal frame completes its words, waits 2 seconds, then glides l
  await expect(html).toHaveAttribute('data-portfolio-tour-hold','horizontal-frame',{timeout:13000});
  await expect(page.locator('#project-gartal [data-frame-index="0"] .sx-word-reveal').first())
   .toHaveAttribute('data-reveal-complete','true');
+ await expect(page.locator('#project-gartal [data-frame-index="0"]'))
+  .toHaveAttribute('data-frame-state','active');
+ for(const future of ['1','2']){
+  const pending=page.locator('#project-gartal [data-frame-index="'+future+'"]');
+  await expect(pending).toHaveAttribute('data-frame-state','upcoming');
+  await expect(pending.locator('.sx-word-pieces').first()).toHaveCSS('visibility','hidden');
+  await expect(pending.locator('[data-reveal-word]').first()).toHaveCSS('opacity','0');
+ }
  const before=await page.evaluate(()=>scrollY);
  await page.waitForTimeout(950);
  expect(Math.abs((await page.evaluate(()=>scrollY))-before)).toBeLessThanOrEqual(3);
@@ -54,6 +62,10 @@ test('middle horizontal panel also pauses despite the same black background',asy
  const panel=page.locator('#project-gartal [data-frame-index="1"]');
  await expect(panel.locator('.sx-word-reveal')).toHaveCount(2);
  await expect(panel.locator('.sx-word-reveal').last()).toHaveAttribute('data-reveal-complete','true');
+ const future=page.locator('#project-gartal [data-frame-index="2"]');
+ await expect(future).toHaveAttribute('data-frame-state','upcoming');
+ await expect(future.locator('.sx-word-pieces').first()).toHaveCSS('visibility','hidden');
+ await expect(future.locator('.sx-v14-ending-actions')).toHaveCSS('visibility','hidden');
 });
 
 test('manual scroll cancels a horizontal panel pause; reduced-motion skips it',async({page})=>{
