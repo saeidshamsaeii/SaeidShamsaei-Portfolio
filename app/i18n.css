@@ -1,0 +1,97 @@
+/* Edition 31 — multilingual interface, native scripts, restrained ink-and-paper controls.
+   The switcher is a text-led instrument, never a flag gallery or bright widget. */
+.sx-language-switcher{position:relative;z-index:110;display:inline-flex;align-items:center;flex:none;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif!important;letter-spacing:0!important;}
+.sx-language-trigger{
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+ min-width:65px;min-height:34px;padding:7px 10px;
+ background:transparent!important;border:1px solid rgba(255,255,255,.38)!important;
+ color:#fff!important;border-radius:2px;cursor:pointer;
+ font:600 11px/1.2 ui-monospace,Consolas,monospace!important;letter-spacing:.025em!important;
+}
+.sx-language-trigger:hover,.sx-language-trigger[aria-expanded=true]{border-color:#fff!important;background:#191919!important;}
+.sx-language-trigger:focus-visible,.sx-language-menu button:focus-visible{
+ outline:2px solid #fff;outline-offset:3px;
+}
+.sx-language-globe{font-size:16px;font-weight:400;line-height:1;opacity:.82;}
+.sx-language-caret{font-size:12px;color:#aaa;}
+.sx-language-menu{
+ position:absolute;inset-block-start:calc(100% + 10px);inset-inline-end:0;
+ width:230px;padding:7px;border:1px solid #666;background:#0c0c0c;color:#fff;
+ display:grid;gap:2px;z-index:220;box-shadow:0 16px 40px #0009;
+}
+.sx-language-menu button{
+ display:grid;grid-template-columns:32px 1fr 15px;align-items:center;
+ min-height:38px;gap:12px;padding:8px 9px;
+ color:#c5c5c5;background:transparent;border:0;text-align:start;
+ font:500 13px/1.45 system-ui,"Segoe UI",Tahoma,Arial,sans-serif;cursor:pointer;
+}
+.sx-language-menu button:hover,.sx-language-menu button.is-selected{color:#fff;background:#242424;}
+.sx-language-code{font:600 10px ui-monospace,Consolas,monospace;color:#999;}
+.sx-language-tick{text-align:center;font-size:9px;color:#fff;}
+.sx-language-native{unicode-bidi:plaintext;}
+.sx-v18-site .sx-v18-header nav{align-items:center;}
+.sx-v10-case-page .case-nav .sx-language-switcher,.sx-ei-nav .sx-language-switcher{margin-inline-start:auto;}
+.sx-ei-nav{flex-wrap:wrap;}
+.sx-ei-nav .sx-language-menu,.case-nav .sx-language-menu{inset-inline-end:0;}
+/* Preserve original brand/rail geometry while localizing readable content. */
+html[dir=rtl] .sx-site,html[dir=rtl] .sx-v10-case-page,html[dir=rtl] .sx-ei{direction:rtl;}
+html[dir=rtl] .sx-site .sx-v11-rail{direction:ltr;}
+html[dir=rtl] .sx-site .sx-v11-slide{direction:rtl;text-align:right;}
+html[dir=rtl] .sx-v18-site #intro .sx-v19-cover-content{direction:rtl;text-align:right;}
+html[dir=rtl] .sx-v18-site #intro .sx-v19-cover h1{
+ direction:ltr;text-align:left!important;unicode-bidi:isolate;
+}
+html[dir=rtl] .sx-v18-site #intro .sx-v18-cover-lead{text-align:right;}
+html[dir=rtl] .sx-v18-site #work-index .sx-v18-index-entry .sx-v16-index-row{
+ direction:rtl;text-align:right;
+}
+html[dir=rtl] .sx-v18-site #work-index .sx-v18-index-entry .sx-v16-index-row strong{
+ direction:ltr;text-align:right;unicode-bidi:isolate;
+}
+html[dir=rtl] .sx-v18-site #work-index [data-work-stage]::after{transform-origin:right center;}
+html[dir=rtl] .sx-v18-site #work-index .sx-v18-index-entry .sx-v18-index-direct{justify-content:flex-start;}
+html[dir=rtl] .sx-ei .sx-ei-evidence{border-left:0!important;border-right:1px solid #fff!important;}
+html[dir=rtl] .sx-v10-case-page .sx-v10-techline,html[dir=rtl] .sx-ei-file-links a,
+html[dir=rtl] .sx-ei-source-list a em{direction:ltr;unicode-bidi:isolate;}
+html:is([lang=fa],[lang=ar]) :is(.sx-site,.sx-v10-case-page,.sx-ei){
+ font-family:Tahoma,"Segoe UI","Noto Naskh Arabic",Arial,sans-serif;
+}
+html:is([lang=fa],[lang=ar]) :is(.sx-v18-site .sx-v8-hero-slide h2,
+ .sx-v18-site .sx-v18-about h2,.sx-v18-site #work-index .sx-v18-index-heading h2,
+ .sx-v18-site .sx-v18-work-intro h2,.sx-v10-case-page h2,.sx-ei h1){
+ letter-spacing:0!important;line-height:1.2!important;
+}
+html:is([lang=zh],[lang=ru],[lang=de],[lang=fr],[lang=it]) :is(.sx-v18-site .sx-v8-hero-slide h2,
+ .sx-v18-site #work-index .sx-v18-index-heading h2){letter-spacing:-.035em!important;}
+html[lang=zh] .sx-site,html[lang=zh] .sx-v10-case-page,html[lang=zh] .sx-ei{
+ font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+/* Native-script translations must not overflow the pinned scenes. */
+html:not([lang=en]) .sx-v18-site .sx-v8-hero-slide h2{
+ font-size:clamp(36px,7.4vw,108px)!important;overflow-wrap:anywhere;
+}
+html:not([lang=en]) .sx-v18-site .sx-v14-editorial-copy :is(h3,p){
+ overflow-wrap:anywhere;hyphens:auto;
+}
+html:not([lang=en]) .sx-v18-site #work-index .sx-v18-index-heading h2{
+ font-size:clamp(29px,5vw,76px)!important;
+}
+html:not([lang=en]) .sx-v18-site #work-index .sx-v18-index-entry .sx-v16-index-row>span:nth-child(2){
+ overflow-wrap:anywhere;hyphens:auto;
+}
+@media(max-width:760px){
+ .sx-language-menu{width:min(230px,calc(100vw - 28px));}
+ .sx-v18-site .sx-v18-header nav{gap:clamp(9px,2.5vw,17px)!important;}
+ .sx-v18-site .sx-v18-header nav a{font-size:clamp(10px,2.6vw,12px)!important;}
+ .sx-language-trigger{min-width:54px;min-height:33px;padding:6px;}
+ html:not([lang=en]) .sx-v18-site .sx-v8-hero-slide h2{
+  font-size:clamp(28px,8vw,57px)!important;line-height:1.18!important;
+ }
+ html:not([lang=en]) .sx-v18-site #work-index .sx-v18-index-heading h2{
+  font-size:clamp(27px,7.2vw,45px)!important;
+ }
+ .sx-ei-nav>span{display:none;}
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-language-trigger,.sx-language-menu button{transition:none!important;}
+}
