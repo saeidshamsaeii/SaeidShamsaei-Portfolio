@@ -67,6 +67,9 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   const render=(value:number)=>{
    const progress=clamp((value-stagger)/Math.max(.05,1-stagger));
    host.dataset.motion='on';
+   // Expose actual animation completion to the headless reading director.
+   // This is not an on-screen counter and never affects manual scrolling.
+   host.dataset.revealComplete=progress>=.999?'true':'false';
    // The legacy line clipping must not hide actual word visibility.
    for(const line of host.querySelectorAll<HTMLElement>('[data-reveal-line]')){
     line.style.opacity='1';
@@ -88,6 +91,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   };
   const clear=()=>{
    host.dataset.motion='off';
+   host.dataset.revealComplete='true';
    for(const node of host.querySelectorAll<HTMLElement>('[data-reveal-line],[data-reveal-word]')){
     node.style.removeProperty('opacity');
     node.style.removeProperty('clip-path');
