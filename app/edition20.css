@@ -86,6 +86,19 @@
 .sx-v18-site .sx-v19-cover h1 .sx-v18-reveal-line{max-width:100%!important;}
 .sx-v18-site .sx-v19-cover .sx-v18-cover-lead .sx-v18-reveal-line{min-height:1.2em;}
 
+/* Mid-sized tablets need the centered links without colliding with the
+ * brand. Stack them before the desktop grid tracks become too narrow. */
+@media(max-width:900px) and (min-width:761px){
+ .sx-v18-site .sx-header.sx-v18-header{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  gap:14px!important;
+ }
+ .sx-v18-site .sx-v18-header .sx-v18-brand{align-self:center!important;}
+ .sx-v18-site .sx-v18-header nav{align-self:center!important;justify-content:center!important;width:100%;}
+}
+
 /* Mobile: center the menu. Image fits at 90% scale and remains higher,
  * while the copy stays in a separate solid-black field below. */
 @media(max-width:760px){
