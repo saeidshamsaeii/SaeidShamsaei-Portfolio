@@ -2,20 +2,20 @@
 import {createContext,useCallback,useContext,useEffect,useMemo,useState} from 'react';
 
 export const languages=[
- {code:'en',native:'English',short:'EN',dir:'rtl',flag:'🇬🇧'},
- {code:'fa',native:'فارسی',short:'فا',dir:'ltr',flag:'🇮🇷'},
- {code:'ar',native:'العربية',short:'AR',dir:'ltr',flag:'🇸🇦'},
- {code:'it',native:'Italiano',short:'IT',dir:'rtl',flag:'🇮🇹'},
- {code:'de',native:'Deutsch',short:'DE',dir:'rtl',flag:'🇩🇪'},
- {code:'fr',native:'Français',short:'FR',dir:'rtl',flag:'🇫🇷'},
- {code:'zh',native:'中文',short:'中',dir:'rtl',flag:'🇨🇳'},
- {code:'ru',native:'Русский',short:'RU',dir:'rtl',flag:'🇷🇺'}
+ {code:'en',native:'English',short:'EN',dir:'ltr',icon:'/flags/gb.svg'},
+ {code:'fa',native:'فارسی',short:'فا',dir:'rtl',icon:'/flags/ir.svg'},
+ {code:'ar',native:'العربية',short:'AR',dir:'rtl',icon:'/flags/sa.svg'},
+ {code:'it',native:'Italiano',short:'IT',dir:'ltr',icon:'/flags/it.svg'},
+ {code:'de',native:'Deutsch',short:'DE',dir:'ltr',icon:'/flags/de.svg'},
+ {code:'fr',native:'Français',short:'FR',dir:'ltr',icon:'/flags/fr.svg'},
+ {code:'zh',native:'中文',short:'中',dir:'ltr',icon:'/flags/cn.svg'},
+ {code:'ru',native:'Русский',short:'RU',dir:'ltr',icon:'/flags/ru.svg'}
 ] as const;
 export type SiteLocale=typeof languages[number]['code'];
 export const isSiteLocale=(value:string|null):value is SiteLocale=>
  languages.some(entry=>entry.code===value);
-// Requested visual direction: Persian/Arabic LTR; all other selections RTL.
-export const directionFor=(locale:SiteLocale)=>locale==='fa'||locale==='ar'?'ltr':'rtl';
+// Each language follows its natural script and accessible reading order.
+export const directionFor=(locale:SiteLocale)=>locale==='fa'||locale==='ar'?'rtl':'ltr';
 
 type LocaleState={locale:SiteLocale;setLocale:(locale:SiteLocale)=>void};
 const LocaleContext=createContext<LocaleState|undefined>(undefined);
