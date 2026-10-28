@@ -58,7 +58,7 @@ export default function PortfolioExperience(){
    <section className="sx-contact sx-editorial-frame sx-v18-contact"
     id="contact" data-tour-stop data-tour-label="Contact" data-tour-duration="10"
     data-tour-pace=".76" aria-labelledby="sx-contact-title">
-    <WordReveal as="h2" id="sx-contact-title" text="Let's build something that matters."/>
+    <WordReveal as="h2" id="sx-contact-title" text={t.contactTitle}/>
     <div className="sx-contact-directory" aria-label="Contact channels">
      <a className="sx-contact-link" href={'mailto:'+publicContact.email}>
       <WordReveal as="strong" text={t.contactLabels[0]}/><WordReveal as="span" text={publicContact.email+" ↗"}/>
