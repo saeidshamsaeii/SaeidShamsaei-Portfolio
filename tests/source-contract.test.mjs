@@ -385,5 +385,6 @@ test('Edition 26 never previews the next block during its predecessor reading ho
  assert.match(css,/\[data-tour-awaiting="true"\] > \*/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.match(director,/HORIZONTAL_FRAME_PAUSE_MS=2000/);
+ assert.match(director,/!horizontalHold&&time-state\.arrivedAt>=COPY_SETTLE_MAX_MS/);
  assert.match(director,/return top\+travel\*clamp\(\(index\+\.66\)\/count\)/);
 });
