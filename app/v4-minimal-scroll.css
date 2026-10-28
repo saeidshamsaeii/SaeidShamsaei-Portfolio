@@ -3,7 +3,7 @@
  * One idea per frame. Vertical viewport stories become horizontal projects.
  * Override legacy CSS with scoped, responsive, reduced-motion-safe rules.
  */
-.sx-site{background:#080a0c;color:#f6f1e8;--sx-gold:#e2bd8e;}
+.sx-site{background:#080a0c;color:#f6f1e8;--sx-gold:#ffffff;}
 .sx-site .sx-header{height:64px;position:relative;z-index:40;background:#080a0cdb;border-bottom:1px solid #ffffff0f;padding-inline:clamp(18px,5.3vw,84px);}
 .sx-site .sx-header .sx-brand img{width:36px;height:36px;}
 .sx-site .sx-header nav{font-weight:650;font-size:11px;gap:clamp(14px,2.1vw,30px);}
