@@ -143,9 +143,16 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     // Finish copy before the horizontal rail departs this frame.
     progress=grouped(panel,clamp((scaled-index)/.64));
    }else if(workIndex){
-    // One viewport, one sequential score. No project row races ahead of
-    // the title or waits to cross a centerline beyond the available scroll.
-    progress=grouped(workIndex,clamp(Number(workIndex.dataset.workRevealProgress||'0')));
+    // Each row is a distinct beat: name and summary type in order,
+    // then its underline draws, then 2s of reading before the NEXT row.
+    // A single continuous group previously made every underline and
+    // upcoming row appear prematurely.
+    const stage=host.closest<HTMLElement>('[data-work-stage]');
+    const current=Number(workIndex.dataset.workStageIndex||'0');
+    const active=stage?Number(stage.dataset.workStage||'0'):0;
+    const local=clamp(Number(workIndex.dataset.workStageProgress||'0'));
+    progress=stage?active<current?1:active>current?0:
+     grouped(stage,local):0;
    }else if(onIntro){
     const container=host.closest<HTMLElement>('.sx-v19-cover-content');
     if(ready&&container){
