@@ -4,6 +4,9 @@ test('Hello... comes first, then the rest of the greeting sequence rapidly',asyn
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const loader=page.locator('.sx-v18-loader');
  await expect(loader.locator('[lang="en"]')).toContainText('Hello...');
+ await expect(loader.locator('.sx-v19-hello-content')).toHaveCSS('flex-direction','row');
+ await expect(loader.locator('.sx-v19-hello-dots')).toHaveText('...');
+ await expect(loader.locator('.sx-v19-hello-content')).toHaveAttribute('dir','ltr');
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
  await expect(loader).toHaveCount(0,{timeout:8500});
  await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toBeVisible({timeout:5000});
