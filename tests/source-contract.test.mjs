@@ -336,3 +336,27 @@ test('Edition 24 holds for exactly two seconds only across real section backgrou
  assert.match(director,/window\.addEventListener\('wheel',manualInput/);
  assert.match(director,/IDLE_RESUME_MS=3500/);
 });
+
+test('Edition 25 holds every horizontal panel 2 seconds after its text and before the leftward glide',()=>{
+ const director=read('components/GuidedTour.tsx');
+ const chapter=read('components/HorizontalCaseChapter.tsx');
+ const reveal=read('components/WordReveal.tsx');
+ assert.equal((chapter.match(/data-tour-hold="horizontal-frame"/g)||[]).length,3);
+ assert.match(chapter,/const count=3/);
+ assert.match(chapter,/const departure=clamp\(\(fraction-\.67\)\/\.33\)/);
+ assert.match(director,/const HORIZONTAL_FRAME_PAUSE_MS=2000/);
+ assert.match(director,/return top\+travel\*clamp\(\(index\+\.66\)\/count\)/);
+ assert.match(director,/stop\.element\.dataset\.tourHold==='horizontal-frame'/);
+ assert.match(director,/const horizontalHold=isHorizontalFrame\[state\.index\]/);
+ assert.match(director,/const backgroundHold=hasBackgroundChange\[state\.index\]/);
+ assert.match(director,/if\(horizontalHold\|\|backgroundHold\)/);
+ assert.match(director,/textHasFinished\(stops\[state\.index\]\)/);
+ assert.match(director,/root\.dataset\.portfolioTourHold=horizontalHold\?'horizontal-frame':'background-change'/);
+ assert.match(director,/const duration=horizontalHold\?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS/);
+ assert.match(director,/time-state\.holdStartedAt>=duration/);
+ assert.match(director,/delete root\.dataset\.portfolioTourHold/);
+ assert.match(reveal,/progress=grouped\(panel,clamp\(\(scaled-index\)\/\.64\)\)/);
+ assert.match(director,/READING_SPEED_PX_PER_SECOND=205/);
+ assert.match(director,/IDLE_RESUME_MS=3500/);
+ assert.match(director,/return null;/);
+});
