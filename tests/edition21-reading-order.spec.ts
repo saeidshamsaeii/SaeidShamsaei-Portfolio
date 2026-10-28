@@ -23,6 +23,7 @@ test('the first-screen statement becomes readable before automatic scroll leaves
 
 test('scroll jumps do not write the next case paragraph before the prior paragraph is complete',async({page})=>{
  await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:6000});
  await page.keyboard.press('Escape');
  const article=page.locator('.sx-v10-case-section').first();
  const paragraphs=article.locator('.sx-v13-paragraph p');
@@ -35,10 +36,12 @@ test('scroll jumps do not write the next case paragraph before the prior paragra
   const rect=el.getBoundingClientRect();
   window.scrollTo({top:window.scrollY+rect.top+rect.height*.70,behavior:'instant'});
  });
- const premature=await page.evaluate(async({first,second})=>{
-  const a=document.querySelector(first) as HTMLElement|null;
-  const b=document.querySelector(second) as HTMLElement|null;
-  if(!a||!b)return true;
+ const premature=await page.evaluate(async()=>{
+  const firstArticle=document.querySelector('.sx-v10-case-section');
+  const passages=firstArticle?.querySelectorAll('.sx-v13-paragraph p');
+  const a=passages?.[0]?.querySelector('[data-reveal-word]:last-child');
+  const b=passages?.[1]?.querySelector('[data-reveal-word]:first-child');
+  if(!(a instanceof HTMLElement)||!(b instanceof HTMLElement))return true;
   for(let i=0;i<140;i++){
    await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
    const previous=Number(getComputedStyle(a).opacity);
@@ -46,9 +49,6 @@ test('scroll jumps do not write the next case paragraph before the prior paragra
    if(next>.02&&previous<.98)return true;
   }
   return false;
- },{
-  first:'.sx-v10-case-section:first-of-type .sx-v13-paragraph:nth-child(1) [data-reveal-word]:last-child',
-  second:'.sx-v10-case-section:first-of-type .sx-v13-paragraph:nth-child(2) [data-reveal-word]:first-child'
  });
  expect(premature).toBe(false);
  // Locators above check actual source structure independently as well.
