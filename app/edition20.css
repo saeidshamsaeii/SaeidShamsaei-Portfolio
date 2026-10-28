@@ -352,3 +352,27 @@
   background:linear-gradient(to bottom,transparent 37%,rgba(0,0,0,.12) 58%,rgba(0,0,0,.67) 83%,#000 100%)!important;
  }
 }
+
+/* Edition 26 — A held horizontal frame owns the full reading viewport.
+ * Suppress all copy and action links in upcoming panels, even if the user
+ * previously viewed them and then scrolled backwards. Their background
+ * can still glide into place, but text remains blank until that panel
+ * becomes the active frame and WordReveal starts its own typing timeline.
+ */
+.sx-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"] .sx-word-pieces,
+.sx-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"] .sx-v14-opening-foot,
+.sx-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"] .sx-v14-ending-actions{
+ visibility:hidden!important;
+}
+.sx-site .sx-v11-horizontal-chapter [data-frame-state="active"] .sx-word-pieces,
+.sx-site .sx-v11-horizontal-chapter [data-frame-state="active"] .sx-v14-opening-foot,
+.sx-site .sx-v11-horizontal-chapter [data-frame-state="active"] .sx-v14-ending-actions{
+ visibility:visible!important;
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"] .sx-word-pieces,
+ .sx-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"] .sx-v14-opening-foot,
+ .sx-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"] .sx-v14-ending-actions{
+  visibility:visible!important;
+ }
+}
