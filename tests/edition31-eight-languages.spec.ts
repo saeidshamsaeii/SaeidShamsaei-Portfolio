@@ -59,6 +59,9 @@ test('language menu remains keyboard-accessible and minimalist on narrow screens
  await expect(trigger).toHaveAttribute('aria-expanded','true');
  await expect(page.locator('.sx-language-menu button')).toHaveCount(8);
  await expect(page.locator('.sx-language-menu .sx-language-flag')).toHaveCount(8);
+ await expect.poll(()=>page.locator('.sx-language-menu img').evaluateAll(nodes=>
+  nodes.length===8&&nodes.every(node=>(node as HTMLImageElement).complete&&
+   (node as HTMLImageElement).naturalWidth>0)),{timeout:5000}).toBe(true);
  const placement=await page.locator('.sx-language-menu').evaluate(node=>{
   const list=node.getBoundingClientRect();
   const header=node.closest('header');
@@ -141,5 +144,33 @@ test('the inline SVG ribbon follows correct script directions for all eight lang
   await page.locator('.sx-language-menu button[lang="'+locale+'"]').click();
   await expect(page.locator('html')).toHaveAttribute('dir',
    locale==='fa'||locale==='ar'?'rtl':'ltr');
+ }
+});
+
+test('downloaded flags remain a single header row at desktop and narrow widths',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ for(const width of [320,390,768,1024,1440]){
+  await page.setViewportSize({width,height:900});
+  await page.goto('/?lang=en');
+  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+  await page.locator('.sx-language-trigger').click();
+  const ribbon=page.locator('.sx-language-menu');
+  await expect(ribbon.locator('button')).toHaveCount(8);
+  const metrics=await ribbon.evaluate(node=>{
+   const boxes=Array.from(node.querySelectorAll('button'),button=>button.getBoundingClientRect());
+   const region=node.closest('header')!.getBoundingClientRect();
+   const box=node.getBoundingClientRect();
+   return {
+    oneRow:boxes.every(rect=>Math.abs(rect.y-boxes[0].y)<=2),
+    insideHeader:box.top>=region.top-2&&box.bottom<=region.bottom+2,
+    outsideViewport:document.documentElement.scrollWidth>innerWidth+2,
+    imagesLocal:Array.from(node.querySelectorAll('img')).every(img=>
+     img.getAttribute('src')?.startsWith('/flags/'))
+   };
+  });
+  expect(metrics.oneRow).toBe(true);
+  expect(metrics.insideHeader).toBe(true);
+  expect(metrics.outsideViewport).toBe(false);
+  expect(metrics.imagesLocal).toBe(true);
  }
 });
