@@ -9,6 +9,7 @@ const READING_SPEED_PX_PER_SECOND=205;
 const MIN_SEGMENT_MS=1700;
 const IDLE_RESUME_MS=3500;
 const BACKGROUND_PAUSE_MS=2000;
+const HORIZONTAL_FRAME_PAUSE_MS=2000;
 const COPY_SETTLE_MAX_MS=2600;
 
 function findStops():Stop[]{
@@ -50,7 +51,10 @@ function scrollDestination(stop:Stop){
   const rect=horizontal.getBoundingClientRect();
   const top=rect.top+window.scrollY;
   const travel=Math.max(0,rect.height-window.innerHeight);
-  return top+travel*clamp((index+.68)/count);
+  // At .66 every WordReveal panel has completed its .64 reveal window,
+  // but the next panel's sideways glide has not begun (.67 threshold).
+  // The director can hold the fully visible panel before moving left.
+  return top+travel*clamp((index+.66)/count);
  }
  const box=stop.element.getBoundingClientRect(),top=box.top+window.scrollY;
  // The owner name, surname and concise role are an ordered introduction,
@@ -87,10 +91,14 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, touchActive=false, disposed=false;
   let openingAlreadyPresented=false;
-  // Cache actual computed surface transitions once, after styles are loaded.
-  // Three black project frames are one continuous surface: no fake holds.
+  // A pause is required for every marked horizontal panel, even between
+  // black panels. A color transition also requires one pause. Both reasons
+  // share ONE hold at a stop (never two consecutive two-second delays).
   const hasBackgroundChange=stops.map((stop,index)=>
    index<stops.length-1&&visibleSurface(stop)!==visibleSurface(stops[index+1])
+  );
+  const isHorizontalFrame=stops.map(stop=>
+   stop.element.dataset.tourHold==='horizontal-frame'
   );
   const setPlayback=(next:Mode)=>{
    if(playback===next)return;
@@ -232,17 +240,21 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      if(state.index===stops.length-1){
       setPlayback('finished');onExitRef.current();return;
      }
-     if(hasBackgroundChange[state.index]){
+     const horizontalHold=isHorizontalFrame[state.index];
+     const backgroundHold=hasBackgroundChange[state.index];
+     if(horizontalHold||backgroundHold){
       if(!state.arrivedAt)state.arrivedAt=time;
-      // WordReveal publishes completion of the ACTUAL animated text.
-      // Allow one short settle window for scroll observers and font layout.
+      // Reveal the heading, then each successive line. Only when the
+      // complete current panel is readable do we start its 2s hold.
+      // A short safety bound handles missing intersection callbacks.
       if(textHasFinished(stops[state.index])||
          time-state.arrivedAt>=COPY_SETTLE_MAX_MS){
        if(state.holdStartedAt===null){
         state.holdStartedAt=time;
-        root.dataset.portfolioTourHold='background-change';
+        root.dataset.portfolioTourHold=horizontalHold?'horizontal-frame':'background-change';
        }
-       if(time-state.holdStartedAt>=BACKGROUND_PAUSE_MS){
+       const duration=horizontalHold?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS;
+       if(time-state.holdStartedAt>=duration){
         delete root.dataset.portfolioTourHold;
         goTo(state.index+1);
        }
