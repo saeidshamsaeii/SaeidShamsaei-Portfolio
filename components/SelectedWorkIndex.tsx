@@ -32,9 +32,15 @@ export function SelectedWorkIndex(){
    if(startedAt===null){
     const rect=host.getBoundingClientRect();
     const visible=Math.max(0,Math.min(rect.bottom,innerHeight)-Math.max(0,rect.top));
-    // The director reserves future scenes; don't type while reserved.
+    // Automatic narration must not type words while the directory is still
+    // sliding into view. Start only when the whole black panel is framed.
+    // Manual readers retain an early, scroll-independent reveal.
+    const autoNarrating=document.documentElement.dataset.portfolioTour==='playing';
+    const fullyFramed=rect.height>innerHeight+12||
+     (rect.top>=-12&&rect.bottom<=innerHeight+12);
     if(host.hasAttribute('data-tour-awaiting')||
-       visible<Math.min(innerHeight,rect.height)*.72)return;
+       (autoNarrating?!fullyFramed:
+        visible<Math.min(innerHeight,rect.height)*.72))return;
     startedAt=time;
    }
    const progress=Math.min(1,(time-startedAt)/DURATION_MS);
