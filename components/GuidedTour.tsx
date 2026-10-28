@@ -1,19 +1,17 @@
 'use client';
 import {useEffect,useRef} from 'react';
 
-type Stop={element:HTMLElement;label:string;seconds:number;pace:number;fraction:number|null};
+type Stop={element:HTMLElement;label:string;fraction:number|null};
 type Mode='playing'|'manual'|'paused'|'finished';
 type Playback={index:number;elapsed:number;last:number;start:number;end:number;duration:number};
 const clamp=(x:number)=>Math.max(0,Math.min(1,x));
-const BASE_SPEED=2 as const;
-const paceBound=(value:number)=>Math.max(.58,Math.min(1.55,Number.isFinite(value)?value:1));
+const READING_SPEED_PX_PER_SECOND=315;
+const MIN_SEGMENT_MS=1700;
 const IDLE_RESUME_MS=3500;
 
 function findStops():Stop[]{
  return Array.from(document.querySelectorAll<HTMLElement>('[data-tour-stop]')).map(element=>({
   element,label:element.dataset.tourLabel||'The story',
-  seconds:Math.max(4,Math.min(24,Number(element.dataset.tourDuration)||9)),
-  pace:paceBound(Number(element.dataset.tourPace||'1')),
   fraction:element.dataset.tourProgress!==undefined?clamp(Number(element.dataset.tourProgress)):null
  }));
 }
@@ -44,12 +42,11 @@ function scrollDestination(stop:Stop){
 }
 
 /**
- * Default-on cinematic scroll with an underlying 2x tempo and per-scene
- * variable speed ramps. Native bidirectional scroll always remains free.
+ * Headless guided scroll at a moderate, distance-based pace instead of
+ * accelerating and braking on every scene. Native manual scroll remains free.
  * Every genuine interaction suspends playback; after 3.5s idle, the director
  * finds the next stop AHEAD OF THE CURRENT scrollY (never jumps to the start).
- * A deliberate top-bar Pause or Exit remains available for accessibility.
- * Reduced-motion never starts the director.
+ * Press Escape to pause scripted motion. Reduced-motion never starts it.
  */
 export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
  const onExitRef=useRef(onExit);
@@ -65,7 +62,6 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let playback:Mode='playing';
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, touchActive=false, disposed=false;
-  let currentSpeed=BASE_SPEED,targetSpeed=BASE_SPEED;
   const setPlayback=(next:Mode)=>{
    if(playback===next)return;
    playback=next;
@@ -80,14 +76,14 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.last=0;
    state.start=from;
    state.end=target(index);
-   // The destination and chapter pacing are recalculated from current scrollY.
-   targetSpeed=BASE_SPEED*stops[index].pace;
-   // Natural narration cannot reveal fifty words in a three-second drive-by.
-   // Give long source-backed passages actual reading time, but bound a large
-   // About section so a single stop does not monopolize the whole tour.
+   // Use actual travel distance to prevent one section racing while the
+   // next crawls. Keep a bounded minimum for short reading beats.
+   const distance=Math.abs(state.end-state.start);
    const words=stops[index].element.querySelectorAll('[data-reveal-word]').length;
-   const readingMs=Math.min(18000,(words/4.5)*1000);
-   state.duration=Math.max(stops[index].seconds*1000,readingMs*targetSpeed);
+   const modestReadingMs=Math.min(3300,words*55);
+   const openingMs=stops[index].element.id==='intro'?3400:MIN_SEGMENT_MS;
+   state.duration=Math.max(openingMs,modestReadingMs,
+    distance/READING_SPEED_PX_PER_SECOND*1000);
   };
   const findNextFromScroll=()=>{
    const y=window.scrollY;
@@ -166,9 +162,9 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    if(playback==='playing'&&!document.hidden){
     const delta=state.last?Math.min(100,time-state.last):0;
     state.last=time;
-    // Continuously ramp velocity across narrative beats without instant changes.
-    currentSpeed+=(targetSpeed-currentSpeed)*Math.min(1,delta/800);
-    state.elapsed+=delta*currentSpeed;
+    // Distance-based moderate pace; there is no per-stop speed multiplier
+    // that could make the start artificially fast and later sections slow.
+    state.elapsed+=delta;
     const fraction=clamp(state.elapsed/state.duration);
     // One continuous camera move, not the old repeated stop/ease/hold pattern
     // that appeared fake at every chapter. Variation comes from the smoothed
