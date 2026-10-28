@@ -67,7 +67,7 @@
  display:inline-block!important;
  white-space:pre!important;
  transform:none!important;
- transition:clip-path .085s linear,opacity .085s linear!important;
+ transition:none!important;
 }
 @media (scripting:enabled) and (prefers-reduced-motion:no-preference){
  .sx-v20-ordered:not([data-motion="off"]) [data-reveal-word]{
@@ -161,4 +161,50 @@
   border-left:0!important;
   border-bottom:1px solid #ccc!important;
  }
+}
+
+/* Rescue the actual personal introduction from earlier over-constrained
+ * cover rules. Clear name and short introduction stay on the solid-black
+ * text side, without extending over the portrait. */
+.sx-v18-site .sx-v19-cover-content{overflow:visible!important;}
+.sx-v18-site .sx-v19-cover h1{
+ display:block!important;width:100%!important;max-width:100%!important;
+ min-width:0!important;font-size:clamp(45px,5.8vw,90px)!important;
+ line-height:.98!important;text-align:left!important;
+ opacity:1!important;visibility:visible!important;
+}
+.sx-v18-site .sx-v19-cover h1>.sx-word-reveal{
+ display:block!important;width:100%!important;max-width:100%!important;
+ white-space:normal!important;
+}
+.sx-v18-site .sx-v19-cover h1 .sx-word-pieces{
+ display:block!important;width:100%!important;overflow:visible!important;
+}
+.sx-v18-site .sx-v19-cover h1 .sx-v18-reveal-line{
+ display:block!important;width:max-content!important;
+ max-width:100%!important;white-space:nowrap!important;overflow:visible!important;
+}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-lead{
+ font:440 clamp(19px,2.1vw,31px)/1.32 Georgia,serif!important;
+ letter-spacing:-.026em!important;width:100%!important;
+ max-width:480px!important;margin:0!important;color:#fff!important;
+}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-lead .sx-v18-reveal-line{
+ display:block!important;width:auto!important;max-width:100%!important;
+ white-space:normal!important;min-height:1.3em;
+}
+@media(max-width:1050px) and (min-width:761px){
+ .sx-v18-site .sx-v19-cover h1{font-size:clamp(43px,5.5vw,67px)!important;}
+ .sx-v18-site .sx-v19-cover .sx-v18-cover-lead{
+  font-size:clamp(18px,2vw,24px)!important;
+ }
+}
+@media(max-width:760px){
+ .sx-v18-site .sx-v19-cover h1{font-size:clamp(48px,11vw,78px)!important;}
+ .sx-v18-site .sx-v19-cover .sx-v18-cover-lead{
+  font-size:clamp(21px,5.1vw,29px)!important;
+ }
+}
+@media(max-width:360px){
+ .sx-v18-site .sx-v19-cover h1{font-size:47px!important;}
 }
