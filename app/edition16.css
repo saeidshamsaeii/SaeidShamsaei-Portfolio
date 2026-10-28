@@ -4,7 +4,7 @@
    portfolio. Real checked-in owner portrait; no fake project imagery.
    Motion is native-scrolled, with complete reduced-motion fallbacks. */
 .sx-site .sx-header{position:relative;z-index:70;background:#0e1112!important;border-bottom:1px solid #e2e2d92a;}
-.sx-site .sx-header nav a[href="/engineering/"]{color:#d0ae80;}
+.sx-site .sx-header nav a[href="/engineering/"]{color:#ffffff;}
 .sx-site .sx-v16-cover{
  --sx-v16-paper:#c8ccca;--sx-v16-ink:#151919;
  position:relative;isolation:isolate;display:block;box-sizing:border-box;
@@ -95,8 +95,8 @@
  gap:clamp(35px,6vw,115px);padding-top:clamp(80px,11svh,160px);padding-bottom:clamp(80px,11svh,160px);
 }
 .sx-v16-about-statement{
- min-height:clamp(340px,60svh,760px);border-left:1px solid #d0ae8033;
- border-right:1px solid #d0ae801c;
+ min-height:clamp(340px,60svh,760px);border-left:1px solid #ffffff33;
+ border-right:1px solid #ffffff1c;
  padding:30px clamp(20px,3vw,55px);display:flex;flex-direction:column;
  justify-content:space-between;align-items:flex-start;color:#ded0b5;
  background:radial-gradient(ellipse at 80% 68%,#cfa36c12,transparent 56%);
@@ -104,14 +104,14 @@
 .sx-v16-about-statement-label,.sx-v16-about-statement-note{
  font:650 10px/1.5 ui-monospace,Consolas,monospace;letter-spacing:.12em;
 }
-.sx-v16-about-statement-label{color:#d4b98d;}
+.sx-v16-about-statement-label{color:#ffffff;}
 .sx-v16-about-statement-note{align-self:flex-end;color:#8eaaa0;max-width:190px;text-align:right;}
 .sx-v16-about-statement-mark{
  align-self:center;display:flex;align-items:center;gap:.04em;transform:rotate(-8deg);
  font:450 clamp(120px,16vw,260px)/1 Georgia,serif;letter-spacing:-.12em;
- color:#e3d7bc;
+ color:#ffffff;
 }
-.sx-v16-about-statement-mark>span{font-size:.26em;color:#d0ae80;transform:rotate(-45deg);}
+.sx-v16-about-statement-mark>span{font-size:.26em;color:#ffffff;transform:rotate(-45deg);}
 .sx-site .sx-v8-about-content{max-width:890px;}
 /* Compact curated work directory: browse without consuming twenty motion
    stops, accessible anchor navigation and real text-only expansion. */
