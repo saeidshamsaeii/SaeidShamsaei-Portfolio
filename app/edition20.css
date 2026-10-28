@@ -37,7 +37,7 @@
  overflow:hidden!important;
 }
 .sx-v18-site .sx-v19-photo-background img{
- object-fit:contain!important;
+ object-fit:cover!important;
  object-position:50% 0%!important;
  transform:translateY(-1.2%) scale(.91)!important;
  transform-origin:center top!important;
