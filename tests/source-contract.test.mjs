@@ -226,7 +226,7 @@ test('Edition 20 keeps motion without visible Auto Story and reveals real wrappe
  assert.ok(!tour.includes('AUTO STORY')||tour.includes('// automatic'));
  assert.ok(tour.includes('resumeFromHere'));
  assert.ok(word.includes('word.getBoundingClientRect().top'));
- assert.ok(word.includes('const blocks=Array.from(container.querySelectorAll'));
+ assert.ok(word.includes('const blocks=blocksFor(container)'));
  assert.ok(word.includes('const before=sizes.slice(0,self)'));
  assert.ok(word.includes('.sx-v10-case-section'));
  assert.ok(word.includes('new ResizeObserver(invalidate)'));
