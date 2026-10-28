@@ -159,7 +159,7 @@ export function SelectedWorkIndex(){
     onFocusCapture={()=>setActive(project.id)}
     onTouchStart={()=>setActive(project.id)}>
     <a href={'#project-'+project.id} className="sx-v16-index-row"
-     aria-label={'Discover '+project.brand+' immersive story'}>
+     aria-label={t.viewWork+' / '+project.brand}>
      <WordReveal as="strong" text={project.brand}/>
      <WordReveal as="span" text={locale==='en'?keywords[project.id]:projectText(locale,project.id).keyword}/>
      <span aria-hidden="true">↗</span>
