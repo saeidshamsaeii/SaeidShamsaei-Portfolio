@@ -5,7 +5,7 @@ type Stop={element:HTMLElement;label:string;fraction:number|null};
 type Mode='playing'|'manual'|'paused'|'finished';
 type Playback={index:number;elapsed:number;last:number;start:number;end:number;duration:number};
 const clamp=(x:number)=>Math.max(0,Math.min(1,x));
-const READING_SPEED_PX_PER_SECOND=315;
+const READING_SPEED_PX_PER_SECOND=205;
 const MIN_SEGMENT_MS=1700;
 const IDLE_RESUME_MS=3500;
 
