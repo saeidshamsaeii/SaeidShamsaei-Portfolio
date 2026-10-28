@@ -399,10 +399,10 @@ test('Edition 27 fits the entire Selected Work directory and slows every reading
  assert.match(css,/grid-template-rows:repeat\(4,minmax\(0,1fr\)\)!important/);
  assert.match(css,/@media\(max-width:760px\)/);
  assert.match(css,/@media\(max-height:430px\)/);
- assert.match(directory,/const DURATION_MS=7200/);
+ assert.match(directory,/const BETWEEN_BLOCK_HOLD_MS=2000/);
  assert.match(directory,/data-work-reveal-progress="0"/);
  assert.match(directory,/host\.hasAttribute\('data-tour-awaiting'\)/);
- assert.match(word,/progress=grouped\(workIndex,clamp\(Number\(workIndex\.dataset\.workRevealProgress/);
+ assert.match(word,/grouped\(stage,local\)/);
  assert.match(word,/workIndex\.addEventListener\('sx-work-progress',update\)/);
  assert.match(word,/const byEntry=clamp\(\(performance\.now\(\)-started\)\/4700\)/);
  assert.match(director,/READING_SPEED_PX_PER_SECOND=150/);
@@ -450,4 +450,31 @@ test('Edition 29 moves Selected Work copy up while it fades away on departure',(
  // The new exit cue does not replace the full-copy two-second reading hold.
  assert.match(director,/const SELECTED_WORK_HOLD_MS=2000/);
  assert.match(director,/workFullyFramed&&workTypingFinished/);
+});
+
+test('Edition 30 types each Selected Work block before its own line and 2s reading hold',()=>{
+ const directory=read('components/SelectedWorkIndex.tsx');
+ const reveal=read('components/WordReveal.tsx');
+ const css=read('app/edition20.css');
+ const tour=read('components/GuidedTour.tsx');
+ assert.match(directory,/const TITLE_TYPE_MS=2300/);
+ assert.match(directory,/const ROW_TYPE_MS=2600/);
+ assert.match(directory,/const LINE_DRAW_MS=500/);
+ assert.match(directory,/const BETWEEN_BLOCK_HOLD_MS=2000/);
+ assert.match(directory,/index<stages\.length-1\?BETWEEN_BLOCK_HOLD_MS:0/);
+ assert.match(directory,/data-work-stage="0"/);
+ assert.match(directory,/data-work-stage=\{index\+1\}/);
+ assert.match(directory,/stage\.dataset\.workStageState=index<current\?'complete'/);
+ assert.match(directory,/stage\.style\.setProperty\('--sx-work-rule',String\(draw\)\)/);
+ assert.match(directory,/host\.dataset\.workStageIndex=String\(current\)/);
+ assert.match(directory,/host\.dataset\.workStageProgress=String\(typingProgress\)/);
+ assert.match(reveal,/active<current\?1:active>current\?0/);
+ assert.match(reveal,/grouped\(stage,local\)/);
+ assert.match(css,/border-bottom-color:transparent!important/);
+ assert.match(css,/transform:scaleX\(var\(--sx-work-rule,0\)\)/);
+ assert.match(css,/\[data-work-stage-state="pending"\]/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(css,/@media\(scripting:none\)/);
+ assert.match(tour,/const SELECTED_WORK_HOLD_MS=2000/);
+ assert.match(tour,/workFullyFramed&&workTypingFinished/);
 });
