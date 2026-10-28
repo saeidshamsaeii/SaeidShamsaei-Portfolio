@@ -5,14 +5,17 @@
 English `en`, Persian `fa`, Arabic `ar`, Italian `it`, German `de`,
 French `fr`, Simplified Chinese `zh` and Russian `ru`.
 
-A subtle monochrome language selector appears on the homepage, case studies and
-Engineering Index. It uses native language names rather than flag icons, has a
-keyboard-operable popup, Escape dismissal, visible focus and a reduced-motion
-fallback. The user's explicit language is saved in `localStorage` and written
+A restrained **flag-only** language selector appears across the homepage,
+case studies and Engineering Index. Eight country flags (GB, IR, SA, IT, DE,
+FR, CN, RU) are shown without visible language codes or names. Accessible names
+and hover titles still identify each language. The menu supports keyboard use,
+Escape dismissal, visible focus and reduced motion. The user's explicit language is saved in `localStorage` and written
 as a shareable `?lang=<code>` URL parameter. On a fresh visit, a valid query
 takes precedence, then the saved choice, then the browser language (if supported),
-then English. Arabic and Persian update `html[dir]` to `rtl`; Chinese and
-RTL scripts have deliberate typography fallbacks.
+then English. The current **owner-requested** visual direction is
+nonstandard: English, Italian, German, French, Chinese and Russian use
+`html dir=rtl`; Persian and Arabic use `html dir=ltr`. This reverses usual
+reading conventions and can be changed later if native reading order is desired.
 
 ## Translation scope
 
@@ -38,9 +41,10 @@ RTL scripts have deliberate typography fallbacks.
 Selected Work retains five sequential stages: type, draw the divider, read for
 two seconds, then advance. The last panel's final hold is handled by the headless
 director. Switching language must not restart the overall tour or remove the
-manual-scroll escape hatch. RTL word clipping follows the natural script direction.
-The horizontal gallery rail retains its scroll geometry while its editorial copy
-uses RTL where appropriate.
+manual-scroll escape hatch. Word clipping follows the selected page direction.
+Long translated words and CJK runs can wrap within their visual boxes instead
+of escaping the page. Extra-short viewports use natural vertical overflow rather
+than cropping paragraphs. The horizontal rail retains its scroll geometry.
 
 ## SEO and delivery boundary
 
