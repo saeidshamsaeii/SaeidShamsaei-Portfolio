@@ -25,21 +25,19 @@ export function LanguageSwitcher(){
  },[open]);
  return <div ref={host} className="sx-language-switcher" dir="ltr">
   <button type="button" className="sx-language-trigger"
-   aria-label={siteText(locale).uiLanguage} aria-haspopup="true" aria-expanded={open}
+   aria-label={siteText(locale).uiLanguage+' / '+selected.native}
+   title={selected.native}
+   aria-haspopup="true" aria-expanded={open}
    onClick={()=>setOpen(value=>!value)}>
-   <span className="sx-language-globe" aria-hidden="true">◎</span>
-   <span>{selected.short}</span>
-   <span className="sx-language-caret" aria-hidden="true">{open?'−':'+'}</span>
+   <span className="sx-language-flag" aria-hidden="true">{selected.flag}</span>
   </button>
   {open&&<div className="sx-language-menu" role="group" aria-label={siteText(locale).uiLanguage}>
    {languages.map(item=><button type="button" key={item.code}
     className={locale===item.code?'is-selected':''}
-    lang={item.code} dir={item.dir}
-    aria-pressed={locale===item.code}
+    lang={item.code} dir={item.dir} title={item.native}
+    aria-label={item.native} aria-pressed={locale===item.code}
     onClick={()=>{setLocale(item.code);setOpen(false);}}>
-    <span className="sx-language-code" dir="ltr">{item.short}</span>
-    <span className="sx-language-native">{item.native}</span>
-    <span aria-hidden="true" className="sx-language-tick">{locale===item.code?'●':''}</span>
+    <span className="sx-language-flag" aria-hidden="true">{item.flag}</span>
    </button>)}
   </div>}
  </div>;
