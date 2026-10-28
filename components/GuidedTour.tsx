@@ -32,6 +32,9 @@ function scrollDestination(stop:Stop){
   return top+travel*clamp((index+.68)/count);
  }
  const box=stop.element.getBoundingClientRect(),top=box.top+window.scrollY;
+ // The owner name, surname and concise role are an ordered introduction,
+ // not three unrelated reveals rushed past by the automatic director.
+ if(stop.element.id==='intro')return top+box.height*.72;
  if(stop.fraction!==null){
   const stage=stop.element.closest<HTMLElement>('#top')||stop.element;
   return stage.getBoundingClientRect().top+window.scrollY+
