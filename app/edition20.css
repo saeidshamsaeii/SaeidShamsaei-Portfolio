@@ -515,3 +515,36 @@
   grid-template-rows:repeat(4,minmax(83px,auto))!important;
  }
 }
+
+/* Edition 29 — Selected Work scroll-linked upward exit.
+ * Words finish typing and remain perfectly still through the 2-second hold.
+ * Only as the black scene LEAVES the viewport do its heading and four
+ * project rows drift up while fading, without exposing the upcoming copy. */
+.sx-v18-site #work-index .sx-v18-index-heading{
+ transform:translate3d(0,calc(var(--sx-work-exit, 0) * -36px),0);
+ opacity:calc(1 - var(--sx-work-exit, 0) * .97);
+ transition:none!important;
+ will-change:transform,opacity;
+}
+.sx-v18-site #work-index .sx-v18-index-entry{
+ transform:translate3d(0,calc(var(--sx-work-exit, 0) * -62px),0);
+ opacity:calc(1 - var(--sx-work-exit, 0) * .97);
+ transition:none!important;
+ will-change:transform,opacity;
+}
+@media(max-width:760px){
+ .sx-v18-site #work-index .sx-v18-index-heading{
+  transform:translate3d(0,calc(var(--sx-work-exit, 0) * -26px),0);
+ }
+ .sx-v18-site #work-index .sx-v18-index-entry{
+  transform:translate3d(0,calc(var(--sx-work-exit, 0) * -40px),0);
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-v18-site #work-index .sx-v18-index-heading,
+ .sx-v18-site #work-index .sx-v18-index-entry{
+  transform:none!important;
+  opacity:1!important;
+  will-change:auto;
+ }
+}
