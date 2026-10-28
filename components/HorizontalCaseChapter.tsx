@@ -88,7 +88,7 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
   <div className="sx-v11-sticky">
    <div className="sx-v11-rail" ref={rail}>
     <article className="sx-v11-slide sx-v14-scene sx-v14-opening" data-frame-index="0"
-     data-tour-stop data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
+     data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
      <div className="sx-v14-opening-inner">
       <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
       <WordReveal as="p" text={signatureLines[project.id]}/>
@@ -99,7 +99,7 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
     </article>
     <article id={'project-'+project.id+'-origin'}
      className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+lead.mode}
-     data-frame-index="1" data-tour-stop data-tour-label={project.brand+' / core idea'}
+     data-frame-index="1" data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / core idea'}
      data-tour-duration={String(lead.duration)} data-tour-pace={String(lead.pace)}>
      <div className="sx-v14-editorial-copy">
       <WordReveal as="h3" text={lead.headline}/>
@@ -107,7 +107,7 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
      </div>
     </article>
     <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="2"
-     data-tour-stop data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
+     data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
      <div className="sx-v14-ending-inner"><WordReveal as="h3" text={story.ending}/>
       <div className="sx-v14-ending-actions">
        <Link href={'/work/'+project.id+'/'}>READ THE CASE STUDY ↗</Link>
