@@ -113,6 +113,36 @@ export function SelectedWorkIndex(){
    if(raf)cancelAnimationFrame(raf);
   };
  },[]);
+ // A translated title or an exceptionally long description can exceed
+ // the fixed viewport directory even when the words themselves wrap.
+ // Measure all FIVE actual rows and use natural document height only when
+ // they cannot fit. This prevents text from being cut behind overflow:hidden.
+ useEffect(()=>{
+  const host=section.current;
+  if(!host)return;
+  const blocks=Array.from(host.querySelectorAll<HTMLElement>('[data-work-stage]'));
+  let frame=0;
+  const measure=()=>{
+   frame=0;
+   const css=getComputedStyle(host);
+   const available=Math.max(0,window.innerHeight-
+    parseFloat(css.paddingTop||'0')-parseFloat(css.paddingBottom||'0'));
+   const contentHeight=blocks.reduce((sum,block)=>sum+block.scrollHeight,0);
+   const overflow=contentHeight>available+3;
+   if(host.dataset.workOversize!==(overflow?'true':'false'))
+    host.dataset.workOversize=overflow?'true':'false';
+  };
+  const request=()=>{if(!frame)frame=requestAnimationFrame(measure);};
+  const observer=new ResizeObserver(request);
+  for(const block of blocks)observer.observe(block);
+  window.addEventListener('resize',request);
+  request();
+  return()=>{
+   observer.disconnect();
+   window.removeEventListener('resize',request);
+   if(frame)cancelAnimationFrame(frame);
+  };
+ },[locale]);
  // Link the exit fade to actual scroll movement AFTER the two-second
  // fully typed reading hold. The heading and four rows rise as they fade;
  // revisiting the section restores them with no replay/blanking glitch.
