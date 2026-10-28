@@ -28,7 +28,7 @@ export default function PortfolioExperience(){
    </nav>
   </header>
   <main>
-   <SignatureOpening/>
+   <SignatureOpening ready={loaded}/>
    <ScrollHero/>
    <section className="sx-profile sx-editorial-frame sx-v8-about sx-v18-about"
     id="about" data-tour-stop data-tour-label="About" data-tour-duration="12"
