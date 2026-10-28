@@ -311,3 +311,28 @@ test('Edition 23 has grounded project copy, a blurred photo seam, no legacy gold
  assert.match(engineering,/--ei-gold:#ffffff/);
  assert.doesNotMatch(engineering,/#d2b78c|#dfc89f|#eddec4/);
 });
+
+test('Edition 24 holds for exactly two seconds only across real section background changes after text is complete',()=>{
+ const director=read('components/GuidedTour.tsx');
+ const words=read('components/WordReveal.tsx');
+ const linux=read('components/ScrollHero.tsx');
+ const homepage=read('components/PortfolioExperience.tsx');
+ assert.match(director,/const BACKGROUND_PAUSE_MS=2000/);
+ assert.match(director,/visibleSurface\(stop\)!==visibleSurface\(stops\[index\+1\]\)/);
+ assert.match(director,/const hasBackgroundChange=stops\.map/);
+ assert.match(director,/textHasFinished\(stops\[state\.index\]\)/);
+ assert.match(director,/element\.dataset\.revealComplete==='true'/);
+ assert.match(director,/root\.dataset\.portfolioTourHold='background-change'/);
+ assert.match(director,/time-state\.holdStartedAt>=BACKGROUND_PAUSE_MS/);
+ assert.match(director,/delete root\.dataset\.portfolioTourHold/);
+ assert.match(director,/last\.getBoundingClientRect\(\)/);
+ assert.match(director,/COPY_SETTLE_MAX_MS=2600/);
+ assert.match(linux,/data-tour-progress=\{String\(\(index\+\.80\)\/slides\.length\)\}/);
+ assert.match(words,/host\.dataset\.revealComplete=progress>=\.999/);
+ assert.match(words,/host\.dataset\.revealComplete='true'/);
+ assert.match(homepage,/id="about"/);
+ assert.match(homepage,/id="selected-projects"/);
+ assert.doesNotMatch(director,/<aside|AUTO STORY|sx-v11-top-speed/);
+ assert.match(director,/window\.addEventListener\('wheel',manualInput/);
+ assert.match(director,/IDLE_RESUME_MS=3500/);
+});
