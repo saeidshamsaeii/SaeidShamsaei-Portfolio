@@ -5,17 +5,19 @@
 English `en`, Persian `fa`, Arabic `ar`, Italian `it`, German `de`,
 French `fr`, Simplified Chinese `zh` and Russian `ru`.
 
-A restrained **flag-only** language selector appears across the homepage,
-case studies and Engineering Index. Eight country flags (GB, IR, SA, IT, DE,
-FR, CN, RU) are shown without visible language codes or names. Accessible names
-and hover titles still identify each language. The menu supports keyboard use,
-Escape dismissal, visible focus and reduced motion. The user's explicit language is saved in `localStorage` and written
-as a shareable `?lang=<code>` URL parameter. On a fresh visit, a valid query
-takes precedence, then the saved choice, then the browser language (if supported),
-then English. The current **owner-requested** visual direction is
-nonstandard: English, Italian, German, French, Chinese and Russian use
-`html dir=rtl`; Persian and Arabic use `html dir=ltr`. This reverses usual
-reading conventions and can be changed later if native reading order is desired.
+A restrained **flag-only** language selector appears on the homepage,
+case studies and Engineering Index. Eight country icons (GB, IR, SA, IT,
+DE, FR, CN, RU) are bundled as local SVGs under `public/flags` with an
+MIT license notice in `public/flags/LICENSE.txt`. When opened, all eight
+flags appear in a **single horizontal row inside the header**; there is no
+dropdown overlay or 2x4 grid. Language names remain accessible through
+screen-reader labels and hover titles, rather than visible codes.
+
+The user's selection is persisted in `localStorage` and a shareable
+`?lang=<code>` URL parameter; query, storage and supported browser locale
+take precedence in that order before falling back to English.
+Persian and Arabic use `html dir=rtl`; English, Italian, German, French,
+Chinese and Russian use `html dir=ltr`, matching their natural directions.
 
 ## Translation scope
 
@@ -43,7 +45,8 @@ two seconds, then advance. The last panel's final hold is handled by the headles
 director. Switching language must not restart the overall tour or remove the
 manual-scroll escape hatch. Word clipping follows the selected page direction.
 Long translated words and CJK runs can wrap within their visual boxes instead
-of escaping the page. Extra-short viewports use natural vertical overflow rather
+of escaping the page. The former catch-all wrapping rules were replaced with
+scoped language-specific typography. Extra-short viewports use natural vertical overflow rather
 than cropping paragraphs. The horizontal rail retains its scroll geometry.
 
 ## SEO and delivery boundary
