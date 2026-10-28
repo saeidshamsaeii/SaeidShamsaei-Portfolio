@@ -170,7 +170,7 @@ test('work rules draw one at a time and next block waits until predecessor hold 
  }));
  expect(pendingRule.progress).toBe(0);
  expect(pendingRule.border).toBe('rgba(0, 0, 0, 0)');
- expect(pendingRule.scale).toMatch(/^matrix\\(0[, ]/);
+ expect(pendingRule.scale).toMatch(/^matrix\(0[, ]/);
  await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','line',{timeout:6500});
  await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','pending');
  await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','holding',{timeout:2500});
@@ -184,7 +184,7 @@ test('work rules draw one at a time and next block waits until predecessor hold 
   scale:getComputedStyle(el,'::after').transform
  }));
  expect(firstRule.progress).toBe(1);
- expect(firstRule.scale).toMatch(/^matrix\\(1[, ]/);
+ expect(firstRule.scale).toMatch(/^matrix\(1[, ]/);
  await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','complete');
  for(let index=1;index<5;index++){
   await expect(blocks.nth(index)).toHaveAttribute('data-work-stage-state','line',{timeout:6500});
