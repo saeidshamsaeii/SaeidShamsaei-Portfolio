@@ -58,6 +58,19 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0}:
     node.classList.remove('is-typing');
    }
   };
+  // A section is one reading score: its heading's final line must finish
+  // before the very first line of its supporting paragraph can start.
+  const grouped=(container:HTMLElement,local:number)=>{
+   const blocks=Array.from(container.querySelectorAll<HTMLElement>('.sx-word-reveal'));
+   if(blocks.length<2)return local;
+   const sizes=blocks.map(el=>Math.max(1,el.querySelectorAll('[data-reveal-line]').length));
+   const own=Math.max(0,blocks.indexOf(host));
+   const total=sizes.reduce((a,b)=>a+b,0);
+   const preceding=sizes.slice(0,own).reduce((a,b)=>a+b,0);
+   const start=.035+.58*preceding/total;
+   const distance=.58*sizes[own]/total;
+   return clamp((local-start)/Math.max(.04,distance));
+  };
   const update=()=>{
    raf=0;
    if(media.matches){clear();return;}
@@ -67,12 +80,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0}:
    if(chapter&&panel){
     const scaled=Number(chapter.dataset.frameProgress||'0');
     const index=Number(panel.dataset.frameIndex||'0');
-    const blocks=Array.from(panel.querySelectorAll<HTMLElement>('.sx-word-reveal'));
-    const ordinal=Math.max(0,blocks.indexOf(host));
-    const total=blocks.length;
-    const start=.02+(ordinal/Math.max(1,total))*.48;
-    const duration=Math.max(.13,.62/Math.max(1,total)+.09);
-    progress=clamp((scaled-index-start)/duration);
+    progress=grouped(panel,clamp(scaled-index));
    }else if(host.closest<HTMLElement>('#intro')){
     // Intro uses document travel, not viewport entrance: at scrollY=0 the
     // name starts blank, then line 1 completes before line 2 begins.
@@ -88,11 +96,16 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0}:
      const slides=Array.from(heroRoot.querySelectorAll('.sx-v8-hero-slide'));
      const idx=slides.indexOf(hero);
      const scaled=Number(heroRoot.dataset.heroProgress||'0')*slides.length;
-     progress=clamp((scaled-idx-.01)/.67);
+     progress=grouped(hero,clamp(scaled-idx));
     }else{
-     const rect=host.getBoundingClientRect();
+     // Vertical editorial sections also use a single ordered line score.
+     const group=host.closest<HTMLElement>(
+      '.sx-v18-about-inner,.sx-v14-editorial-copy,.sx-v10-case-cover,.sx-v10-case-evidence,.sx-v10-case-next,.sx-v14-ending-inner,.sx-v18-work-intro'
+     );
+     const rect=(group||host).getBoundingClientRect();
      const travel=Math.max(window.innerHeight*.52,Math.min(window.innerHeight*.98,rect.height+window.innerHeight*.32));
-     progress=clamp((window.innerHeight*.89-rect.top)/travel);
+     const local=clamp((window.innerHeight*.89-rect.top)/travel);
+     progress=group?grouped(group,local):local;
     }
    }
    render(progress);
