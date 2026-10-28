@@ -11,6 +11,7 @@ const IDLE_RESUME_MS=3500;
 const BACKGROUND_PAUSE_MS=2000;
 const INTRO_PHOTO_HOLD_MS=2000;
 const HORIZONTAL_FRAME_PAUSE_MS=2000;
+const SELECTED_WORK_HOLD_MS=2000;
 const COPY_SETTLE_MAX_MS=2600;
 
 function findStops():Stop[]{
@@ -58,6 +59,10 @@ function scrollDestination(stop:Stop){
   return top+travel*clamp((index+.66)/count);
  }
  const box=stop.element.getBoundingClientRect(),top=box.top+window.scrollY;
+ // Selected Work is a single black, viewport-height editorial frame.
+ // Stop at its actual TOP, not at the last row's centerline: otherwise the
+ // headline and first project are pushed above the visible reading frame.
+ if(stop.element.id==='work-index')return top;
  // The owner name, surname and concise role are an ordered introduction,
  // not three unrelated reveals rushed past by the automatic director.
  if(stop.element.id==='intro')return top+box.height*.72;
@@ -143,7 +148,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    const stop=stops[index];
    // Finish every line before changing black ↔ white. Pinned horizontal
    // panels and the Linux stage use their own normalized frame positions.
-   if(hasBackgroundChange[index]&&
+   if(hasBackgroundChange[index]&&stop.element.id!=='work-index'&&
       !stop.element.closest('[data-frame-index],.sx-v8-hero-slide')){
     const lines=Array.from(stop.element.querySelectorAll<HTMLElement>('.sx-word-reveal'));
     const last=lines[lines.length-1];
@@ -291,23 +296,35 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      }
      const horizontalHold=isHorizontalFrame[state.index];
      const backgroundHold=hasBackgroundChange[state.index];
+     // This black one-screen directory always gets its OWN reading hold,
+     // even if a future theme change removes the white following section.
+     const selectedWorkHold=stops[state.index].element.id==='work-index';
      // On mobile the first photo is stacked ABOVE the copy. Pause after
      // arriving at the readable text rather than holding an empty image.
      const mobileIntroHold=state.index===0&&introMobile&&!introHoldComplete;
-     if(horizontalHold||backgroundHold||mobileIntroHold){
+     if(horizontalHold||backgroundHold||mobileIntroHold||selectedWorkHold){
       if(!state.arrivedAt)state.arrivedAt=time;
       // Wait for genuine text completion on horizontal panels, the
       // full-screen work directory, and the mobile opening portrait.
-      const strictCopy=horizontalHold||mobileIntroHold||
-       stops[state.index].element.id==='work-index';
-      if(textHasFinished(stops[state.index])||
-         (!strictCopy&&time-state.arrivedAt>=COPY_SETTLE_MAX_MS)){
+      const strictCopy=horizontalHold||mobileIntroHold||selectedWorkHold;
+      const workFullyFramed=!selectedWorkHold||(()=>{
+       const rect=stops[state.index].element.getBoundingClientRect();
+       // Short landscape windows cannot fit the whole section: never
+       // strand playback, but ordinary screens require the full black card.
+       return rect.height>innerHeight+12||
+        (rect.top>=-12&&rect.bottom<=innerHeight+12);
+      })();
+      if(workFullyFramed&&
+         (textHasFinished(stops[state.index])||
+          (!strictCopy&&time-state.arrivedAt>=COPY_SETTLE_MAX_MS))){
        if(state.holdStartedAt===null){
         state.holdStartedAt=time;
         root.dataset.portfolioTourHold=mobileIntroHold?'intro-photo':
+         selectedWorkHold?'selected-work':
          horizontalHold?'horizontal-frame':'background-change';
        }
        const duration=mobileIntroHold?INTRO_PHOTO_HOLD_MS:
+        selectedWorkHold?SELECTED_WORK_HOLD_MS:
         horizontalHold?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS;
        if(time-state.holdStartedAt>=duration){
         if(mobileIntroHold)introHoldComplete=true;
