@@ -57,7 +57,7 @@ test('headless moderate director preserves auto scroll, manual override and idle
  const homepage=read('components/PortfolioExperience.tsx');
  const cases=read('components/CaseStudy.tsx');
  assert.ok(director.includes("querySelectorAll<HTMLElement>('[data-tour-stop]')"));
- assert.ok(director.includes('const READING_SPEED_PX_PER_SECOND=315'));
+ assert.ok(director.includes('const READING_SPEED_PX_PER_SECOND=205'));
  assert.ok(director.includes('const MIN_SEGMENT_MS=1700'));
  assert.ok(director.includes('state.elapsed+=delta;'));
  assert.ok(!director.includes('targetSpeed=BASE_SPEED*stops[index].pace'));
@@ -256,7 +256,7 @@ test('Edition 21 restores actual first-screen words and prevents simultaneous pa
  assert.match(reveal,/const complete=viewport\*\.50-rect\.height\*\.50/);
  assert.match(reveal,/const before=sizes\.slice\(0,self\)/);
  assert.match(reveal,/host\.getBoundingClientRect\(\)\.bottom<=window\.innerHeight\*\.5/);
- assert.match(director,/READING_SPEED_PX_PER_SECOND=315/);
+ assert.match(director,/READING_SPEED_PX_PER_SECOND=205/);
  assert.match(director,/distance\/READING_SPEED_PX_PER_SECOND\*1000/);
  assert.match(director,/MIN_SEGMENT_MS=1700/);
  assert.doesNotMatch(director,/currentSpeed|targetSpeed|paceBound/);
@@ -282,4 +282,32 @@ test('Edition 22 guarantees complete text at viewport center, readable page tail
  assert.match(css,/sx-v10-case-page \.sx-v10-counter/);
  assert.match(css,/--ei-gold:#fff!important/);
  assert.ok(home.includes("className=\"sx-header sx-v18-header\""));
+});
+
+test('Edition 23 has grounded project copy, a blurred photo seam, no legacy gold and slower headless scroll',()=>{
+ const stories=read('data/homeStories.ts');
+ const directory=read('components/SelectedWorkIndex.tsx');
+ const caseCopy=read('data/caseNarratives.ts');
+ const director=read('components/GuidedTour.tsx');
+ const css=read('app/edition20.css');
+ const engineering=read('app/engineering.css');
+ assert.match(stories,/34 public pages/);
+ assert.match(stories,/Windows Worker/);
+ assert.match(stories,/clinical nutrition workflows/);
+ assert.match(stories,/Zustand/);
+ assert.match(directory,/Service pages · project requests/);
+ assert.match(directory,/Doctor workspace · nutrition rules/);
+ assert.match(caseCopy,/owner-approved upward-arrow brand mark/);
+ assert.doesNotMatch(caseCopy,/energetic orange accents/);
+ assert.match(director,/READING_SPEED_PX_PER_SECOND=205/);
+ assert.match(director,/IDLE_RESUME_MS=3500/);
+ assert.match(director,/return null;/);
+ assert.match(css,/sx-v19-photo-background::before/);
+ assert.match(css,/backdrop-filter:blur\(15px\)/);
+ assert.match(css,/mask-image:linear-gradient\(to bottom/);
+ assert.match(css,/sx-v19-photo-background::after/);
+ assert.match(css,/rgba\(0,0,0,\.66\) 83%,#000 100%/);
+ assert.match(css,/#intro\+\.sx-work-hero\{border-top:0!important/);
+ assert.match(engineering,/--ei-gold:#ffffff/);
+ assert.doesNotMatch(engineering,/#d2b78c|#dfc89f|#eddec4/);
 });
