@@ -67,17 +67,17 @@ export default function PortfolioExperience(){
       <WordReveal as="strong" text={t.contactLabels[1]}/><WordReveal as="span" text={publicContact.phone+" ↗"}/>
      </a>
      <a className="sx-contact-link" href={publicContact.linkedin} target="_blank" rel="noreferrer noopener">
-      <WordReveal as="strong" text={t.contactLabels[2]}/><WordReveal as="span" text="Profile ↗"/>
+      <WordReveal as="strong" text={t.contactLabels[2]}/><WordReveal as="span" text={t.nav[3]+' ↗'}/>
      </a>
      <a className="sx-contact-link" href={publicContact.telegram} target="_blank" rel="noreferrer noopener">
-      <WordReveal as="strong" text={t.contactLabels[3]}/><WordReveal as="span" text="Message ↗"/>
+      <WordReveal as="strong" text={t.contactLabels[3]}/><WordReveal as="span" text={t.nav[3]+' ↗'}/>
      </a>
     </div>
    </section>
   </main>
   <footer className="sx-footer sx-v18-footer">
    <span>SAEID SHAMSAEI.</span>
-   <nav aria-label="Footer navigation"><a href="#intro">Top ↑</a><Link href="/engineering/">{t.nav[2]}</Link>
+   <nav aria-label="Footer navigation"><a href="#intro">SAEID ↑</a><Link href="/engineering/">{t.nav[2]}</Link>
     <a href={'mailto:'+publicContact.email}>{t.nav[3]} ↗</a></nav>
   </footer>
  </div>;
