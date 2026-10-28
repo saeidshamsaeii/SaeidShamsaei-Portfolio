@@ -39,6 +39,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   const onIntro=Boolean(host.closest('#intro'));
   const horizontalChapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
+  const workIndex=host.closest<HTMLElement>('#work-index');
   const started=performance.now();
   let raf=0;
   let layoutCache=new WeakMap<HTMLElement,HTMLElement[][]>();
@@ -141,13 +142,17 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     const index=Number(panel.dataset.frameIndex||'0');
     // Finish copy before the horizontal rail departs this frame.
     progress=grouped(panel,clamp((scaled-index)/.64));
+   }else if(workIndex){
+    // One viewport, one sequential score. No project row races ahead of
+    // the title or waits to cross a centerline beyond the available scroll.
+    progress=grouped(workIndex,clamp(Number(workIndex.dataset.workRevealProgress||'0')));
    }else if(onIntro){
     const container=host.closest<HTMLElement>('.sx-v19-cover-content');
     if(ready&&container){
      const cover=host.closest<HTMLElement>('#intro')!;
      const rect=cover.getBoundingClientRect();
      const byScroll=clamp(-rect.top/Math.max(1,rect.height*.72));
-     const byEntry=clamp((performance.now()-started)/2300);
+     const byEntry=clamp((performance.now()-started)/4700);
      progress=grouped(container,Math.max(byEntry,byScroll));
      // The on-entry score is finite and starts only when the greeting ends.
      if(byEntry<1)request();
@@ -208,6 +213,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   if(horizontalChapter){
    horizontalChapter.addEventListener('sx-horizontal-progress',update);
   }
+  if(workIndex)workIndex.addEventListener('sx-work-progress',update);
   const sizing=new ResizeObserver(invalidate);
   sizing.observe(host);
   const onMotion=()=>reduced.matches?clear():request();
@@ -217,6 +223,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   return()=>{
    observer.disconnect();sizing.disconnect();
    horizontalChapter?.removeEventListener('sx-horizontal-progress',update);
+   workIndex?.removeEventListener('sx-work-progress',update);
    window.removeEventListener('scroll',request);
    window.removeEventListener('resize',invalidate);
    reduced.removeEventListener('change',onMotion);
