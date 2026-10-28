@@ -1,0 +1,182 @@
+/* Edition 19 — pure black #000 / white #fff, no progress/speed HUD.
+   Authored full-bleed portrait and section-level sequential typography.
+   This late stylesheet deliberately supersedes historic editions. */
+:root{--sx-black:#000;--sx-white:#fff;}
+html,body{background:#000!important;}
+.sx-site.sx-v18-site{background:#000!important;color:#fff!important;--sx-v10-accent:#fff!important;}
+.sx-v18-site .sx-header.sx-v18-header,
+.sx-v18-site .sx-footer.sx-v18-footer,
+.sx-v18-site .sx-v16-index.sx-v18-index,
+.sx-v18-site .sx-work-hero.sx-v9-hero,
+.sx-v18-site .sx-v9-hero .sx-v8-hero-stage,
+.sx-v18-site .sx-linux-scene,
+.sx-v18-site .sx-v14-scene,
+.sx-v18-site .sx-v14-scene:nth-child(even){background:#000!important;color:#fff!important;}
+.sx-v18-site .sx-v18-about,
+.sx-v18-site .sx-v18-work-intro,
+.sx-v18-site .sx-contact.sx-v18-contact{background:#fff!important;color:#000!important;}
+.sx-v10-case-page,
+.sx-v10-case-page .case-nav,
+.sx-v10-case-page .sx-v10-case-cover,
+.sx-v10-case-page .sx-v10-case-section,
+.sx-v10-case-page .sx-v10-case-evidence,
+.sx-v10-case-page .sx-v10-case-next,
+.sx-ei{background:#000!important;color:#fff!important;}
+.sx-v10-case-page .sx-v10-case-section:nth-child(odd){background:#000!important;}
+.sx-ei{--ei-bg:#000!important;--ei-panel:#000!important;--ei-gold:#fff!important;}
+.sx-ei .sx-ei-evidence{background:#000!important;}
+.sx-ei .sx-ei-filter-list button[aria-pressed=true]{background:#000!important;}
+
+/* Unboxed, edge-to-edge owner portrait. It occupies the right background
+   plane; sharp, high-positioned grayscale photograph stays unobstructed. */
+.sx-v18-site .sx-v16-cover.sx-v18-cover.sx-v19-cover{
+ position:relative!important;isolation:isolate;
+ display:block!important;min-height:max(680px,calc(100svh - 72px))!important;
+ height:auto!important;background:#000!important;color:#fff!important;
+ overflow:hidden!important;
+}
+.sx-v19-photo-background{
+ position:absolute;z-index:0;top:0;right:0;bottom:0;
+ width:58%;overflow:hidden;pointer-events:none;
+ background:#000;
+}
+.sx-v19-photo-background img{
+ display:block;width:100%;height:100%;
+ object-fit:cover;object-position:50% 7%;
+ filter:grayscale(1) contrast(1.1) brightness(1.04);
+ transform:none;opacity:1;
+}
+.sx-v19-cover-content{
+ position:relative;z-index:2;box-sizing:border-box;
+ display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+ gap:clamp(25px,5svh,65px);
+ min-height:max(680px,calc(100svh - 72px));
+ width:46%;max-width:760px;padding:clamp(60px,8svh,110px) 0
+ clamp(60px,8svh,110px) clamp(24px,5vw,100px);
+ background:#000;
+}
+.sx-v18-site .sx-v19-cover h1{
+ font:650 clamp(50px,6.5vw,110px)/.95 Inter,Arial,sans-serif!important;
+ color:#fff!important;letter-spacing:-.075em!important;
+ max-width:100%;white-space:normal;overflow-wrap:anywhere!important;
+ margin:0!important;
+}
+.sx-v18-site .sx-v19-cover h1>.sx-word-reveal{
+ width:100%!important;max-width:100%!important;
+ color:#fff!important;font:inherit!important;
+ line-height:inherit!important;letter-spacing:inherit!important;
+ margin:0!important;transform:none!important;
+}
+.sx-v18-site .sx-v19-cover h1 .sx-v18-reveal-line{
+ display:block!important;width:100%!important;
+ white-space:nowrap;overflow:visible;
+}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-lead{
+ color:#fff!important;font:440 clamp(24px,3vw,43px)/1.25 Georgia,serif;
+ max-width:580px;margin:0!important;
+}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-lead .sx-v18-reveal-line{
+ display:block;min-height:1.3em;
+}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-links{
+ border-top:1px solid #ffffff75;
+ width:min(100%,580px);padding-top:18px;
+}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-links a{
+ color:#fff!important;font-size:14px;
+}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-links a:focus-visible{
+ outline:2px solid #fff;outline-offset:5px;
+}
+/* No floating tour speed or progress bar. Buttons remain available without
+   a box, at the top, and always contrast with their background. */
+.sx-v18-site .sx-guided-tour.sx-v11-tour{
+ background:transparent!important;border:0!important;
+ box-shadow:none!important;gap:10px!important;
+}
+.sx-guided-tour .sx-v11-top-progress,
+.sx-guided-tour .sx-v11-top-speed{display:none!important;}
+.sx-v18-site .sx-guided-tour.sx-v11-tour[data-surface="dark"] .sx-v11-top-label,
+.sx-v18-site .sx-guided-tour.sx-v11-tour[data-surface="dark"] .sx-v11-top-button{color:#fff!important;}
+.sx-v18-site .sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-label,
+.sx-v18-site .sx-guided-tour.sx-v11-tour[data-surface="light"] .sx-v11-top-button{color:#000!important;}
+
+/* Emphasis follows authored sentence beats. On the homepage every line of
+   each scene completes before the next one starts; no fake typing caret. */
+.sx-v18-line-reveal .sx-v18-reveal-line{transform:none!important;}
+.sx-v18-line-reveal .sx-v18-reveal-line .sx-word-piece{
+ transform:none!important;transition:none!important;
+}
+.sx-v18-site .sx-v14-opening-inner{gap:clamp(18px,3svh,44px)!important;}
+.sx-v18-site .sx-v14-opening-inner>p{
+ color:#fff!important;font:440 clamp(26px,3.4vw,52px)/1.24 Georgia,serif!important;
+ letter-spacing:-.035em;max-width:930px!important;
+}
+.sx-v18-site .sx-v14-opening-inner>p .sx-v18-reveal-line{
+ width:max-content;max-width:100%;
+}
+.sx-v18-site .sx-v14-opening-inner h2{
+ font-size:clamp(56px,12vw,180px)!important;letter-spacing:-.08em;
+}
+.sx-v18-site .sx-v14-opening-foot{border-top:1px solid #ffffff7d;}
+.sx-v18-site .sx-v14-editorial-copy{border-top:1px solid #ffffff8c;}
+.sx-v18-site .sx-v18-index-entry{border-bottom:1px solid #ffffff69!important;}
+.sx-v18-site .sx-v18-index-heading{border-bottom:1px solid #fff!important;}
+
+/* The loader starts with the slightly longer Hello...; later translations
+   flash rapidly with no progress percentage or decorative rails. */
+.sx-v18-loader{background:#000!important;color:#fff!important;}
+.sx-v18-loader-word{color:#fff!important;animation:sx-v19-greeting .14s ease-out both;}
+@keyframes sx-v19-greeting{
+ from{opacity:0;transform:translate3d(0,9px,0)}
+ to{opacity:1;transform:none}
+}
+.sx-v18-loader-word[lang="en"]{animation-duration:.28s;}
+/* At tablet widths the copy remains out of the portrait. */
+@media(max-width:1050px){
+ .sx-v19-photo-background{width:55%;}
+ .sx-v19-cover-content{width:48%;padding-left:clamp(22px,4vw,60px);}
+ .sx-v18-site .sx-v19-cover h1{font-size:clamp(45px,6.1vw,84px)!important;}
+ .sx-v18-site .sx-v19-cover .sx-v18-cover-lead{font-size:clamp(21px,3.1vw,34px);}
+}
+/* On phones the same unframed portrait occupies the upper background;
+   words live in the full-black lower field, so the face stays unobstructed. */
+@media(max-width:760px){
+ .sx-v18-site .sx-v16-cover.sx-v18-cover.sx-v19-cover{min-height:0!important;}
+ .sx-v19-photo-background{
+  position:absolute;inset:0 0 auto;top:0;width:100%;
+  height:clamp(350px,59svh,650px);
+ }
+ .sx-v19-photo-background img{object-position:center 7%;}
+ .sx-v19-cover-content{
+  width:100%;max-width:none;
+  min-height:0!important;gap:22px;
+  margin-top:clamp(350px,59svh,650px);
+  padding:clamp(30px,5svh,55px) 20px 55px;
+  background:#000;
+ }
+ .sx-v18-site .sx-v19-cover h1{
+  font-size:clamp(53px,11.8vw,87px)!important;
+  letter-spacing:-.073em!important;line-height:.96!important;
+ }
+ .sx-v18-site .sx-v19-cover .sx-v18-cover-lead{
+  font-size:clamp(22px,5.4vw,32px)!important;
+ }
+ .sx-v18-site .sx-v19-cover .sx-v18-cover-links{
+  border-top-color:#ffffff70;padding-top:15px;
+ }
+ .sx-v18-site .sx-v14-opening-inner h2{font-size:clamp(45px,10.8vw,76px)!important;}
+ .sx-v18-site .sx-v14-opening-inner>p{font-size:clamp(23px,5.3vw,36px)!important;max-width:100%!important;}
+}
+@media(max-width:390px){
+ .sx-v18-site .sx-v19-cover h1{font-size:clamp(47px,10.7vw,61px)!important;}
+}
+/* Restoring readable content for assistive/reduced motion rather than
+   running cosmetic animations without explicit visitor permission. */
+@media(prefers-reduced-motion:reduce){
+ .sx-v19-photo-background img{transform:none!important;filter:grayscale(1) contrast(1.1) brightness(1.04)!important;}
+ .sx-v18-loader-word{animation:none!important;}
+ .sx-v18-line-reveal .sx-v18-reveal-line{
+  opacity:1!important;clip-path:none!important;transition:none!important;
+ }
+}
