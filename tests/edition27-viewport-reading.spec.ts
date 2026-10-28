@@ -68,3 +68,34 @@ test('mobile portrait hold occurs after scrolling to the stacked readable copy',
  await expect(page.locator('#intro .sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(2);
  expect(await page.evaluate(()=>scrollY)).toBeGreaterThan(100);
 });
+
+test('black Selected Work freezes only AFTER all nine word blocks finish and fit the viewport',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ const section=page.locator('#work-index');
+ const top=await section.evaluate(node=>node.getBoundingClientRect().top+scrollY);
+ // Manual takeover, then auto-resume from before this exact section.
+ await page.mouse.wheel(0,40);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),Math.max(0,top-260));
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','manual');
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:6500});
+ const html=page.locator('html');
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','selected-work',{timeout:25000});
+
+ // No partially typed title, project name or description may initiate hold.
+ await expect(section.locator('.sx-word-reveal')).toHaveCount(9);
+ await expect(section.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(9);
+ const progress=Number(await section.getAttribute('data-work-reveal-progress'));
+ expect(progress).toBeGreaterThanOrEqual(.999);
+ const rect=await section.evaluate(node=>{
+  const box=node.getBoundingClientRect();
+  return {top:box.top,bottom:box.bottom,viewport:innerHeight};
+ });
+ expect(Math.abs(rect.top)).toBeLessThanOrEqual(12);
+ expect(Math.abs(rect.bottom-rect.viewport)).toBeLessThanOrEqual(12);
+ const frozen=await page.evaluate(()=>scrollY);
+ await page.waitForTimeout(650);
+ expect(Math.abs((await page.evaluate(()=>scrollY))-frozen)).toBeLessThanOrEqual(2);
+ await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','selected-work',{timeout:2700});
+});
