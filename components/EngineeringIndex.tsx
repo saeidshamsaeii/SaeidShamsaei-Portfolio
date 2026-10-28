@@ -44,7 +44,7 @@ function EvidenceProject({entry,filter,query}:{entry:EngineeringRecord;filter:Fi
    {decisions.map((decision,index)=><article key={decision.id} className="sx-ei-decision">
     <div className="sx-ei-decision-id">
      <span>{String(index+1).padStart(2,'0')}</span>
-     <span>{decision.discipline.replace('-', ' ').toUpperCase()}</span>
+     <span>{filterName(locale,decision.discipline)}</span>
     </div>
     <h3>{decision.question}</h3>
     <div className="sx-ei-pair">
@@ -62,7 +62,7 @@ function EvidenceProject({entry,filter,query}:{entry:EngineeringRecord;filter:Fi
     </div>
    </article>)}
   </div>
-  <section id={'source-'+entry.id} className="sx-ei-register" aria-label={project.brand+' source register'}>
+  <section id={'source-'+entry.id} className="sx-ei-register" aria-label={project.brand+' / '+t.register}>
    <div className="sx-ei-register-head"><h3>{t.sourceRegister}</h3><p>{t.sourceNote}</p></div>
    <div className="sx-ei-source-list">{entry.files.map((file,i)=><a
     href={fileUrl(file)} key={file.repo+'/'+file.path} target="_blank" rel="noopener noreferrer">
@@ -106,7 +106,7 @@ export default function EngineeringIndex(){
 
  return <main className="sx-ei">
   <div className="sx-ei-skip"><a href="#evidence-results">{t.browse}</a></div>
-  <nav className="sx-ei-nav" aria-label="Engineering section navigation">
+  <nav className="sx-ei-nav" aria-label={t.nav}>
    <Link href="/">← Saeid Shamsaei</Link>
    <span>{t.nav}</span>
    <a href="#evidence-results">{t.browse} ↓</a><LanguageSwitcher/>
@@ -120,7 +120,7 @@ export default function EngineeringIndex(){
    </div>
   </header>
   <div className="sx-ei-main" id="evidence-results">
-   <aside className="sx-ei-sidebar" aria-label="Engineering index filters">
+   <aside className="sx-ei-sidebar" aria-label={t.find}>
     <div className="sx-ei-sidebar-head">{t.find}</div>
     <label htmlFor="sx-ei-search">{t.search}</label>
     <input id="sx-ei-search" type="search" value={query} onChange={e=>setQuery(e.target.value)}
