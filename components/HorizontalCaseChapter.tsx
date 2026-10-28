@@ -2,10 +2,19 @@
 import {useEffect,useRef} from 'react';
 import Link from 'next/link';
 import {homeStories} from '@/data/homeStories';
-import {projects,type Project} from '@/data/portfolio';
+import {projects,type Project,type ProjectId} from '@/data/portfolio';
 import {WordReveal} from '@/components/WordReveal';
 
 const clamp=(v:number)=>Math.max(0,Math.min(1,v));
+
+// Authored editorial beats. The newline is a real animation boundary, not
+// a viewport-dependent word-count guess. All copy retains its original meaning.
+const signatureLines:Record<ProjectId,string>={
+ gartal:'A studio at the front. A platform\\nunderneath.',
+ factory:'The remote commit is not\\nthe local machine.',
+ digirezhim:'Design for the clinician,\\nnot the dashboard.',
+ petiwoo:'Commerce that understands\\nwho you shop for.'
+};
 
 /**
  * A short horizontal editorial sequence, not a gallery of identical cards.
@@ -82,7 +91,7 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
      data-tour-stop data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
      <div className="sx-v14-opening-inner">
       <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
-      <WordReveal as="p" text={story.signature}/>
+      <WordReveal as="p" text={signatureLines[project.id]}/>
      </div>
      <div className="sx-v14-opening-foot">
       <a href={'/work/'+project.id+'/'}>FULL CASE STUDY ↗</a>
