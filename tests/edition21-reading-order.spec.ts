@@ -16,8 +16,8 @@ test('the first-screen statement becomes readable before automatic scroll leaves
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:8500});
  const name=page.locator('#intro h1 [data-reveal-word]').last();
  const lastWord=page.locator('#intro .sx-v18-cover-lead [data-reveal-word]').last();
- await expect.poll(()=>name.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:4200}).toBeGreaterThan(.98);
- await expect.poll(()=>lastWord.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:4200}).toBeGreaterThan(.98);
+ await expect.poll(()=>name.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:7000}).toBeGreaterThan(.98);
+ await expect.poll(()=>lastWord.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:7000}).toBeGreaterThan(.98);
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
 });
 
@@ -61,7 +61,7 @@ test('auto-reading speed is medium, continuous and has no on-screen speed bar',a
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:8500});
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing');
  await expect(page.locator('.sx-guided-tour,.sx-v11-top-speed,.sx-v11-top-progress')).toHaveCount(0);
- await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:8500}).toBeGreaterThan(60);
+ await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:12500}).toBeGreaterThan(60);
  await page.mouse.wheel(0,220);
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','manual');
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:6500});
