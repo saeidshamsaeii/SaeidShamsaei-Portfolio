@@ -230,8 +230,8 @@ test('Edition 20 keeps motion without visible Auto Story and reveals real wrappe
  assert.ok(word.includes('const before=sizes.slice(0,self)'));
  assert.ok(word.includes('.sx-v10-case-section'));
  assert.ok(word.includes('new ResizeObserver(invalidate)'));
- assert.ok(word.includes('sectionClocks=new WeakMap'));
- assert.ok(word.includes('pacedSection(container,goal,total)'));
+ assert.ok(word.includes('function centerlineProgress(element:HTMLElement)'));
+ assert.ok(word.includes('viewportGroup(group)'));
  assert.ok(word.includes('ready=true'));
  assert.ok(cover.includes('ready={ready}'));
  assert.ok(home.includes('<SignatureOpening ready={loaded}/>'));
@@ -252,13 +252,34 @@ test('Edition 21 restores actual first-screen words and prevents simultaneous pa
  assert.match(cover,/ready=\{ready\}/);
  assert.match(style,/font-size:clamp\(45px,5\.8vw,90px\)/);
  assert.match(style,/transition:none!important/);
- assert.match(reveal,/const sectionClocks=new WeakMap/);
- assert.match(reveal,/const rate=Math\.max\(\.34/);
+ assert.match(reveal,/function centerlineProgress/);
+ assert.match(reveal,/const complete=viewport\*\.50-rect\.height\*\.50/);
  assert.match(reveal,/const before=sizes\.slice\(0,self\)/);
- assert.doesNotMatch(reveal,/getBoundingClientRect\(\)\.bottom<0[^\n]+render\(1\)/);
+ assert.match(reveal,/host\.getBoundingClientRect\(\)\.bottom<=window\.innerHeight\*\.5/);
  assert.match(director,/READING_SPEED_PX_PER_SECOND=315/);
  assert.match(director,/distance\/READING_SPEED_PX_PER_SECOND\*1000/);
  assert.match(director,/MIN_SEGMENT_MS=1700/);
  assert.doesNotMatch(director,/currentSpeed|targetSpeed|paceBound/);
  assert.match(director,/return null;/);
+});
+
+test('Edition 22 guarantees complete text at viewport center, readable page tail and true monochrome contrast',()=>{
+ const text=read('components/WordReveal.tsx');
+ const css=read('app/edition20.css');
+ const home=read('components/PortfolioExperience.tsx');
+ assert.match(text,/function centerlineProgress\(element:HTMLElement\)/);
+ assert.match(text,/const complete=viewport\*\.50-rect\.height\*\.50/);
+ assert.match(text,/viewportGroup\(group\)/);
+ assert.match(text,/progress=centerlineProgress\(host\)|:centerlineProgress\(host\)/);
+ assert.match(text,/document\.documentElement\.scrollHeight-window\.innerHeight-4/);
+ assert.match(text,/host\.getBoundingClientRect\(\)\.bottom<=window\.innerHeight\*\.5/);
+ assert.doesNotMatch(text,/sectionClocks|pacedSection\(/);
+ assert.match(css,/sx-v19-photo-background::after/);
+ assert.match(css,/rgba\(0,0,0,\.74\)/);
+ assert.match(css,/a\.sx-v18-brand:visited/);
+ assert.match(css,/\.sx-v19-cover-content h1 \.sx-word-piece/);
+ assert.match(css,/--sx-v10-accent:#fff!important/);
+ assert.match(css,/sx-v10-case-page \.sx-v10-counter/);
+ assert.match(css,/--ei-gold:#fff!important/);
+ assert.ok(home.includes("className=\"sx-header sx-v18-header\""));
 });
