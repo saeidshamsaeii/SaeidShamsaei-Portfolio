@@ -86,11 +86,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     for(let j=0;j<words.length;j++){
      const amount=clamp(typed-j);
      words[j].style.opacity=String(amount);
-     // Right-to-left scripts reveal from their natural reading edge.
-     const rtl=document.documentElement.dir==='rtl';
-     words[j].style.clipPath=rtl?
-      'inset(0 0 0 '+((1-amount)*100)+'%)':
-      'inset(0 '+((1-amount)*100)+'% 0 0)';
+     words[j].style.clipPath='inset(0 '+((1-amount)*100)+'% 0 0)';
      words[j].style.transform='none';
     }
    }

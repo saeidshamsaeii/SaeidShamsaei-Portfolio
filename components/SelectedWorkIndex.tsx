@@ -3,9 +3,6 @@ import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import {WordReveal} from '@/components/WordReveal';
 import {projects,type ProjectId} from '@/data/portfolio';
-import {projectText} from '@/data/projectTranslations';
-import {siteText} from '@/data/siteTranslations';
-import {useSiteLocale} from '@/components/LocaleProvider';
 
 const keywords:Record<ProjectId,string>={
  gartal:'Service pages · project requests',
@@ -14,8 +11,6 @@ const keywords:Record<ProjectId,string>={
  petiwoo:'Product search · cart · checkout'
 };
 export function SelectedWorkIndex(){
- const {locale}=useSiteLocale();
- const t=siteText(locale);
  const [active,setActive]=useState<ProjectId>('gartal');
  const section=useRef<HTMLElement>(null);
  // Edition 30: five strictly ordered beats. The heading and then each
@@ -113,36 +108,6 @@ export function SelectedWorkIndex(){
    if(raf)cancelAnimationFrame(raf);
   };
  },[]);
- // A translated title or an exceptionally long description can exceed
- // the fixed viewport directory even when the words themselves wrap.
- // Measure all FIVE actual rows and use natural document height only when
- // they cannot fit. This prevents text from being cut behind overflow:hidden.
- useEffect(()=>{
-  const host=section.current;
-  if(!host)return;
-  const blocks=Array.from(host.querySelectorAll<HTMLElement>('[data-work-stage]'));
-  let frame=0;
-  const measure=()=>{
-   frame=0;
-   const css=getComputedStyle(host);
-   const available=Math.max(0,window.innerHeight-
-    parseFloat(css.paddingTop||'0')-parseFloat(css.paddingBottom||'0'));
-   const contentHeight=blocks.reduce((sum,block)=>sum+block.scrollHeight,0);
-   const overflow=contentHeight>available+3;
-   if(host.dataset.workOversize!==(overflow?'true':'false'))
-    host.dataset.workOversize=overflow?'true':'false';
-  };
-  const request=()=>{if(!frame)frame=requestAnimationFrame(measure);};
-  const observer=new ResizeObserver(request);
-  for(const block of blocks)observer.observe(block);
-  window.addEventListener('resize',request);
-  request();
-  return()=>{
-   observer.disconnect();
-   window.removeEventListener('resize',request);
-   if(frame)cancelAnimationFrame(frame);
-  };
- },[locale]);
  // Link the exit fade to actual scroll movement AFTER the two-second
  // fully typed reading hold. The heading and four rows rise as they fade;
  // revisiting the section restores them with no replay/blanking glitch.
@@ -179,8 +144,8 @@ export function SelectedWorkIndex(){
   aria-labelledby="sx-v16-work-title" data-active-project={active}
   data-tour-stop data-tour-label="Selected work" data-tour-duration="10" data-tour-pace=".92">
   <div className="sx-v18-index-heading" data-work-stage="0" data-work-stage-state="pending">
-   <WordReveal as="h2" id="sx-v16-work-title" text={t.selectedWork}/>
-   <span>{t.projectsCount}</span>
+   <WordReveal as="h2" id="sx-v16-work-title" text="Selected work."/>
+   <span>04 projects</span>
   </div>
   <div className="sx-v18-index-rows">
    {projects.map((project,index)=><div className="sx-v18-index-entry" key={project.id}
@@ -189,14 +154,14 @@ export function SelectedWorkIndex(){
     onFocusCapture={()=>setActive(project.id)}
     onTouchStart={()=>setActive(project.id)}>
     <a href={'#project-'+project.id} className="sx-v16-index-row"
-     aria-label={t.viewWork+' / '+project.brand}>
+     aria-label={'Discover '+project.brand+' immersive story'}>
      <WordReveal as="strong" text={project.brand}/>
-     <WordReveal as="span" text={locale==='en'?keywords[project.id]:projectText(locale,project.id).keyword}/>
+     <WordReveal as="span" text={keywords[project.id]}/>
      <span aria-hidden="true">↗</span>
     </a>
     <div className="sx-v18-index-direct">
-     <Link href={'/work/'+project.id+'/'}>{t.caseStudy}</Link>
-     <Link href={'/engineering/#evidence-'+project.id}>{t.source} ↗</Link>
+     <Link href={'/work/'+project.id+'/'}>Case study</Link>
+     <Link href={'/engineering/#evidence-'+project.id}>Source ↗</Link>
     </div>
    </div>)}
   </div>

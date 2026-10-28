@@ -1,8 +1,6 @@
 'use client';
 import Link from 'next/link';
 import {WordReveal} from '@/components/WordReveal';
-import {useSiteLocale} from '@/components/LocaleProvider';
-import {siteText} from '@/data/siteTranslations';
 
 /**
  * Full-bleed, owner-supplied grayscale portrait, positioned higher and
@@ -10,8 +8,6 @@ import {siteText} from '@/data/siteTranslations';
  * the photo remains crisp and visible on the right, never washed out.
  */
 export function SignatureOpening({ready=false}:{ready?:boolean}){
- const {locale}=useSiteLocale();
- const t=siteText(locale);
  return <section id="intro" className="sx-v16-cover sx-v18-cover sx-v19-cover"
   data-tour-stop data-tour-label="Introducing Saeid" data-tour-duration="13" data-tour-pace=".77"
   aria-labelledby="sx-v16-name">
@@ -24,11 +20,11 @@ export function SignatureOpening({ready=false}:{ready?:boolean}){
     <WordReveal as="span" text={'SAEID\nSHAMSAEI'} mode="lines" ready={ready}/>
    </h1>
    <WordReveal as="p" className="sx-v18-cover-lead"
-    text={t.coverLead}
+    text={'I make complex digital systems\nfeel considered, useful and human.'}
     mode="lines" ready={ready}/>
    <div className="sx-v18-cover-links">
-    <a href="#work-index">{t.viewWork} <span aria-hidden="true">↗</span></a>
-    <Link href="/engineering/">{t.nav[2]} <span aria-hidden="true">↗</span></Link>
+    <a href="#work-index">View work <span aria-hidden="true">↗</span></a>
+    <Link href="/engineering/">Engineering <span aria-hidden="true">↗</span></Link>
    </div>
   </div>
  </section>;

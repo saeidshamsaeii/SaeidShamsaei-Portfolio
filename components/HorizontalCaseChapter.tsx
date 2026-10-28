@@ -4,9 +4,6 @@ import Link from 'next/link';
 import {homeStories} from '@/data/homeStories';
 import {projects,type Project,type ProjectId} from '@/data/portfolio';
 import {WordReveal} from '@/components/WordReveal';
-import {useSiteLocale} from '@/components/LocaleProvider';
-import {siteText} from '@/data/siteTranslations';
-import {projectText} from '@/data/projectTranslations';
 
 const clamp=(v:number)=>Math.max(0,Math.min(1,v));
 
@@ -26,9 +23,6 @@ const signatureLines:Record<ProjectId,string>={
  * Only native vertical document scroll controls the pinned horizontal track.
  */
 export function HorizontalCaseChapter({project,index}:{project:Project;index:number}){
- const {locale}=useSiteLocale();
- const t=siteText(locale);
- const localized=projectText(locale,project.id);
  const section=useRef<HTMLElement>(null);
  const rail=useRef<HTMLDivElement>(null);
  const count=3;
@@ -107,10 +101,10 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
      data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
      <div className="sx-v14-opening-inner">
       <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
-      <WordReveal as="p" text={locale==='en'?signatureLines[project.id]:localized.signature}/>
+      <WordReveal as="p" text={signatureLines[project.id]}/>
      </div>
      <div className="sx-v14-opening-foot">
-      <a href={'/work/'+project.id+'/'}>{t.readCase} ↗</a>
+      <a href={'/work/'+project.id+'/'}>FULL CASE STUDY ↗</a>
      </div>
     </article>
     <article id={'project-'+project.id+'-origin'}
@@ -118,16 +112,16 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
      data-frame-index="1" data-frame-state="upcoming" data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / core idea'}
      data-tour-duration={String(lead.duration)} data-tour-pace={String(lead.pace)}>
      <div className="sx-v14-editorial-copy">
-      <WordReveal as="h3" text={locale==='en'?lead.headline:localized.headline}/>
-      <WordReveal as="p" text={locale==='en'?lead.copy:localized.copy}/>
+      <WordReveal as="h3" text={lead.headline}/>
+      <WordReveal as="p" text={lead.copy}/>
      </div>
     </article>
     <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="2" data-frame-state="upcoming"
      data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
-     <div className="sx-v14-ending-inner"><WordReveal as="h3" text={locale==='en'?story.ending:localized.ending}/>
+     <div className="sx-v14-ending-inner"><WordReveal as="h3" text={story.ending}/>
       <div className="sx-v14-ending-actions">
-       <Link href={'/work/'+project.id+'/'}>{t.readCase} ↗</Link>
-       <a href={next?'#project-'+next.id:'#contact'}>{next?t.next+' / '+next.brand:t.letsTalk} ↓</a>
+       <Link href={'/work/'+project.id+'/'}>READ THE CASE STUDY ↗</Link>
+       <a href={next?'#project-'+next.id:'#contact'}>{next?'NEXT / '+next.brand:'LET’S TALK'} ↓</a>
       </div>
      </div>
     </article>

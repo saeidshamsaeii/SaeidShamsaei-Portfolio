@@ -2,8 +2,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {LinuxCodeCanvas} from '@/components/LinuxCodeCanvas';
 import {WordReveal} from '@/components/WordReveal';
-import {useSiteLocale} from '@/components/LocaleProvider';
-import {siteText} from '@/data/siteTranslations';
 
 /**
  * Linux code is a DOM animation driven by native scroll progress.
@@ -23,8 +21,6 @@ const slides=[
 ] as const;
 
 export function ScrollHero(){
- const {locale}=useSiteLocale();
- const t=siteText(locale);
  const host=useRef<HTMLElement>(null);
  const [scene,setScene]=useState(0);
  const [progress,setProgress]=useState(0);
@@ -72,10 +68,10 @@ export function ScrollHero(){
       data-tour-pace={String([.72,1.28,.88][index])}
       data-tour-progress={String((index+.80)/slides.length)}>
 
-       {index===0?<h2 id="sx-work-title"><WordReveal as="span" text={t.hero[0].a}/><br/><em><WordReveal as="span" text={t.hero[0].b}/></em></h2>:
-        <h2>{index===1?<><WordReveal as="span" text={t.hero[1].a}/><br/><em><WordReveal as="span" text={t.hero[1].b}/></em></>:
-         <><WordReveal as="span" text={t.hero[2].a}/><br/><em><WordReveal as="span" text={t.hero[2].b}/></em></>}</h2>}
-       <WordReveal className="sx-v8-hero-desc" text={t.hero[index].description}/>
+       {index===0?<h2 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h2>:
+        <h2>{index===1?<><WordReveal as="span" text="COMPLEX IDEAS."/><br/><em><WordReveal as="span" text="CLEAR EXPERIENCES."/></em></>:
+         <><WordReveal as="span" text="ARCHITECTURE."/><br/><em><WordReveal as="span" text="PRODUCT. PEOPLE."/></em></>}</h2>}
+       <WordReveal className="sx-v8-hero-desc" text={slide.description}/>
       </div>)}
     </div>
    </div>

@@ -107,7 +107,7 @@ test('five distinct scroll-pinned editorial scenes preserve source-backed contex
  assert.ok(word.includes('.sx-v10-case-section'));
  assert.ok(read('app/layout.tsx').includes("import './edition20.css';"));
  assert.ok(word.includes('word.getBoundingClientRect().top'));
- assert.ok(word.includes("const rtl=document.documentElement.dir==='rtl'"));
+ assert.ok(word.includes("clipPath='inset(0 '"));
  assert.ok(word.includes('[data-reveal-line]'));
  assert.ok(word.includes('progress*lines.length'));
  assert.ok(read('app/layout.tsx').includes("import './edition18.css';"));
@@ -182,8 +182,8 @@ test('Edition 19 starts Hello... and displays a high clear portrait with sequent
  assert.match(opening,/sx-v19-photo-background/);
  assert.match(css,/object-fit:cover/);
  assert.doesNotMatch(opening,/sx-v16-cover-photo-note|sx-v16-cover-edge|sx-v16-cover-meta/);
- const ordered=['Hello...','سلام','مرحباً','こんにちは','Привет','नमस्ते','Ciao'];
- for(let i=1;i<ordered.length;i++)assert.ok(greeting.indexOf(ordered[i-1])<greeting.indexOf(ordered[i]));
+  assert.match(greeting,/lang="en" dir="ltr"/);
+  assert.doesNotMatch(greeting,/سلام|مرحباً|こんにちは|Привет|नमस्ते|Ciao|Bonjour/);
  assert.match(directory,/sx-v18-index-entry/);
  assert.doesNotMatch(directory,/sx-v17-index-watermark|PROJECT NOTE/);
  assert.match(css,/sx-v18-loader/);
@@ -202,7 +202,7 @@ test('ordered opening animation never overlaps its next sentence beat',()=>{
  const mono=read('app/edition19.css');
  assert.match(component,/const count=3/);
  assert.ok(component.includes(String.raw`A studio at the front. A platform\nunderneath.`));
- assert.match(component,/locale==='en'\?signatureLines\[project\.id\]/);
+ assert.match(component,/text=\{signatureLines\[project\.id\]\}/);
  assert.match(word,/const before=sizes\.slice\(0,self\)/);
  assert.match(word,/return clamp\(\(clamp\(local\)\*total-before\)\/sizes\[self\]\)/);
  assert.match(word,/data-reveal-line/);
@@ -212,7 +212,7 @@ test('ordered opening animation never overlaps its next sentence beat',()=>{
  assert.match(mono,/color:#fff!important/);
  assert.match(read('app/layout.tsx'),/themeColor:'#000000'/);
  assert.doesNotMatch(director,/sx-v11-top-speed|sx-v11-top-progress|setDisplaySpeed|AUTO STORY/);
- assert.match(loader,/index===0\?600:125/);
+ assert.match(loader,/setTimeout\(\(\)=>setLeaving\(true\),850\)/);
  assert.match(director,/stop\.element\.id==='intro'/);
 });
 
@@ -247,8 +247,8 @@ test('Edition 21 restores actual first-screen words and prevents simultaneous pa
  const style=read('app/edition20.css');
  const reveal=read('components/WordReveal.tsx');
  const director=read('components/GuidedTour.tsx');
- assert.match(read('data/siteTranslations.ts'),/I make complex digital systems/);
- assert.match(read('data/siteTranslations.ts'),/feel considered, useful and human\./);
+ assert.match(cover,/I make complex digital systems/);
+ assert.match(cover,/feel considered, useful and human\./);
  assert.match(cover,/ready=\{ready\}/);
  assert.match(style,/font-size:clamp\(45px,5\.8vw,90px\)/);
  assert.match(style,/transition:none!important/);
@@ -479,66 +479,25 @@ test('Edition 30 types each Selected Work block before its own line and 2s readi
  assert.match(tour,/workFullyFramed&&workTypingFinished/);
 });
 
-test('Edition 31 translates all eight supported site languages and preserves source-linked pages',()=>{
- const provider=read('components/LocaleProvider.tsx');
- const selector=read('components/LanguageSwitcher.tsx');
- const copy=read('data/siteTranslations.ts');
- const projects=read('data/projectTranslations.ts');
- const cases=read('data/caseTranslations.ts');
- const engineering=read('data/engineeringTranslations.ts');
- const home=read('components/PortfolioExperience.tsx');
- const casePage=read('components/CaseStudy.tsx');
- const engineeringPage=read('components/EngineeringIndex.tsx');
+test('English-only portfolio has no locale picker or translated routes',()=>{
  const layout=read('app/layout.tsx');
- const css=read('app/i18n.css');
- for(const code of ['en','fa','ar','it','de','fr','zh','ru']){
-  assert.ok(provider.includes("code:'"+code+"'"),'picker language missing: '+code);
-  assert.ok(copy.includes(' '+code+':{'),'homepage translation missing: '+code);
-  if(code!=='en'){
-   assert.ok(projects.includes(' '+code+':{'),'project translation missing: '+code);
-   assert.ok(cases.includes(' '+code+':{'),'case translation missing: '+code);
-   assert.ok(engineering.includes(' '+code+':{'),'engineering translation missing: '+code);
-  }
- }
- assert.ok(provider.includes('localStorage.setItem(STORAGE_KEY,locale)'));
- assert.ok(provider.includes('document.documentElement.lang=locale'));
- assert.ok(provider.includes('document.documentElement.dir=directionFor(locale)'));
- assert.ok(layout.includes('<LocaleProvider>{children}</LocaleProvider>'));
- assert.ok(layout.includes("import './i18n.css';"));
- assert.ok(home.includes('<LanguageSwitcher/>'));
- assert.ok(casePage.includes('<LanguageSwitcher/>'));
- assert.ok(engineeringPage.includes('<LanguageSwitcher/>'));
- assert.ok(selector.includes('aria-pressed={locale===item.code}'));
- assert.ok(home.includes('text={t.aboutTitle}'));
- assert.ok(casePage.includes('caseText(locale,id)'));
- assert.ok(engineeringPage.includes('localizeEngineering(locale,entry)'));
- assert.ok(css.includes('html[dir=rtl]'));
- assert.ok(css.includes('html[lang=zh]'));
- assert.ok(css.includes('prefers-reduced-motion:reduce'));
-});
-
-test('Edition 33: locally downloaded SVG flags form one inline row and natural reading directions',()=>{
- const provider=read('components/LocaleProvider.tsx');
- const picker=read('components/LanguageSwitcher.tsx');
- const css=read('app/i18n.css');
- const cases=read('components/CaseStudy.tsx');
- for(const country of ['gb','ir','sa','it','de','fr','cn','ru']){
-  assert.ok(provider.includes("icon:'/flags/"+country+".svg'"));
-  assert.ok(fs.statSync(path.join(root,'public/flags',country+'.svg')).size>150);
- }
- assert.ok(fs.existsSync(path.join(root,'public/flags/LICENSE.txt')));
- assert.match(provider,/locale==='fa'\|\|locale==='ar'\?'rtl':'ltr'/);
- assert.match(picker,/src=\{selected\.icon\}/);
- assert.match(picker,/src=\{item\.icon\}/);
- assert.match(picker,/aria-label=\{item\.native\}/);
- assert.match(picker,/title=\{item\.native\}/);
- assert.doesNotMatch(picker,/selected\.short|item\.short|sx-language-native|sx-language-code/);
- assert.match(css,/position:static!important/);
- assert.match(css,/flex-flow:row nowrap!important/);
- assert.match(css,/display:flex!important/);
- assert.doesNotMatch(css,/grid-template-columns:repeat\(4/);
- assert.match(css,/white-space:normal!important/);
- assert.match(css,/overflow-wrap:anywhere!important/);
- assert.match(css,/@media\(max-height:680px\)/);
- assert.match(cases,/localized\.title|chapterCopy/);
+ const home=read('components/PortfolioExperience.tsx');
+ const greeting=read('components/MultilingualGreeting.tsx');
+ const removed=[
+  'components/LocaleProvider.tsx','components/LanguageSwitcher.tsx',
+  'data/siteTranslations.ts','data/projectTranslations.ts',
+  'data/caseTranslations.ts','data/engineeringTranslations.ts',
+  'app/i18n.css','tests/edition31-eight-languages.spec.ts',
+  'docs/EDITION31-EIGHT-LANGUAGE-LOCALIZATION.md'
+ ];
+ for(const file of removed)assert.ok(!fs.existsSync(path.join(root,file)),file+' must be absent');
+ for(const flag of ['gb','ir','sa','it','de','fr','cn','ru'])
+  assert.ok(!fs.existsSync(path.join(root,'public/flags',flag+'.svg')));
+ assert.match(layout,/<html lang="en" dir="ltr">/);
+ assert.doesNotMatch(layout,/LocaleProvider|i18n\.css/);
+ assert.doesNotMatch(home,/LanguageSwitcher|useSiteLocale|siteText/);
+ assert.match(greeting,/Hello/);
+ assert.doesNotMatch(greeting,/سلام|مرحباً|Bonjour|Ciao|Привет/);
+ assert.match(read('components/SelectedWorkIndex.tsx'),/BETWEEN_BLOCK_HOLD_MS=2000/);
+ assert.match(read('components/SelectedWorkIndex.tsx'),/LINE_DRAW_MS=500/);
 });
