@@ -478,3 +478,41 @@ test('Edition 30 types each Selected Work block before its own line and 2s readi
  assert.match(tour,/const SELECTED_WORK_HOLD_MS=2000/);
  assert.match(tour,/workFullyFramed&&workTypingFinished/);
 });
+
+test('Edition 31 translates all eight supported site languages and preserves source-linked pages',()=>{
+ const provider=read('components/LocaleProvider.tsx');
+ const selector=read('components/LanguageSwitcher.tsx');
+ const copy=read('data/siteTranslations.ts');
+ const projects=read('data/projectTranslations.ts');
+ const cases=read('data/caseTranslations.ts');
+ const engineering=read('data/engineeringTranslations.ts');
+ const home=read('components/PortfolioExperience.tsx');
+ const casePage=read('components/CaseStudy.tsx');
+ const engineeringPage=read('components/EngineeringIndex.tsx');
+ const layout=read('app/layout.tsx');
+ const css=read('app/i18n.css');
+ for(const code of ['en','fa','ar','it','de','fr','zh','ru']){
+  assert.ok(provider.includes("code:'"+code+"'"),'picker language missing: '+code);
+  assert.ok(copy.includes(' '+code+':{'),'homepage translation missing: '+code);
+  if(code!=='en'){
+   assert.ok(projects.includes(' '+code+':{'),'project translation missing: '+code);
+   assert.ok(cases.includes(' '+code+':{'),'case translation missing: '+code);
+   assert.ok(engineering.includes(' '+code+':{'),'engineering translation missing: '+code);
+  }
+ }
+ assert.ok(provider.includes('localStorage.setItem(STORAGE_KEY,locale)'));
+ assert.ok(provider.includes('document.documentElement.lang=locale'));
+ assert.ok(provider.includes('document.documentElement.dir=directionFor(locale)'));
+ assert.ok(layout.includes('<LocaleProvider>{children}</LocaleProvider>'));
+ assert.ok(layout.includes("import './i18n.css';"));
+ assert.ok(home.includes('<LanguageSwitcher/>'));
+ assert.ok(casePage.includes('<LanguageSwitcher/>'));
+ assert.ok(engineeringPage.includes('<LanguageSwitcher/>'));
+ assert.ok(selector.includes('aria-pressed={locale===item.code}'));
+ assert.ok(home.includes('text={t.aboutTitle}'));
+ assert.ok(casePage.includes('caseText(locale,id)'));
+ assert.ok(engineeringPage.includes('localizeEngineering(locale,entry)'));
+ assert.ok(css.includes('html[dir=rtl]'));
+ assert.ok(css.includes('html[lang=zh]'));
+ assert.ok(css.includes('prefers-reduced-motion:reduce'));
+});
