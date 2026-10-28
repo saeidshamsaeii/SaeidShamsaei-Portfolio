@@ -38,6 +38,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   const host=root.current;if(!host)return;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   const onIntro=Boolean(host.closest('#intro'));
+  const horizontalChapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
   const started=performance.now();
   let raf=0;
   let layoutCache=new WeakMap<HTMLElement,HTMLElement[][]>();
@@ -197,6 +198,13 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    }
   },{rootMargin:'200px 0px 200px 0px',threshold:0});
   observer.observe(host);
+  // Unlike IntersectionObserver, this synchronizes all three panels,
+  // including those outside the horizontal viewport. On a backwards move
+  // their future text is reset BEFORE the rail's next animation frame.
+  // Synchronous updates avoid a one-frame flash of previously read text.
+  if(horizontalChapter){
+   horizontalChapter.addEventListener('sx-horizontal-progress',update);
+  }
   const sizing=new ResizeObserver(invalidate);
   sizing.observe(host);
   const onMotion=()=>reduced.matches?clear():request();
@@ -205,6 +213,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   if(reduced.matches)clear();else request();
   return()=>{
    observer.disconnect();sizing.disconnect();
+   horizontalChapter?.removeEventListener('sx-horizontal-progress',update);
    window.removeEventListener('scroll',request);
    window.removeEventListener('resize',invalidate);
    reduced.removeEventListener('change',onMotion);
