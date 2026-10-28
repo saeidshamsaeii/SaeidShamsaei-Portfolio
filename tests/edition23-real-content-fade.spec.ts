@@ -9,10 +9,10 @@ test('the opening photo softly blurs and fades to black at its bottom without a 
   const gradient=getComputedStyle(el,'::after');
   const image=getComputedStyle(el.querySelector('img')!);
   return {
-   backdrop:blurred.backdropFilter||blurred.webkitBackdropFilter,
-   mask:blurred.maskImage||blurred.webkitMaskImage,
+   backdrop:blurred.backdropFilter||blurred.getPropertyValue('-webkit-backdrop-filter'),
+   mask:blurred.maskImage||blurred.getPropertyValue('-webkit-mask-image'),
    grad:gradient.backgroundImage,
-   imageMask:image.maskImage||image.webkitMaskImage,
+   imageMask:image.maskImage||image.getPropertyValue('-webkit-mask-image'),
    introBorder:getComputedStyle(document.querySelector('#intro')!).borderBottomWidth,
    nextBorder:getComputedStyle(document.querySelector('#top')!).borderTopWidth
   };
