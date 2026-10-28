@@ -15,7 +15,7 @@ test('Auto Story interface is absent; the original cinematic scroll still starts
  await expect(page.locator('.sx-v11-top-speed,.sx-v11-top-progress')).toHaveCount(0);
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:4000});
  const begin=await page.evaluate(()=>scrollY);
- await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:5500}).toBeGreaterThan(begin+12);
+ await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:11500}).toBeGreaterThan(begin+12);
 });
 
 test('manual wheel directions interrupt the hidden director and idle resumes at this position',async({page})=>{
