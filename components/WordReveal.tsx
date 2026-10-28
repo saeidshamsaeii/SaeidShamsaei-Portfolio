@@ -4,25 +4,17 @@ import {useEffect,useMemo,useRef} from 'react';
 type Tag='p'|'h1'|'h2'|'h3'|'span'|'small'|'strong';
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 
-// Shared section-level clock. Without this, a large wheel step could jump
-// from paragraph one to paragraph three in a single frame, making unrelated
-// lines appear at the same moment. The clock advances at a readable bounded
-// rate, and reverse scrolling rewinds immediately.
-const sectionClocks=new WeakMap<HTMLElement,{position:number;at:number}>();
-function pacedSection(container:HTMLElement,goal:number,lineCount:number){
- const now=performance.now(),previous=sectionClocks.get(container);
- if(!previous){
-  const entry={position:0,at:now};
-  sectionClocks.set(container,entry);
-  return {value:0,pending:goal>.001};
- }
- const elapsed=Math.min(140,Math.max(0,now-previous.at))/1000;
- const linesPerSecond=4.5;
- const rate=Math.max(.34,Math.min(1.8,linesPerSecond/Math.max(1,lineCount)));
- const next=goal<previous.position?goal:Math.min(goal,previous.position+rate*elapsed);
- previous.position=next;
- previous.at=now;
- return {value:next,pending:goal-next>.001};
+/**
+ * Centerline contract: the actual rendered block reaches 100% disclosure
+ * when its visual midpoint crosses the viewport's vertical midpoint.
+ * This geometric clock cannot fall behind long case studies or the page tail.
+ */
+function centerlineProgress(element:HTMLElement){
+ const rect=element.getBoundingClientRect();
+ const viewport=Math.max(1,window.innerHeight);
+ const begin=viewport*.88;
+ const complete=viewport*.50-rect.height*.50;
+ return clamp((begin-rect.top)/Math.max(1,begin-complete));
 }
 
 /**
@@ -103,22 +95,34 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    }
   };
 
-  // One scroll clock across a heading and ALL its paragraphs. A block's
-  // window of time is proportional to its actual rendered line count.
-  let pending=false;
+  // A section's headings and paragraphs share a single ordering, but
+  // the target is based on EACH block's position. A tall case chapter must
+  // not leave its final paragraphs unwritten as they pass the centerline.
+  const blocksFor=(container:HTMLElement)=>Array.from(
+   container.querySelectorAll<HTMLElement>('.sx-word-reveal')
+  ).filter(element=>element.getClientRects().length>0);
   const grouped=(container:HTMLElement,local:number)=>{
-   const blocks=Array.from(container.querySelectorAll<HTMLElement>('.sx-word-reveal'))
-    .filter(element=>element.getClientRects().length>0);
+   const blocks=blocksFor(container);
    if(!blocks.length)return clamp(local);
    const sizes=blocks.map(element=>Math.max(1,measureLines(element).length));
    const self=blocks.indexOf(host);
    if(self<0)return clamp(local);
    const total=Math.max(1,sizes.reduce((a,b)=>a+b,0));
-   const goal=clamp(local);
-   const result=pacedSection(container,goal,total);
-   pending=result.pending;
    const before=sizes.slice(0,self).reduce((a,b)=>a+b,0);
-   return clamp((result.value*total-before)/sizes[self]);
+   return clamp((clamp(local)*total-before)/sizes[self]);
+  };
+  const viewportGroup=(container:HTMLElement)=>{
+   const blocks=blocksFor(container);
+   if(!blocks.length)return centerlineProgress(host);
+   const sizes=blocks.map(element=>Math.max(1,measureLines(element).length));
+   const total=Math.max(1,sizes.reduce((a,b)=>a+b,0));
+   let before=0,goal=0;
+   for(let i=0;i<blocks.length;i++){
+    const progress=centerlineProgress(blocks[i]);
+    goal=Math.max(goal,(before+progress*sizes[i])/total);
+    before+=sizes[i];
+   }
+   return grouped(container,goal);
   };
   const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const update=()=>{
@@ -157,17 +161,10 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
       '.sx-v18-about-inner,.sx-v18-index-heading,.sx-v18-index-entry,'+
       '#contact,.sx-v14-editorial-copy,.sx-v14-ending-inner,.sx-v18-work-intro'
      );
-     const rect=(group||host).getBoundingClientRect();
-     const length=Math.max(1,rect.height+window.innerHeight*.56);
-     const local=clamp((window.innerHeight*.83-rect.top)/length);
-     progress=group?grouped(group,local):local;
+     progress=group?viewportGroup(group):centerlineProgress(host);
     }
    }
    render(progress);
-   if(pending){
-    pending=false;
-    request();
-   }
   };
   const invalidate=()=>{
    layoutCache=new WeakMap<HTMLElement,HTMLElement[][]>();
@@ -181,8 +178,10 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    }else{
     window.removeEventListener('scroll',request);
     window.removeEventListener('resize',invalidate);
-    // Preserve the scroll-derived stage, never force all later paragraphs
-    // visible at once just because this paragraph leaves the viewport.
+    // If a text block is already above the centerline, complete it even
+    // after a very fast swipe moved it outside the observer's root.
+    if(!onIntro&&!host.closest('[data-horizontal-chapter]')&&
+       host.getBoundingClientRect().bottom<=window.innerHeight*.5)render(1);
    }
   },{rootMargin:'200px 0px 200px 0px',threshold:0});
   observer.observe(host);
