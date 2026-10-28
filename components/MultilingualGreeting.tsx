@@ -47,8 +47,14 @@ export function MultilingualGreeting({onComplete}:{onComplete:()=>void}){
  const greeting=greetings[index];
  return <div className={'sx-v18-loader'+(leaving?' is-leaving':'')}
   role="status" aria-label="Welcome" aria-live="off" data-greeting-index={index}>
-  <span className="sx-v18-loader-word" key={greeting.lang}
-   lang={greeting.lang} dir={greeting.dir}>{greeting.text}</span>
+  <span className={'sx-v18-loader-word'+(index===0?' sx-v19-hello-ltr':'')} key={greeting.lang}
+   lang={greeting.lang} dir={greeting.dir}>
+   {index===0
+    ? <span className="sx-v19-hello-content" dir="ltr" aria-label="Hello...">
+       <span aria-hidden="true">Hello</span><span className="sx-v19-hello-dots" aria-hidden="true">...</span>
+      </span>
+    : greeting.text}
+  </span>
   <span className="sr-only">Welcome to Saeid Shamsaei's portfolio.</span>
  </div>;
 }
