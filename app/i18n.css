@@ -207,6 +207,15 @@ html:not([lang=en]) .sx-ei :is(.sx-ei-project,.sx-ei-main,.sx-ei-results){
   font-size:clamp(20px,5.5vw,29px)!important;
  }
 }
+/* Actual measured overflow, not a language/viewport guess. Preserve all
+   lines of the directory if any localized title grows beyond the frame. */
+html .sx-v18-site #work-index.sx-v18-index[data-work-oversize="true"]{
+ height:auto!important;min-height:100svh!important;
+ overflow:visible!important;grid-template-rows:auto auto!important;
+}
+html .sx-v18-site #work-index[data-work-oversize="true"] .sx-v18-index-rows{
+ grid-template-rows:repeat(4,minmax(min-content,auto))!important;
+}
 /* A one-viewport directory is only feasible when all five translated
    sections physically fit. On shorter screens allow natural document flow. */
 @media(max-height:680px){
