@@ -31,6 +31,7 @@ test('Selected Work presents four complete linked rows in one viewport at standa
 });
 
 test('Selected Work types title and projects in one slower ordered sequence',async({page})=>{
+ test.setTimeout(60000);
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  await page.keyboard.press('Escape');
@@ -42,7 +43,7 @@ test('Selected Work types title and projects in one slower ordered sequence',asy
  await expect(section.locator('.sx-v18-index-entry').last().locator('.sx-word-reveal').last())
   .toHaveAttribute('data-reveal-complete','false');
  await expect.poll(()=>section.locator('.sx-word-reveal[data-reveal-complete="true"]').count(),
-  {timeout:12000}).toBe(9);
+  {timeout:36000}).toBe(9);
 });
 
 test('portrait opening finishes typing and holds completely still for two seconds',async({page})=>{
@@ -70,6 +71,7 @@ test('mobile portrait hold occurs after scrolling to the stacked readable copy',
 });
 
 test('black Selected Work freezes only AFTER all nine word blocks finish and fit the viewport',async({page})=>{
+ test.setTimeout(65000);
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
@@ -81,7 +83,7 @@ test('black Selected Work freezes only AFTER all nine word blocks finish and fit
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','manual');
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:6500});
  const html=page.locator('html');
- await expect(html).toHaveAttribute('data-portfolio-tour-hold','selected-work',{timeout:25000});
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','selected-work',{timeout:47000});
 
  // No partially typed title, project name or description may initiate hold.
  await expect(section.locator('.sx-word-reveal')).toHaveCount(9);
@@ -146,4 +148,43 @@ test('Selected Work exit movement is disabled for reduced-motion readers',async(
  }));
  expect(copy.opacity).toBe('1');
  expect(copy.transform).toBe('none');
+});
+
+test('work rules draw one at a time and next block waits until predecessor hold finishes',async({page})=>{
+ test.setTimeout(65000);
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await page.keyboard.press('Escape');
+ await page.locator('#work-index').evaluate(node=>
+  node.scrollIntoView({block:'start',behavior:'instant'})
+ );
+ const section=page.locator('#work-index');
+ const blocks=section.locator('[data-work-stage]');
+ await expect(blocks).toHaveCount(5);
+ await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','typing',{timeout:5000});
+ await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','pending');
+ expect(Number(await blocks.nth(1).evaluate(e=>e.style.getPropertyValue('--sx-work-rule')||'0'))).toBe(0);
+ await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','line',{timeout:6500});
+ await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','pending');
+ await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','holding',{timeout:2500});
+ const pauseStart=await section.evaluate(el=>Number(el.dataset.workStageIndex));
+ expect(pauseStart).toBe(0);
+ await page.waitForTimeout(750);
+ await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','pending');
+ await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','typing',{timeout:4000});
+ const firstRule=await blocks.nth(0).evaluate(el=>el.style.getPropertyValue('--sx-work-rule'));
+ expect(Number(firstRule)).toBe(1);
+ await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','complete');
+ for(let index=1;index<5;index++){
+  await expect(blocks.nth(index)).toHaveAttribute('data-work-stage-state','line',{timeout:6500});
+  if(index<4){
+   await expect(blocks.nth(index+1)).toHaveAttribute('data-work-stage-state','pending');
+   await expect(blocks.nth(index)).toHaveAttribute('data-work-stage-state','holding',{timeout:2000});
+   await page.waitForTimeout(700);
+   await expect(blocks.nth(index+1)).toHaveAttribute('data-work-stage-state','pending');
+   await expect(blocks.nth(index+1)).toHaveAttribute('data-work-stage-state','typing',{timeout:5000});
+  }
+ }
+ await expect.poll(()=>section.getAttribute('data-work-reveal-progress'),{timeout:3500}).toBe('1');
+ await expect(section.locator('[data-work-stage-state="complete"]')).toHaveCount(5);
 });
