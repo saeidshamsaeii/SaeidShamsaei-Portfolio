@@ -1,13 +1,11 @@
 'use client';
 import {useEffect,useState} from 'react';
 
-/** Owner-requested greeting sequence. Starts in Persian and ends in Italian.
- * Real translations; language and direction are explicit for screen readers.
- * Motion is disabled in OS reduced-motion mode.
- */
+/** Hello... leads, with a short deliberate beat; other greetings pass quickly.
+ * RTL languages use their true script and language direction. */
 const greetings=[
+ {text:'Hello...',lang:'en',dir:'ltr'},
  {text:'سلام',lang:'fa',dir:'rtl'},
- {text:'Hello',lang:'en',dir:'ltr'},
  {text:'مرحباً',lang:'ar',dir:'rtl'},
  {text:'こんにちは',lang:'ja',dir:'ltr'},
  {text:'Привет',lang:'ru',dir:'ltr'},
@@ -24,30 +22,26 @@ export function MultilingualGreeting({onComplete}:{onComplete:()=>void}){
  const [index,setIndex]=useState(0);
  const [leaving,setLeaving]=useState(false);
  useEffect(()=>{
-  const previous=document.documentElement.style.overflow;
+  const oldOverflow=document.documentElement.style.overflow;
   document.documentElement.style.overflow='hidden';
-  return()=>{document.documentElement.style.overflow=previous;};
+  return()=>{document.documentElement.style.overflow=oldOverflow;};
  },[]);
  useEffect(()=>{
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduced){
-   // Do not trap readers with a long animated overlay.
-   const timer=window.setTimeout(onComplete,450);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+   const timer=window.setTimeout(onComplete,420);
    return()=>window.clearTimeout(timer);
   }
-  let i=0,completed=false;
-  const interval=window.setInterval(()=>{
-   i+=1;
-   if(i>=greetings.length){
-    window.clearInterval(interval);
-    if(!completed){completed=true;setLeaving(true);}
-   }else setIndex(i);
-  },240);
-  return()=>window.clearInterval(interval);
- },[onComplete]);
+  // First word stays a little longer; subsequent greetings change quickly.
+  const duration=index===0?600:125;
+  const timer=window.setTimeout(()=>{
+   if(index===greetings.length-1)setLeaving(true);
+   else setIndex(n=>n+1);
+  },duration);
+  return()=>window.clearTimeout(timer);
+ },[index,onComplete]);
  useEffect(()=>{
   if(!leaving)return;
-  const timer=window.setTimeout(onComplete,380);
+  const timer=window.setTimeout(onComplete,260);
   return()=>window.clearTimeout(timer);
  },[leaving,onComplete]);
  const greeting=greetings[index];
