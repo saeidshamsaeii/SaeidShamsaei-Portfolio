@@ -62,6 +62,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let playback:Mode='playing';
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, touchActive=false, disposed=false;
+  let openingAlreadyPresented=false;
   const setPlayback=(next:Mode)=>{
    if(playback===next)return;
    playback=next;
@@ -76,6 +77,13 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.last=0;
    state.start=from;
    state.end=target(index);
+   // Show the real name and adjacent introductory sentence before the
+   // camera starts moving. This is a one-time first-screen hold, not a
+   // slow segment speed or a recurring stop between chapters.
+   if(index===0&&!openingAlreadyPresented&&window.scrollY<12){
+    state.elapsed=-2350;
+    openingAlreadyPresented=true;
+   }
    // Use actual travel distance to prevent one section racing while the
    // next crawls. Keep a bounded minimum for short reading beats.
    const distance=Math.abs(state.end-state.start);
