@@ -19,7 +19,9 @@ export function SignatureOpening({ready=false}:{ready?:boolean}){
    <h1 id="sx-v16-name">
     <WordReveal as="span" text={'SAEID\nSHAMSAEI'} mode="lines" ready={ready}/>
    </h1>
-   <WordReveal as="p" className="sx-v18-cover-lead" text={'Design.\nCode.\nArchitecture.'} mode="lines" ready={ready}/>
+   <WordReveal as="p" className="sx-v18-cover-lead"
+    text={'I make complex digital systems\nfeel considered, useful and human.'}
+    mode="lines" ready={ready}/>
    <div className="sx-v18-cover-links">
     <a href="#work-index">View work <span aria-hidden="true">↗</span></a>
     <Link href="/engineering/">Engineering <span aria-hidden="true">↗</span></Link>
