@@ -100,11 +100,30 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const isHorizontalFrame=stops.map(stop=>
    stop.element.dataset.tourHold==='horizontal-frame'
   );
+  // While the automatic director reads the current block, the NEXT block
+  // is a blank canvas: its copy cannot peek into the viewport below.
+  // This is removed immediately for manual scrolling and reduced motion.
+  let awaitingNext:HTMLElement|null=null;
+  const clearAwaiting=()=>{
+   if(awaitingNext)delete awaitingNext.dataset.tourAwaiting;
+   awaitingNext=null;
+  };
+  const reserveNext=(index:number)=>{
+   clearAwaiting();
+   const next=stops[index+1]?.element;
+   if(next){
+    awaitingNext=next;
+    awaitingNext.dataset.tourAwaiting='true';
+   }
+  };
   const setPlayback=(next:Mode)=>{
    if(playback===next)return;
    playback=next;
    root.dataset.portfolioTour=next;
-   if(next!=='playing')delete root.dataset.portfolioTourHold;
+   if(next!=='playing'){
+    delete root.dataset.portfolioTourHold;
+    clearAwaiting();
+   }
   };
   const maxScroll=()=>Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
   const target=(index:number)=>{
@@ -127,6 +146,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
 
   const goTo=(index:number,from=window.scrollY)=>{
    state.index=index;
+   reserveNext(index);
    state.elapsed=0;
    state.last=0;
    state.arrivedAt=0;
@@ -285,6 +305,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    disposed=true;clearIdle();cancelAnimationFrame(raf);
    delete root.dataset.portfolioTour;
    delete root.dataset.portfolioTourHold;
+   clearAwaiting();
    window.removeEventListener('wheel',manualInput);
    window.removeEventListener('touchstart',onTouchStart);
    window.removeEventListener('touchmove',manualInput);
