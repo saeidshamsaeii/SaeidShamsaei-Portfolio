@@ -129,7 +129,8 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     }else{
      const group=host.closest<HTMLElement>(
       '.sx-v10-case-section,.sx-v10-case-cover,.sx-v10-case-evidence,.sx-v10-case-next,'+
-      '.sx-v18-about-inner,.sx-v14-editorial-copy,.sx-v14-ending-inner,.sx-v18-work-intro'
+      '.sx-v18-about-inner,.sx-v18-index-heading,.sx-v18-index-entry,'+
+      '#contact,.sx-v14-editorial-copy,.sx-v14-ending-inner,.sx-v18-work-intro'
      );
      const rect=(group||host).getBoundingClientRect();
      const length=Math.max(1,rect.height+window.innerHeight*.56);
