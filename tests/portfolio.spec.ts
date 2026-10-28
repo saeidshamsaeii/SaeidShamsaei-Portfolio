@@ -8,15 +8,15 @@ test('full portfolio pins four image-free, five distinct editorial horizontal sc
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
- await expect(page.locator('#intro .sx-v18-portrait-frame')).toHaveCount(1);
- await expect(page.locator('#intro .sx-v18-portrait-frame img')).toHaveCSS('object-fit','contain');
+ await expect(page.locator('#intro .sx-v19-photo-background')).toHaveCount(1);
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveCSS('object-fit','cover');
  await expect(page.locator('#intro h1')).toHaveCount(1);
- await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait.webp');
  await expect(page.locator('#work-index .sx-v18-index-entry')).toHaveCount(4);
  await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
  await expect(page.locator('#top img')).toHaveCount(0);
  await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
- await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait.webp');
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
  for(const id of ids){
   const section=page.locator('#project-'+id);
@@ -80,7 +80,7 @@ test('automatic tour varies speed by scene but allows temporary manual interrupt
  await expect(tour).toBeVisible({timeout:6000});
  await expect(tour).toHaveAttribute('data-playback','playing');
  await expect(page.getByRole('button',{name:'Restart guided site tour'})).toHaveCount(0);
- await expect(tour.getByLabel('Current cinematic playback pace')).toContainText('×');
+ await expect(tour.locator('.sx-v11-top-progress,.sx-v11-top-speed')).toHaveCount(0);
  await page.mouse.wheel(0,180);
  await expect(tour).toHaveAttribute('data-playback','manual');
  await expect(tour).toHaveAttribute('data-playback','playing',{timeout:6500});
@@ -168,7 +168,7 @@ test('reduced-motion readers receive full text and no automatic movement',async(
  const style=await word.evaluate(el=>({opacity:getComputedStyle(el).opacity,transform:getComputedStyle(el).transform}));
  expect(style.opacity).toBe('1');
  expect(style.transform).toBe('none');
- await expect(page.locator('#intro .sx-v16-cover-image img')).toBeVisible();
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toBeVisible();
 });
 
 test('public contact links and original owner portrait remain intact',async({page})=>{
@@ -181,5 +181,5 @@ test('public contact links and original owner portrait remain intact',async({pag
   'https://www.linkedin.com/in/saeidshamsaei/',
   'https://t.me/sd_shms'
  ]);
- await expect(page.locator('#intro .sx-v16-cover-image img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait.webp');
 });
