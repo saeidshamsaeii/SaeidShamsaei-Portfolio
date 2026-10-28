@@ -517,29 +517,28 @@ test('Edition 31 translates all eight supported site languages and preserves sou
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
 });
 
-test('Edition 32 uses flag-only language controls with the requested display direction',()=>{
+test('Edition 33: locally downloaded SVG flags form one inline row and natural reading directions',()=>{
  const provider=read('components/LocaleProvider.tsx');
  const picker=read('components/LanguageSwitcher.tsx');
  const css=read('app/i18n.css');
  const cases=read('components/CaseStudy.tsx');
- assert.match(provider,/flag:'🇬🇧'/);
- assert.match(provider,/flag:'🇮🇷'/);
- assert.match(provider,/flag:'🇸🇦'/);
- assert.match(provider,/flag:'🇮🇹'/);
- assert.match(provider,/flag:'🇩🇪'/);
- assert.match(provider,/flag:'🇫🇷'/);
- assert.match(provider,/flag:'🇨🇳'/);
- assert.match(provider,/flag:'🇷🇺'/);
- assert.match(provider,/locale==='fa'\|\|locale==='ar'\?'ltr':'rtl'/);
- assert.match(picker,/selected\.flag/);
- assert.match(picker,/item\.flag/);
+ for(const country of ['gb','ir','sa','it','de','fr','cn','ru']){
+  assert.ok(provider.includes("icon:'/flags/"+country+".svg'"));
+  assert.ok(fs.statSync(path.join(root,'public/flags',country+'.svg')).size>150);
+ }
+ assert.ok(fs.existsSync(path.join(root,'public/flags/LICENSE.txt')));
+ assert.match(provider,/locale==='fa'\|\|locale==='ar'\?'rtl':'ltr'/);
+ assert.match(picker,/src=\{selected\.icon\}/);
+ assert.match(picker,/src=\{item\.icon\}/);
  assert.match(picker,/aria-label=\{item\.native\}/);
  assert.match(picker,/title=\{item\.native\}/);
  assert.doesNotMatch(picker,/selected\.short|item\.short|sx-language-native|sx-language-code/);
- assert.match(css,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)!important/);
- assert.match(css,/\.sx-language-switcher \.sx-language-flag/);
- assert.match(css,/white-space:pre-wrap!important/);
+ assert.match(css,/position:static!important/);
+ assert.match(css,/flex-flow:row nowrap!important/);
+ assert.match(css,/display:flex!important/);
+ assert.doesNotMatch(css,/grid-template-columns:repeat\(4/);
+ assert.match(css,/white-space:normal!important/);
  assert.match(css,/overflow-wrap:anywhere!important/);
- assert.match(css,/@media\(max-height:620px\)/);
- assert.match(cases,/Localized|localized\.title|chapterCopy/);
+ assert.match(css,/@media\(max-height:680px\)/);
+ assert.match(cases,/localized\.title|chapterCopy/);
 });
