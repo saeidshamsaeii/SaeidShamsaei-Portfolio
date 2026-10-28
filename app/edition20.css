@@ -1,0 +1,115 @@
+/* Edition 20: visual repair and real reading chronology.
+ * Keep the true #000 / #fff palette and avoid one more decorative layer.
+ * The Auto Story UI is not rendered; its native scroll director remains.
+ */
+
+/* Center the actual navigation labels, independent of the left-side brand.
+ * The unused right grid column balances the left brand track. */
+.sx-v18-site .sx-header.sx-v18-header {
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ align-items:center!important;
+ justify-content:normal!important;
+ column-gap:clamp(15px,3vw,48px)!important;
+ background:#000!important;
+}
+.sx-v18-site .sx-v18-header .sx-v18-brand{
+ grid-column:1!important;
+ justify-self:start;
+}
+.sx-v18-site .sx-v18-header nav{
+ grid-column:2!important;
+ justify-self:center!important;
+ margin:0!important;
+ width:max-content;
+ gap:clamp(15px,2.2vw,36px)!important;
+ justify-content:center!important;
+ text-align:center;
+}
+.sx-v18-site .sx-v18-header nav a{color:#fff!important;}
+
+/* Reduce portrait scale without replacing the original owner photo.
+ * A dark fade makes the zoomed-out image blend with the background,
+ * rather than exposing a rectangle or returning to a bordered card.
+ * Raise the photographic subject through a high object-position. */
+.sx-v18-site .sx-v19-photo-background{
+ background:#000!important;
+ overflow:hidden!important;
+}
+.sx-v18-site .sx-v19-photo-background img{
+ object-fit:contain!important;
+ object-position:50% 0%!important;
+ transform:translateY(-1.2%) scale(.91)!important;
+ transform-origin:center top!important;
+ filter:grayscale(1) contrast(1.12) brightness(1.04)!important;
+ -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 10%,#000 96%,transparent 100%);
+ mask-image:linear-gradient(to right,transparent 0%,#000 10%,#000 96%,transparent 100%);
+}
+.sx-v18-site .sx-v19-cover-content{
+ background:#000!important;
+}
+.sx-v18-site .sx-v19-cover h1,
+.sx-v18-site .sx-v19-cover .sx-v18-cover-lead{
+ color:#fff!important;
+}
+
+/* Every WordReveal line is an authored semantic delimiter. Every natural
+ * wrap within a delimiter is measured and revealed separately in JS.
+ * Never pre-display upcoming text as semi-transparent ghost copy. */
+.sx-v20-ordered .sx-v18-reveal-line{
+ opacity:1!important;
+ clip-path:none!important;
+ transform:none!important;
+ overflow:visible!important;
+ white-space:normal!important;
+}
+.sx-v20-ordered .sx-v18-reveal-line [data-reveal-word]{
+ display:inline-block!important;
+ white-space:pre!important;
+ transform:none!important;
+ transition:clip-path .085s linear,opacity .085s linear!important;
+}
+@media (scripting:enabled) and (prefers-reduced-motion:no-preference){
+ .sx-v20-ordered:not([data-motion="off"]) [data-reveal-word]{
+  opacity:0;clip-path:inset(0 100% 0 0);
+ }
+}
+@media (scripting:none){
+ .sx-v20-ordered [data-reveal-word]{opacity:1!important;clip-path:none!important;}
+}
+@media (prefers-reduced-motion:reduce){
+ .sx-v20-ordered [data-reveal-word]{opacity:1!important;clip-path:none!important;transition:none!important;}
+}
+
+/* The hero name and its short phrase are high-contrast, immediately
+ * animated on arrival after the greeting, not delayed until deep scroll. */
+.sx-v18-site .sx-v19-cover h1 .sx-v18-reveal-line{max-width:100%!important;}
+.sx-v18-site .sx-v19-cover .sx-v18-cover-lead .sx-v18-reveal-line{min-height:1.2em;}
+
+/* Mobile: center the menu. Image fits at 90% scale and remains higher,
+ * while the copy stays in a separate solid-black field below. */
+@media(max-width:760px){
+ .sx-v18-site .sx-header.sx-v18-header{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px 15px!important;
+  row-gap:15px!important;
+ }
+ .sx-v18-site .sx-v18-header .sx-v18-brand{align-self:center!important;text-align:center;}
+ .sx-v18-site .sx-v18-header nav{
+  align-self:center!important;
+  justify-content:center!important;
+  width:100%!important;max-width:100%;
+  flex-wrap:wrap!important;
+  text-align:center!important;
+  gap:10px clamp(13px,4vw,25px)!important;
+ }
+ .sx-v18-site .sx-v19-photo-background img{
+  transform:translateY(-1%) scale(.90)!important;
+  object-position:center top!important;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 87%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0%,#000 87%,transparent 100%);
+ }
+}
