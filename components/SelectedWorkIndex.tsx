@@ -3,6 +3,9 @@ import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
 import {WordReveal} from '@/components/WordReveal';
 import {projects,type ProjectId} from '@/data/portfolio';
+import {projectText} from '@/data/projectTranslations';
+import {siteText} from '@/data/siteTranslations';
+import {useSiteLocale} from '@/components/LocaleProvider';
 
 const keywords:Record<ProjectId,string>={
  gartal:'Service pages · project requests',
@@ -11,6 +14,8 @@ const keywords:Record<ProjectId,string>={
  petiwoo:'Product search · cart · checkout'
 };
 export function SelectedWorkIndex(){
+ const {locale}=useSiteLocale();
+ const t=siteText(locale);
  const [active,setActive]=useState<ProjectId>('gartal');
  const section=useRef<HTMLElement>(null);
  // Edition 30: five strictly ordered beats. The heading and then each
@@ -144,8 +149,8 @@ export function SelectedWorkIndex(){
   aria-labelledby="sx-v16-work-title" data-active-project={active}
   data-tour-stop data-tour-label="Selected work" data-tour-duration="10" data-tour-pace=".92">
   <div className="sx-v18-index-heading" data-work-stage="0" data-work-stage-state="pending">
-   <WordReveal as="h2" id="sx-v16-work-title" text="Selected work."/>
-   <span>04 projects</span>
+   <WordReveal as="h2" id="sx-v16-work-title" text={t.selectedWork}/>
+   <span>{t.projectsCount}</span>
   </div>
   <div className="sx-v18-index-rows">
    {projects.map((project,index)=><div className="sx-v18-index-entry" key={project.id}
@@ -156,12 +161,12 @@ export function SelectedWorkIndex(){
     <a href={'#project-'+project.id} className="sx-v16-index-row"
      aria-label={'Discover '+project.brand+' immersive story'}>
      <WordReveal as="strong" text={project.brand}/>
-     <WordReveal as="span" text={keywords[project.id]}/>
+     <WordReveal as="span" text={locale==='en'?keywords[project.id]:projectText(locale,project.id).keyword}/>
      <span aria-hidden="true">↗</span>
     </a>
     <div className="sx-v18-index-direct">
-     <Link href={'/work/'+project.id+'/'}>Case study</Link>
-     <Link href={'/engineering/#evidence-'+project.id}>Source ↗</Link>
+     <Link href={'/work/'+project.id+'/'}>{t.caseStudy}</Link>
+     <Link href={'/engineering/#evidence-'+project.id}>{t.source} ↗</Link>
     </div>
    </div>)}
   </div>
