@@ -52,6 +52,16 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
    track.style.transform='translate3d('+(-offset*window.innerWidth)+'px,0,0)';
    node.dataset.frameProgress=String(scaled);
    node.dataset.activeFrame=String(position);
+   // Future frames must remain completely unwritten while an earlier frame
+   // is held. Rewind their visual text on backwards navigation as well.
+   for(const panel of Array.from(node.querySelectorAll<HTMLElement>('[data-frame-index]'))){
+    const panelIndex=Number(panel.dataset.frameIndex||'0');
+    const state=panelIndex>position?'upcoming':panelIndex===position?'active':'past';
+    if(panel.dataset.frameState!==state)panel.dataset.frameState=state;
+   }
+   // WordReveal listens even for horizontally off-screen frames so their
+   // opacity is reset when the reader returns to an earlier section.
+   node.dispatchEvent(new Event('sx-horizontal-progress'));
   };
   const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const measure=()=>{
@@ -83,11 +93,11 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
 
  return <section id={'project-'+project.id} ref={section}
   className={'sx-v10-chapter sx-v10-chapter--'+project.id+' sx-v11-horizontal-chapter sx-v14-story'}
-  data-horizontal-chapter="" data-frame-count={count} data-frame-progress="0"
+  data-horizontal-chapter="" data-frame-count={count} data-frame-progress="0" data-active-frame="0"
   aria-labelledby={'title-'+project.id}>
   <div className="sx-v11-sticky">
    <div className="sx-v11-rail" ref={rail}>
-    <article className="sx-v11-slide sx-v14-scene sx-v14-opening" data-frame-index="0"
+    <article className="sx-v11-slide sx-v14-scene sx-v14-opening" data-frame-index="0" data-frame-state="active"
      data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
      <div className="sx-v14-opening-inner">
       <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
@@ -99,14 +109,14 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
     </article>
     <article id={'project-'+project.id+'-origin'}
      className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+lead.mode}
-     data-frame-index="1" data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / core idea'}
+     data-frame-index="1" data-frame-state="upcoming" data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / core idea'}
      data-tour-duration={String(lead.duration)} data-tour-pace={String(lead.pace)}>
      <div className="sx-v14-editorial-copy">
       <WordReveal as="h3" text={lead.headline}/>
       <WordReveal as="p" text={lead.copy}/>
      </div>
     </article>
-    <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="2"
+    <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="2" data-frame-state="upcoming"
      data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
      <div className="sx-v14-ending-inner"><WordReveal as="h3" text={story.ending}/>
       <div className="sx-v14-ending-actions">
