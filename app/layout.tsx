@@ -23,6 +23,8 @@ import './edition16.css';
 import './edition18.css';
 import './edition19.css';
 import './edition20.css';
+import './i18n.css';
+import {LocaleProvider} from '@/components/LocaleProvider';
 
 const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL;
 const validUrl=typeof configuredUrl==='string'&&/^https:\/\/[^/]+\.[^/]+/.test(configuredUrl)&&!configuredUrl.includes('example.invalid');
@@ -54,6 +56,6 @@ export default function RootLayout({children}:{children:React.ReactNode}){
    <link rel="preload" href="/assets/hires/portrait.webp" as="image" type="image/webp"/>
    {ready&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(identity).replace(/</g,'\\u003c')}}/>}
   </head>
-  <body>{children}</body>
+  <body><LocaleProvider>{children}</LocaleProvider></body>
  </html>;
 }
