@@ -1,84 +1,100 @@
 import {test,expect} from '@playwright/test';
 
-test('Hello... comes first, then the rest of the greeting sequence rapidly',async({page})=>{
+test('Hello... still leads and the automatic story is invisible after welcome',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const loader=page.locator('.sx-v18-loader');
  await expect(loader.locator('[lang="en"]')).toContainText('Hello...');
  await expect(loader.locator('.sx-v19-hello-content')).toHaveCSS('flex-direction','row');
  await expect(loader.locator('.sx-v19-hello-dots')).toHaveText('...');
- await expect(loader.locator('.sx-v19-hello-content')).toHaveAttribute('dir','ltr');
- await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toHaveCount(0);
  await expect(loader).toHaveCount(0,{timeout:8500});
- await expect(page.getByRole('region',{name:'Guided portfolio tour'})).toBeVisible({timeout:5000});
+ await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:5000});
 });
 
-test('original portrait is crisp full bleed, high in the background and not boxed',async({page})=>{
+test('owner photo is still crisp monochrome but subtly zoomed out',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const photograph=page.locator('#intro .sx-v19-photo-background img');
- await expect(photograph).toHaveAttribute('src','/assets/hires/portrait.webp');
- await expect(photograph).toHaveCSS('object-fit','cover');
- await expect(photograph).toHaveCSS('object-position','50% 7%');
- await expect(photograph).toHaveCSS('filter',/grayscale\(1\)/);
+ const image=page.locator('#intro .sx-v19-photo-background img');
+ await expect(image).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(image).toHaveCSS('object-fit','cover');
+ await expect(image).toHaveCSS('object-position','50% 0%');
+ await expect(image).toHaveCSS('filter',/grayscale\(1\)/);
+ await expect(image).toHaveCSS('transform',/matrix\(0\.91/);
  await expect(page.locator('#intro figure')).toHaveCount(0);
- await expect(page.locator('#intro .sx-v18-portrait-frame')).toHaveCount(0);
 });
 
-test('primary section backgrounds use exact rgb 0 or 255',async({page})=>{
+test('header labels are centrally aligned in desktop and mobile layouts',async({browser})=>{
+ for(const width of [390,768,1024,1440]){
+  const page=await browser.newPage({viewport:{width,height:844},reducedMotion:'reduce'});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const delta=await page.evaluate(()=>{
+   const nav=document.querySelector('.sx-v18-header nav')!.getBoundingClientRect();
+   return Math.abs(nav.left+nav.width/2-innerWidth/2);
+  });
+  expect(delta,'nav center at '+width).toBeLessThanOrEqual(12);
+  await page.close();
+ }
+});
+
+test('first-screen words appear after greeting, without any required scroll',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:8500});
+ const first=page.locator('#intro h1 [data-reveal-word]').first();
+ const last=page.locator('#intro h1 [data-reveal-word]').last();
+ await expect.poll(()=>first.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:4500}).toBeGreaterThan(.9);
+ await expect.poll(()=>last.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:4500}).toBeGreaterThan(.9);
+ expect(await page.evaluate(()=>scrollY)).toBeLessThan(innerHeight);
+});
+
+test('GARTAL and individual case paragraphs preserve ordered logical and real visual lines',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const chapter=page.locator('#project-gartal .sx-v14-opening');
+ await expect(chapter.locator('h2 [data-reveal-line]')).toContainText('GARTAL');
+ await expect(chapter.locator('p [data-reveal-line]')).toHaveCount(2);
+ await expect(chapter.locator('p [data-reveal-line]').first()).toContainText('A studio at the front. A platform');
+ await expect(chapter.locator('p [data-reveal-line]').last()).toContainText('underneath.');
+ await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
+ const paragraph=page.locator('.sx-v13-paragraph p.sx-v20-ordered').first();
+ expect(await paragraph.locator('[data-reveal-word]').count()).toBeGreaterThan(12);
+ expect(await paragraph.locator('.sx-word-a11y').count()).toBe(1);
+});
+
+test('dark and white section backgrounds remain exact',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const colors=await page.evaluate(()=>{
-  const bg=(s:string)=>getComputedStyle(document.querySelector(s)!).backgroundColor;
-  return {cover:bg('#intro'),index:bg('#work-index'),about:bg('#about'),
-   contact:bg('#contact')};
+  const bg=(selector:string)=>getComputedStyle(document.querySelector(selector)!).backgroundColor;
+  return {cover:bg('#intro'),work:bg('#work-index'),about:bg('#about'),contact:bg('#contact')};
  });
  expect(colors).toEqual({
-  cover:'rgb(0, 0, 0)',index:'rgb(0, 0, 0)',
+  cover:'rgb(0, 0, 0)',work:'rgb(0, 0, 0)',
   about:'rgb(255, 255, 255)',contact:'rgb(255, 255, 255)'
  });
 });
 
-test('GARTAL reveals one title, then exactly two authored signature lines',async({page})=>{
- await page.emulateMedia({reducedMotion:'reduce'});
- await page.goto('/',{waitUntil:'domcontentloaded'});
- const chapter=page.locator('#project-gartal .sx-v14-opening');
- const title=chapter.locator('h2 [data-reveal-line]');
- const lines=chapter.locator('p [data-reveal-line]');
- await expect(title).toHaveCount(1);
- await expect(title).toContainText('GARTAL');
- await expect(lines).toHaveCount(2);
- await expect(lines.first()).toContainText('A studio at the front. A platform');
- await expect(lines.last()).toContainText('underneath.');
- await expect(chapter.locator('p')).toContainText('A studio at the front. A platform');
- await expect(page.locator('#intro h1 [data-reveal-line]')).toHaveCount(2);
-});
-
-test('tour has no speed text or progress bar, while manual control is retained',async({page})=>{
+test('auto reading remains functional without a visible control bar',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:8500});
- const tour=page.getByRole('region',{name:'Guided portfolio tour'});
- await expect(tour).toBeVisible();
- await expect(tour.locator('.sx-v11-top-progress,.sx-v11-top-speed')).toHaveCount(0);
- await tour.getByRole('button',{name:'Pause tour'}).click();
- await expect(tour).toHaveAttribute('data-playback','paused');
- await tour.getByRole('button',{name:'Resume tour'}).click();
- await expect(tour).toHaveAttribute('data-playback','playing');
+ await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing');
+ await page.mouse.wheel(0,220);
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','manual');
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:6500});
 });
 
-test('mobile photo sits above copy, not beneath the text',async({browser})=>{
+test('portrait and live chapters do not expand the document on narrow viewports',async({browser})=>{
  for(const width of [320,360,390,430,768,1024,1440]){
   const page=await browser.newPage({viewport:{width,height:844},reducedMotion:'reduce'});
   await page.goto('/',{waitUntil:'domcontentloaded'});
-  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:5000});
   const geometry=await page.evaluate(()=>{
    const photo=document.querySelector('#intro .sx-v19-photo-background')!.getBoundingClientRect();
-   const name=document.querySelector('#intro h1')!.getBoundingClientRect();
-   return {overlap:photo.left<name.right&&name.left<photo.right&&
-     photo.top<name.bottom&&name.top<photo.bottom,
-    overflow:document.documentElement.scrollWidth-innerWidth};
+   const title=document.querySelector('#intro h1')!.getBoundingClientRect();
+   return {overlap:photo.left<title.right&&title.left<photo.right&&photo.top<title.bottom&&title.top<photo.bottom,
+    excess:document.documentElement.scrollWidth-innerWidth};
   });
-  expect(geometry.overlap,'portrait text overlap at '+width).toBe(false);
-  expect(geometry.overflow,'horizontal overflow at '+width).toBeLessThanOrEqual(2);
+  expect(geometry.overlap,'cover overlap at '+width).toBe(false);
+  expect(geometry.excess,'horizontal overflow at '+width).toBeLessThanOrEqual(2);
   await page.close();
  }
 });
