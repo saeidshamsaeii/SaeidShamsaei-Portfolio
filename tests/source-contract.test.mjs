@@ -349,7 +349,7 @@ test('Edition 25 holds every horizontal panel 2 seconds after its text and befor
  assert.match(director,/stop\.element\.dataset\.tourHold==='horizontal-frame'/);
  assert.match(director,/const horizontalHold=isHorizontalFrame\[state\.index\]/);
  assert.match(director,/const backgroundHold=hasBackgroundChange\[state\.index\]/);
- assert.match(director,/if\(horizontalHold\|\|backgroundHold\|\|mobileIntroHold\)/);
+ assert.match(director,/if\(horizontalHold\|\|backgroundHold\|\|mobileIntroHold\|\|selectedWorkHold\)/);
  assert.match(director,/textHasFinished\(stops\[state\.index\]\)/);
  assert.match(director,/root\.dataset\.portfolioTourHold=mobileIntroHold\?'intro-photo':/);
  assert.match(director,/horizontalHold\?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS/);
@@ -413,4 +413,22 @@ test('Edition 27 fits the entire Selected Work directory and slows every reading
  assert.match(director,/time-state\.holdStartedAt>=INTRO_PHOTO_HOLD_MS/);
  assert.match(director,/mobileIntroHold\?INTRO_PHOTO_HOLD_MS:/);
  assert.match(director,/stops\[state\.index\]\.element\.id==='work-index'/);
+});
+
+test('Edition 28 holds all nine Selected Work word blocks fully framed for two seconds',()=>{
+ const tour=read('components/GuidedTour.tsx');
+ const directory=read('components/SelectedWorkIndex.tsx');
+ const word=read('components/WordReveal.tsx');
+ assert.match(tour,/const SELECTED_WORK_HOLD_MS=2000/);
+ assert.match(tour,/if\(stop\.element\.id==='work-index'\)return top/);
+ assert.match(tour,/hasBackgroundChange\[index\]&&stop\.element\.id!=='work-index'/);
+ assert.match(tour,/const selectedWorkHold=stops\[state\.index\]\.element\.id==='work-index'/);
+ assert.match(tour,/const workTypingFinished=!selectedWorkHold/);
+ assert.match(tour,/dataset\.workRevealProgress\|\|'0'/);
+ assert.match(tour,/workFullyFramed&&workTypingFinished/);
+ assert.match(tour,/selectedWorkHold\?'selected-work'/);
+ assert.match(tour,/selectedWorkHold\?SELECTED_WORK_HOLD_MS/);
+ assert.match(directory,/const fullyFramed=rect\.height>innerHeight\+12/);
+ assert.match(directory,/autoNarrating\?!fullyFramed/);
+ assert.match(word,/!onIntro&&!workIndex&&!host\.closest/);
 });
