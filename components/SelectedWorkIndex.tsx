@@ -13,40 +13,84 @@ const keywords:Record<ProjectId,string>={
 export function SelectedWorkIndex(){
  const [active,setActive]=useState<ProjectId>('gartal');
  const section=useRef<HTMLElement>(null);
- // All four project rows fit a single screen. Their words share one
- // deliberate time-based reading clock rather than separate centerlines.
+ // Edition 30: five strictly ordered beats. The heading and then each
+ // project title/description type, its own underline draws, and a two-second
+ // hold completes BEFORE the next project is allowed to start.
+ // The last project's hold is owned by GuidedTour to avoid a double pause.
  useEffect(()=>{
   const host=section.current;
   if(!host)return;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const DURATION_MS=7200;
-  let startedAt:number|null=null,finished=false,raf=0;
+  const stages=Array.from(host.querySelectorAll<HTMLElement>('[data-work-stage]'));
+  const TITLE_TYPE_MS=2300;
+  const ROW_TYPE_MS=2600;
+  const LINE_DRAW_MS=500;
+  const BETWEEN_BLOCK_HOLD_MS=2000;
+  const stageDuration=(index:number)=>(
+   (index===0?TITLE_TYPE_MS:ROW_TYPE_MS)+LINE_DRAW_MS+
+   (index<stages.length-1?BETWEEN_BLOCK_HOLD_MS:0)
+  );
+  const TOTAL_MS=stages.reduce((sum,_,index)=>sum+stageDuration(index),0);
+  let runningElapsed=0,lastTime=0,started=false,finished=false,raf=0;
   const update=(time:number)=>{
    raf=0;
    if(reduced.matches){
+    stages.forEach(stage=>{
+     stage.dataset.workStageState='complete';
+     stage.style.setProperty('--sx-work-rule','1');
+    });
+    host.dataset.workStageIndex=String(stages.length);
+    host.dataset.workStageProgress='1';
     host.dataset.workRevealProgress='1';
     host.dispatchEvent(new Event('sx-work-progress'));
     finished=true;
     return;
    }
-   if(startedAt===null){
+   if(!started){
     const rect=host.getBoundingClientRect();
     const visible=Math.max(0,Math.min(rect.bottom,innerHeight)-Math.max(0,rect.top));
-    // Automatic narration must not type words while the directory is still
-    // sliding into view. Start only when the whole black panel is framed.
-    // Manual readers retain an early, scroll-independent reveal.
+    // Automatic narration starts only once the entire black panel is framed;
+    // manual readers can begin as soon as most of it is in view.
     const autoNarrating=document.documentElement.dataset.portfolioTour==='playing';
     const fullyFramed=rect.height>innerHeight+12||
      (rect.top>=-12&&rect.bottom<=innerHeight+12);
     if(host.hasAttribute('data-tour-awaiting')||
        (autoNarrating?!fullyFramed:
         visible<Math.min(innerHeight,rect.height)*.72))return;
-    startedAt=time;
+    started=true;
    }
-   const progress=Math.min(1,(time-startedAt)/DURATION_MS);
-   host.dataset.workRevealProgress=String(progress);
+   const delta=lastTime?Math.min(80,Math.max(0,time-lastTime)):0;
+   lastTime=time;
+   runningElapsed=Math.min(TOTAL_MS,runningElapsed+delta);
+   let local=runningElapsed;
+   let current=stages.length;
+   for(let index=0;index<stages.length;index++){
+    const duration=stageDuration(index);
+    if(local<duration){current=index;break;}
+    local-=duration;
+   }
+   const typeDuration=current===0?TITLE_TYPE_MS:ROW_TYPE_MS;
+   const typingProgress=current===stages.length?1:
+    Math.min(1,local/typeDuration);
+   host.dataset.workStageIndex=String(current);
+   host.dataset.workStageProgress=String(typingProgress);
+   for(let index=0;index<stages.length;index++){
+    const stage=stages[index];
+    const typing=index===current&&local<typeDuration;
+    const line=index===current&&local>=typeDuration&&
+     local<typeDuration+LINE_DRAW_MS;
+    const holding=index===current&&local>=typeDuration+LINE_DRAW_MS;
+    stage.dataset.workStageState=index<current?'complete':
+     index>current?'pending':typing?'typing':line?'line':'holding';
+    const draw=index<current?1:index>current?0:
+     Math.min(1,Math.max(0,(local-typeDuration)/LINE_DRAW_MS));
+    stage.style.setProperty('--sx-work-rule',String(draw));
+   }
+   host.dataset.workRevealProgress=String(runningElapsed/TOTAL_MS);
+   // WordReveal receives the current stage only. No upcoming row can type
+   // while the previous rule is drawing or the reader is on its 2s hold.
    host.dispatchEvent(new Event('sx-work-progress'));
-   if(progress<1)raf=requestAnimationFrame(update);
+   if(runningElapsed<TOTAL_MS)raf=requestAnimationFrame(update);
    else finished=true;
   };
   const request=()=>{if(!raf&&!finished)raf=requestAnimationFrame(update);};
@@ -99,12 +143,13 @@ export function SelectedWorkIndex(){
   data-work-reveal-progress="0"
   aria-labelledby="sx-v16-work-title" data-active-project={active}
   data-tour-stop data-tour-label="Selected work" data-tour-duration="10" data-tour-pace=".92">
-  <div className="sx-v18-index-heading">
+  <div className="sx-v18-index-heading" data-work-stage="0" data-work-stage-state="pending">
    <WordReveal as="h2" id="sx-v16-work-title" text="Selected work."/>
    <span>04 projects</span>
   </div>
   <div className="sx-v18-index-rows">
-   {projects.map(project=><div className="sx-v18-index-entry" key={project.id}
+   {projects.map((project,index)=><div className="sx-v18-index-entry" key={project.id}
+    data-work-stage={index+1} data-work-stage-state="pending"
     onMouseEnter={()=>setActive(project.id)}
     onFocusCapture={()=>setActive(project.id)}
     onTouchStart={()=>setActive(project.id)}>
