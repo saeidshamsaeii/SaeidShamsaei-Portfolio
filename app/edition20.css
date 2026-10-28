@@ -113,3 +113,39 @@
   mask-image:linear-gradient(to bottom,#000 0%,#000 87%,transparent 100%);
  }
 }
+
+/* Nested typed words must not inherit borders/padding intended for the
+ * three semantic About keyword columns or for contact link containers. */
+.sx-v18-site .sx-v18-keywords>.sx-word-reveal{
+ display:block!important;
+ padding:21px 10px 0 0!important;
+ border:0!important;
+ font:550 clamp(13px,1.3vw,19px)/1.5 Inter,Arial,sans-serif!important;
+}
+.sx-v18-site .sx-v18-keywords>.sx-word-reveal+.sx-word-reveal{
+ border-left:1px solid #c8c8c8!important;
+ padding-left:clamp(13px,3vw,45px)!important;
+}
+.sx-v18-site .sx-v18-keywords .sx-word-reveal span,
+.sx-v18-site .sx-v18-contact .sx-contact-link .sx-word-reveal span,
+.sx-v18-site .sx-v18-index-entry .sx-word-reveal span{
+ border:0!important;
+ padding:0!important;
+ margin:0!important;
+ background:transparent!important;
+ color:inherit!important;
+ letter-spacing:inherit!important;
+ font:inherit!important;
+}
+.sx-v18-site .sx-v18-index-entry .sx-word-reveal{
+ max-width:100%;
+ min-width:0;
+}
+@media(max-width:760px){
+ .sx-v18-site .sx-v18-keywords>.sx-word-reveal,
+ .sx-v18-site .sx-v18-keywords>.sx-word-reveal+.sx-word-reveal{
+  padding:14px 0!important;
+  border-left:0!important;
+  border-bottom:1px solid #ccc!important;
+ }
+}
