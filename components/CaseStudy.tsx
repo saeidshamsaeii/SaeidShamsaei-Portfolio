@@ -57,7 +57,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
   </div>
   <section className="sx-v10-case-evidence" data-tour-stop data-tour-label={p.brand+' / evidence and current state'} data-tour-duration="13" data-tour-pace="0.73">
    <WordReveal as="span" className="sx-v10-counter" text={t.sourceEvidence}/>
-   <WordReveal as="h2" text={p.id==="gartal"?"An architecture with distinct responsibilities.":p.id==="factory"?"Proof follows the commit.":p.id==="digirezhim"?"Clinical work demands precision.":"Discovery meets dependable commerce."}/>
+   <WordReveal as="h2" text={locale!=='en'?localized.title:p.id==="gartal"?"An architecture with distinct responsibilities.":p.id==="factory"?"Proof follows the commit.":p.id==="digirezhim"?"Clinical work demands precision.":"Discovery meets dependable commerce."}/>
    <WordReveal text={localized.outcome}/>
    <WordReveal text={t.evidenceNote}/>
    <WordReveal className="sx-v10-source-line" text={t.sourceContext+': '+p.source}/>
