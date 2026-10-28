@@ -11,9 +11,9 @@ const clamp=(v:number)=>Math.max(0,Math.min(1,v));
 // a viewport-dependent word-count guess. All copy retains its original meaning.
 const signatureLines:Record<ProjectId,string>={
  gartal:'A studio at the front. A platform\nunderneath.',
- factory:'The remote commit is not\nthe local machine.',
- digirezhim:'Design for the clinician,\nnot the dashboard.',
- petiwoo:'Commerce that understands\nwho you shop for.'
+ factory:'One guarded Windows Worker.\nGitHub remains the source of truth.',
+ digirezhim:'A physician workspace.\nFour separate web and API services.',
+ petiwoo:'Products. Search. Cart.\nA connected checkout flow.'
 };
 
 /**
