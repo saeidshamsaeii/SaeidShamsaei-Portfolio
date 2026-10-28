@@ -201,7 +201,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     window.removeEventListener('resize',invalidate);
     // If a text block is already above the centerline, complete it even
     // after a very fast swipe moved it outside the observer's root.
-    if(!onIntro&&!host.closest('[data-horizontal-chapter]')&&
+    if(!onIntro&&!workIndex&&!host.closest('[data-horizontal-chapter]')&&
        host.getBoundingClientRect().bottom<=window.innerHeight*.5)render(1);
    }
   },{rootMargin:'200px 0px 200px 0px',threshold:0});
