@@ -432,3 +432,22 @@ test('Edition 28 holds all nine Selected Work word blocks fully framed for two s
  assert.match(directory,/autoNarrating\?!fullyFramed/);
  assert.match(word,/!onIntro&&!workIndex&&!host\.closest/);
 });
+
+test('Edition 29 moves Selected Work copy up while it fades away on departure',()=>{
+ const directory=read('components/SelectedWorkIndex.tsx');
+ const css=read('app/edition20.css');
+ const director=read('components/GuidedTour.tsx');
+ assert.match(directory,/const renderExit=\(\)=>/);
+ assert.match(directory,/Math\.min\(1,-rect\.top\/distance\)/);
+ assert.match(directory,/host\.style\.setProperty\('--sx-work-exit',String\(progress\)\)/);
+ assert.match(directory,/window\.addEventListener\('scroll',requestExit/);
+ assert.match(directory,/host\.style\.removeProperty\('--sx-work-exit'\)/);
+ assert.match(css,/#work-index \.sx-v18-index-heading\{/);
+ assert.match(css,/#work-index \.sx-v18-index-entry\{/);
+ assert.match(css,/opacity:calc\(1 - var\(--sx-work-exit, 0\) \* \.97\)/);
+ assert.match(css,/translate3d\(0,calc\(var\(--sx-work-exit, 0\) \* -62px\),0\)/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ // The new exit cue does not replace the full-copy two-second reading hold.
+ assert.match(director,/const SELECTED_WORK_HOLD_MS=2000/);
+ assert.match(director,/workFullyFramed&&workTypingFinished/);
+});
