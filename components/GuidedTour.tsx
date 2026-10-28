@@ -5,10 +5,11 @@ type Stop={element:HTMLElement;label:string;fraction:number|null};
 type Mode='playing'|'manual'|'paused'|'finished';
 type Playback={index:number;elapsed:number;last:number;start:number;end:number;duration:number;arrivedAt:number;holdStartedAt:number|null};
 const clamp=(x:number)=>Math.max(0,Math.min(1,x));
-const READING_SPEED_PX_PER_SECOND=205;
-const MIN_SEGMENT_MS=1700;
+const READING_SPEED_PX_PER_SECOND=150;
+const MIN_SEGMENT_MS=2400;
 const IDLE_RESUME_MS=3500;
 const BACKGROUND_PAUSE_MS=2000;
+const INTRO_PHOTO_HOLD_MS=2000;
 const HORIZONTAL_FRAME_PAUSE_MS=2000;
 const COPY_SETTLE_MAX_MS=2600;
 
@@ -90,7 +91,8 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let playback:Mode='playing';
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, touchActive=false, disposed=false;
-  let openingAlreadyPresented=false;
+  const introMobile=window.matchMedia('(max-width:760px)').matches;
+  let introHoldComplete=false;
   // A pause is required for every marked horizontal panel, even between
   // black panels. A color transition also requires one pause. Both reasons
   // share ONE hold at a stop (never two consecutive two-second delays).
@@ -164,18 +166,14 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    delete root.dataset.portfolioTourHold;
    state.start=from;
    state.end=target(index);
-   // Show the real name and adjacent introductory sentence before the
-   // camera starts moving. This is a one-time first-screen hold, not a
-   // slow segment speed or a recurring stop between chapters.
-   if(index===0&&!openingAlreadyPresented&&window.scrollY<12){
-    state.elapsed=-2350;
-    openingAlreadyPresented=true;
-   }
+   // Desktop waits for the entire photograph-side introduction to type,
+   // then holds it for 2s before scrolling at all. On narrow mobile screens
+   // the portrait is above the text, so that hold occurs at arrival instead.
    // Use actual travel distance to prevent one section racing while the
    // next crawls. Keep a bounded minimum for short reading beats.
    const distance=Math.abs(state.end-state.start);
    const words=stops[index].element.querySelectorAll('[data-reveal-word]').length;
-   const modestReadingMs=Math.min(3300,words*55);
+   const modestReadingMs=Math.min(6000,words*120);
    const openingMs=stops[index].element.id==='intro'?3400:MIN_SEGMENT_MS;
    state.duration=Math.max(openingMs,modestReadingMs,
     distance/READING_SPEED_PX_PER_SECOND*1000);
@@ -255,6 +253,27 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const frame=(time:number)=>{
    if(disposed)return;
    if(playback==='playing'&&!document.hidden){
+    // Desktop portrait and copy are visible in the same opening view.
+    // Hold the camera completely still until EVERY word has actually typed,
+    // then keep that complete composition visible for a full two seconds.
+    if(state.index===0&&!introMobile&&!introHoldComplete&&state.start<12){
+     state.last=time;
+     scriptedScroll=window.scrollY;
+     if(textHasFinished(stops[0])){
+      if(state.holdStartedAt===null){
+       state.holdStartedAt=time;
+       root.dataset.portfolioTourHold='intro-photo';
+      }
+      if(time-state.holdStartedAt>=INTRO_PHOTO_HOLD_MS){
+       introHoldComplete=true;
+       state.holdStartedAt=null;
+       state.last=time;
+       delete root.dataset.portfolioTourHold;
+      }
+     }
+     raf=requestAnimationFrame(frame);
+     return;
+    }
     const delta=state.last?Math.min(100,time-state.last):0;
     state.last=time;
     // Distance-based moderate pace; there is no per-stop speed multiplier
@@ -272,20 +291,26 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      }
      const horizontalHold=isHorizontalFrame[state.index];
      const backgroundHold=hasBackgroundChange[state.index];
-     if(horizontalHold||backgroundHold){
+     // On mobile the first photo is stacked ABOVE the copy. Pause after
+     // arriving at the readable text rather than holding an empty image.
+     const mobileIntroHold=state.index===0&&introMobile&&!introHoldComplete;
+     if(horizontalHold||backgroundHold||mobileIntroHold){
       if(!state.arrivedAt)state.arrivedAt=time;
-      // The horizontal panel must genuinely finish ALL of its lines.
-      // Never invoke a timeout fallback there: the offscreen progress event
-      // now guarantees fresh completion state on each animation frame.
-      // Keep the bounded settle guard only for vertical section boundaries.
+      // Wait for genuine text completion on horizontal panels, the
+      // full-screen work directory, and the mobile opening portrait.
+      const strictCopy=horizontalHold||mobileIntroHold||
+       stops[state.index].element.id==='work-index';
       if(textHasFinished(stops[state.index])||
-         (!horizontalHold&&time-state.arrivedAt>=COPY_SETTLE_MAX_MS)){
+         (!strictCopy&&time-state.arrivedAt>=COPY_SETTLE_MAX_MS)){
        if(state.holdStartedAt===null){
         state.holdStartedAt=time;
-        root.dataset.portfolioTourHold=horizontalHold?'horizontal-frame':'background-change';
+        root.dataset.portfolioTourHold=mobileIntroHold?'intro-photo':
+         horizontalHold?'horizontal-frame':'background-change';
        }
-       const duration=horizontalHold?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS;
+       const duration=mobileIntroHold?INTRO_PHOTO_HOLD_MS:
+        horizontalHold?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS;
        if(time-state.holdStartedAt>=duration){
+        if(mobileIntroHold)introHoldComplete=true;
         delete root.dataset.portfolioTourHold;
         goTo(state.index+1);
        }
