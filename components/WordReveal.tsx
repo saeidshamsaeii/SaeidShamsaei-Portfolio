@@ -177,6 +177,9 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
      }
     }
    }
+   // The incoming block must start blank; even a prior visit or a
+   // browser scroll jump must not pre-complete its words during the hold.
+   if(host.closest('[data-tour-awaiting="true"]'))progress=0;
    render(progress);
   };
   const invalidate=()=>{
