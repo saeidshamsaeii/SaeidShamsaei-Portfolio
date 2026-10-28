@@ -162,6 +162,14 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
       '#contact,.sx-v14-editorial-copy,.sx-v14-ending-inner,.sx-v18-work-intro'
      );
      progress=group?viewportGroup(group):centerlineProgress(host);
+     // The document's last visible text cannot always physically cross the
+     // centerline (the browser runs out of scrollable space). Complete all
+     // remaining on-screen text as soon as the actual page bottom is reached.
+     const atBottom=window.scrollY>=
+      document.documentElement.scrollHeight-window.innerHeight-4;
+     if(atBottom&&host.getBoundingClientRect().top<window.innerHeight){
+      progress=1;
+     }
     }
    }
    render(progress);
