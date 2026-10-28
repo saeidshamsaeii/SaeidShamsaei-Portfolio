@@ -3,17 +3,41 @@ import {useEffect,useRef} from 'react';
 
 type Stop={element:HTMLElement;label:string;fraction:number|null};
 type Mode='playing'|'manual'|'paused'|'finished';
-type Playback={index:number;elapsed:number;last:number;start:number;end:number;duration:number};
+type Playback={index:number;elapsed:number;last:number;start:number;end:number;duration:number;arrivedAt:number;holdStartedAt:number|null};
 const clamp=(x:number)=>Math.max(0,Math.min(1,x));
 const READING_SPEED_PX_PER_SECOND=205;
 const MIN_SEGMENT_MS=1700;
 const IDLE_RESUME_MS=3500;
+const BACKGROUND_PAUSE_MS=2000;
+const COPY_SETTLE_MAX_MS=2600;
 
 function findStops():Stop[]{
  return Array.from(document.querySelectorAll<HTMLElement>('[data-tour-stop]')).map(element=>({
   element,label:element.dataset.tourLabel||'The story',
   fraction:element.dataset.tourProgress!==undefined?clamp(Number(element.dataset.tourProgress)):null
  }));
+}
+/** Identify the effective visible surface, not a decorative child background.
+ * The pause belongs at the *change* of section background, not every slide.
+ */
+function visibleSurface(stop:Stop){
+ const region=stop.element.closest<HTMLElement>(
+  '#intro,#top,#about,#work-index,#selected-projects,#contact,[data-horizontal-chapter],.sx-v10-case-section,.sx-v10-case-cover'
+ )||stop.element;
+ let node:HTMLElement|null=stop.element;
+ while(node){
+  const color=getComputedStyle(node).backgroundColor;
+  if(color&&color!=='transparent'&&color!=='rgba(0, 0, 0, 0)'){
+   return color;
+  }
+  if(node===region)break;
+  node=node.parentElement;
+ }
+ return getComputedStyle(region).backgroundColor;
+}
+function textHasFinished(stop:Stop){
+ const words=Array.from(stop.element.querySelectorAll<HTMLElement>('.sx-word-reveal'));
+ return words.every(element=>element.dataset.revealComplete==='true');
 }
 function scrollDestination(stop:Stop){
  const panel=stop.element.closest<HTMLElement>('[data-frame-index]');
@@ -58,23 +82,48 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const stops=findStops();
   if(!stops.length){onExitRef.current();return;}
   const root=document.documentElement;
-  const state:Playback={index:0,elapsed:0,last:0,start:window.scrollY,end:0,duration:8000};
+  const state:Playback={index:0,elapsed:0,last:0,start:window.scrollY,end:0,duration:8000,arrivedAt:0,holdStartedAt:null};
   let playback:Mode='playing';
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, touchActive=false, disposed=false;
   let openingAlreadyPresented=false;
+  // Cache actual computed surface transitions once, after styles are loaded.
+  // Three black project frames are one continuous surface: no fake holds.
+  const hasBackgroundChange=stops.map((stop,index)=>
+   index<stops.length-1&&visibleSurface(stop)!==visibleSurface(stops[index+1])
+  );
   const setPlayback=(next:Mode)=>{
    if(playback===next)return;
    playback=next;
    root.dataset.portfolioTour=next;
+   if(next!=='playing')delete root.dataset.portfolioTourHold;
   };
   const maxScroll=()=>Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
-  const target=(index:number)=>clamp(scrollDestination(stops[index])/Math.max(1,maxScroll()))*maxScroll();
+  const target=(index:number)=>{
+   let destination=scrollDestination(stops[index]);
+   const stop=stops[index];
+   // Finish every line before changing black ↔ white. Pinned horizontal
+   // panels and the Linux stage use their own normalized frame positions.
+   if(hasBackgroundChange[index]&&
+      !stop.element.closest('[data-frame-index],.sx-v8-hero-slide')){
+    const lines=Array.from(stop.element.querySelectorAll<HTMLElement>('.sx-word-reveal'));
+    const last=lines[lines.length-1];
+    if(last){
+     const rect=last.getBoundingClientRect();
+     const finishAt=rect.top+window.scrollY+rect.height*.5-window.innerHeight*.5;
+     destination=Math.max(destination,finishAt);
+    }
+   }
+   return clamp(destination/Math.max(1,maxScroll()))*maxScroll();
+  };
 
   const goTo=(index:number,from=window.scrollY)=>{
    state.index=index;
    state.elapsed=0;
    state.last=0;
+   state.arrivedAt=0;
+   state.holdStartedAt=null;
+   delete root.dataset.portfolioTourHold;
    state.start=from;
    state.end=target(index);
    // Show the real name and adjacent introductory sentence before the
@@ -183,7 +232,24 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      if(state.index===stops.length-1){
       setPlayback('finished');onExitRef.current();return;
      }
-     goTo(state.index+1);
+     if(hasBackgroundChange[state.index]){
+      if(!state.arrivedAt)state.arrivedAt=time;
+      // WordReveal publishes completion of the ACTUAL animated text.
+      // Allow one short settle window for scroll observers and font layout.
+      if(textHasFinished(stops[state.index])||
+         time-state.arrivedAt>=COPY_SETTLE_MAX_MS){
+       if(state.holdStartedAt===null){
+        state.holdStartedAt=time;
+        root.dataset.portfolioTourHold='background-change';
+       }
+       if(time-state.holdStartedAt>=BACKGROUND_PAUSE_MS){
+        delete root.dataset.portfolioTourHold;
+        goTo(state.index+1);
+       }
+      }
+     }else{
+      goTo(state.index+1);
+     }
     }
    }else state.last=0;
    raf=requestAnimationFrame(frame);
@@ -206,6 +272,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   return()=>{
    disposed=true;clearIdle();cancelAnimationFrame(raf);
    delete root.dataset.portfolioTour;
+   delete root.dataset.portfolioTourHold;
    window.removeEventListener('wheel',manualInput);
    window.removeEventListener('touchstart',onTouchStart);
    window.removeEventListener('touchmove',manualInput);
