@@ -63,7 +63,7 @@
 .sx-v14-ending-actions{display:flex;gap:15px 40px;flex-wrap:wrap;align-items:center;
  border-top:1px solid var(--sx-v14-line);padding-top:24px;}
 .sx-v14-ending-actions a{font:650 11px/1.6 ui-monospace,Consolas,monospace;letter-spacing:.085em;
- text-decoration:none;color:#e6c795;border-bottom:1px solid #d0ae8070;padding:8px 0;}
+ text-decoration:none;color:#ffffff;border-bottom:1px solid #ffffff70;padding:8px 0;}
 .sx-v14-ending-actions a:last-child{color:#9fb9aa;}
 .sx-v14-ending-actions a:hover,.sx-v14-opening-foot a:hover{color:#fff;}
 /* Decrease the sensation of fabricated code: the Linux editor keeps its
@@ -128,10 +128,10 @@
  display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto;
  align-items:center;gap:clamp(22px,4vw,60px);
  padding:clamp(65px,8vw,120px) clamp(23px,7vw,120px);
- background:#141819;border-top:1px solid #d2b78c37;border-bottom:1px solid #d2b78c37;color:#f0ede4;
+ background:#141819;border-top:1px solid #ffffff37;border-bottom:1px solid #ffffff37;color:#f0ede4;
 }
 .sx-site .sx-ei-home-bridge>span{
- align-self:start;color:#d2b78c;font:650 10px/1.5 ui-monospace,Consolas,monospace;
+ align-self:start;color:#ffffff;font:650 10px/1.5 ui-monospace,Consolas,monospace;
  letter-spacing:.13em;white-space:nowrap;
 }
 .sx-site .sx-ei-home-bridge>p{
@@ -139,17 +139,17 @@
  max-width:840px;
 }
 .sx-site .sx-ei-home-bridge>a{
- color:#e6c99d;text-decoration:none;border-bottom:1px solid #d2b78c;padding:13px 0;
+ color:#ffffff;text-decoration:none;border-bottom:1px solid #ffffff;padding:13px 0;
  font:650 11px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.06em;white-space:nowrap;
 }
 .sx-site .sx-ei-home-bridge>a:hover,.case-study .sx-ei-case-link:hover{color:#fff;}
 .case-study .sx-ei-case-link{
  display:inline-flex;align-self:flex-start;margin-top:16px;
- padding:13px 0;border-bottom:1px solid #d2b78c;
+ padding:13px 0;border-bottom:1px solid #ffffff;
  font:650 11px/1.45 ui-monospace,Consolas,monospace;letter-spacing:.06em;
- color:#e0c99e;text-decoration:none;
+ color:#ffffff;text-decoration:none;
 }
-.sx-site .sx-header nav a[href="/engineering/"]{color:#dfc598;}
+.sx-site .sx-header nav a[href="/engineering/"]{color:#ffffff;}
 @media(max-width:1100px){
  .sx-site .sx-ei-home-bridge{grid-template-columns:1fr 2fr;}
  .sx-site .sx-ei-home-bridge>a{grid-column:2;justify-self:start;}
