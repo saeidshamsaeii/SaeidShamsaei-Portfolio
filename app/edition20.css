@@ -280,3 +280,75 @@
   );
  }
 }
+
+/* Edition 23 — Seamless portrait-to-Linux transition. The photograph stays
+   sharp over the face, becoming increasingly blurred only near its lower
+   edge. Both adjacent sections are exactly black, with no separating rule. */
+.sx-v18-site #intro.sx-v19-cover{
+ background:#000!important;
+ border-bottom:0!important;
+ box-shadow:none!important;
+}
+.sx-v18-site #intro .sx-v19-photo-background{
+ background:#000!important;
+ overflow:hidden!important;
+}
+.sx-v18-site #intro .sx-v19-photo-background img{
+ /* A gradual alpha makes the photo disappear before the section boundary.
+    This is not a hard black rectangle over the original photograph. */
+ -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 48%,rgba(0,0,0,.95) 60%,rgba(0,0,0,.56) 78%,transparent 100%)!important;
+ mask-image:linear-gradient(to bottom,#000 0%,#000 48%,rgba(0,0,0,.95) 60%,rgba(0,0,0,.56) 78%,transparent 100%)!important;
+}
+.sx-v18-site #intro .sx-v19-photo-background::before{
+ content:"";position:absolute;z-index:1;inset:0;pointer-events:none;
+ -webkit-backdrop-filter:blur(15px);
+ backdrop-filter:blur(15px);
+ -webkit-mask-image:linear-gradient(to bottom,transparent 0%,transparent 53%,rgba(0,0,0,.28) 68%,#000 100%);
+ mask-image:linear-gradient(to bottom,transparent 0%,transparent 53%,rgba(0,0,0,.28) 68%,#000 100%);
+}
+.sx-v18-site #intro .sx-v19-photo-background::after{
+ content:"";position:absolute;z-index:2;inset:0;pointer-events:none;
+ background:linear-gradient(to bottom,
+ transparent 40%,rgba(0,0,0,.08) 54%,rgba(0,0,0,.26) 67%,
+ rgba(0,0,0,.66) 83%,#000 100%)!important;
+}
+.sx-v18-site #top,
+.sx-v18-site #top .sx-v8-hero-stage,
+.sx-v18-site #top .sx-linux-scene{
+ background:#000!important;
+ border-top:0!important;
+ box-shadow:none!important;
+}
+.sx-v18-site #intro+.sx-work-hero{border-top:0!important;}
+/* Old project brand accents are no longer allowed to color the portfolio.
+   Project-specific logos and source evidence remain untouched in their repos. */
+.sx-v18-site .sx-v11-horizontal-chapter,
+.sx-v18-site .sx-v10-chapter,
+.sx-v10-case-page,
+.sx-ei{
+ --sx-v10-accent:#fff!important;
+ --ei-gold:#fff!important;
+}
+.sx-v18-site .sx-v14-opening-foot a,
+.sx-v18-site .sx-v14-ending-actions a,
+.sx-v18-site .sx-v14-scene :is(h2,h3),
+.sx-v18-site .sx-v11-slide :is(a,strong,em),
+.sx-v10-case-page :is(.sx-v10-case-cover h2,.sx-v10-counter,.sx-v10-reference-list a,.sx-v10-case-next a),
+.sx-ei :is(.sx-ei-hero h1 em,.sx-ei-file-links a,.sx-ei-source-list a em,.sx-ei-project-links a){
+ color:#fff!important;
+ -webkit-text-fill-color:#fff!important;
+}
+@media(max-width:760px){
+ .sx-v18-site #intro .sx-v19-photo-background img{
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 40%,rgba(0,0,0,.85) 62%,rgba(0,0,0,.34) 83%,transparent 100%)!important;
+  mask-image:linear-gradient(to bottom,#000 0%,#000 40%,rgba(0,0,0,.85) 62%,rgba(0,0,0,.34) 83%,transparent 100%)!important;
+ }
+ .sx-v18-site #intro .sx-v19-photo-background::before{
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 44%,rgba(0,0,0,.30) 66%,#000 100%);
+  mask-image:linear-gradient(to bottom,transparent 44%,rgba(0,0,0,.30) 66%,#000 100%);
+ }
+ .sx-v18-site #intro .sx-v19-photo-background::after{
+  background:linear-gradient(to bottom,transparent 37%,rgba(0,0,0,.12) 58%,rgba(0,0,0,.67) 83%,#000 100%)!important;
+ }
+}
