@@ -208,3 +208,75 @@
 @media(max-width:360px){
  .sx-v18-site .sx-v19-cover h1{font-size:47px!important;}
 }
+
+/* Edition 22 — restore absolute black/white contrast and give the real
+   portrait a soft black fade at its bottom, never over printed words. */
+.sx-v18-site header.sx-v18-header a.sx-v18-brand,
+.sx-v18-site header.sx-v18-header a.sx-v18-brand:visited,
+.sx-v18-site header.sx-v18-header nav a,
+.sx-v18-site header.sx-v18-header nav a[href="/engineering/"]{
+ color:#fff!important;
+ -webkit-text-fill-color:#fff!important;
+ opacity:1!important;
+}
+.sx-v18-site #intro .sx-v19-cover-content h1,
+.sx-v18-site #intro .sx-v19-cover-content h1 .sx-word-reveal,
+.sx-v18-site #intro .sx-v19-cover-content h1 .sx-word-piece,
+.sx-v18-site #intro .sx-v19-cover-content .sx-v18-cover-lead,
+.sx-v18-site #intro .sx-v19-cover-content .sx-v18-cover-lead .sx-word-piece{
+ color:#fff!important;
+ -webkit-text-fill-color:#fff!important;
+}
+/* No rectangle, new asset or text overlay: only a fade at the photograph's
+   bottom edge, preserving the high-contrast face above it. */
+.sx-v18-site #intro .sx-v19-photo-background::after{
+ content:"";position:absolute;z-index:2;inset:0;pointer-events:none;
+ background:linear-gradient(
+  to bottom,
+  transparent 46%,
+  rgba(0,0,0,.18) 66%,
+  rgba(0,0,0,.74) 86%,
+  #000 100%
+ );
+}
+/* Override the remaining historic gold text variables and hard-coded
+   gold links in actual dark project/case/evidence surfaces. */
+.sx-v18-site .sx-v11-horizontal-chapter,
+.sx-v18-site .sx-v11-horizontal-chapter.sx-v10-chapter--gartal,
+.sx-v18-site .sx-v11-horizontal-chapter.sx-v10-chapter--factory,
+.sx-v18-site .sx-v11-horizontal-chapter.sx-v10-chapter--digirezhim,
+.sx-v18-site .sx-v11-horizontal-chapter.sx-v10-chapter--petiwoo,
+.sx-v10-case-page{
+ --sx-v10-accent:#fff!important;
+}
+.sx-v18-site .sx-v14-opening-foot a,
+.sx-v18-site .sx-v14-ending-actions a,
+.sx-v18-site .sx-v14-editorial-copy :is(h3,p),
+.sx-v10-case-page .sx-v10-counter,
+.sx-v10-case-page .sx-v10-case-cover .sx-v10-counter,
+.sx-v10-case-page .sx-v10-case-cover h2,
+.sx-v10-case-page .sx-v10-reference-list a,
+.sx-v10-case-page .sx-v10-case-next a,
+.sx-v10-case-page .sx-ei-case-link,
+.sx-ei .sx-ei-file-links a,
+.sx-ei .sx-ei-source-list a em,
+.sx-ei .sx-ei-nav>a:last-child{
+ color:#fff!important;
+ -webkit-text-fill-color:#fff!important;
+}
+.sx-ei{--ei-gold:#fff!important;}
+.sx-ei .sx-ei-filter-list button[aria-pressed="true"]{
+ color:#fff!important;background:#000!important;
+}
+/* Guarantee final visible words are not clipped by legacy line opacity. */
+.sx-v20-ordered .sx-v18-reveal-line{
+ opacity:1!important;clip-path:none!important;
+}
+@media(max-width:760px){
+ .sx-v18-site #intro .sx-v19-photo-background::after{
+  background:linear-gradient(
+   to bottom,transparent 40%,rgba(0,0,0,.14) 62%,
+   rgba(0,0,0,.80) 87%,#000 100%
+  );
+ }
+}
