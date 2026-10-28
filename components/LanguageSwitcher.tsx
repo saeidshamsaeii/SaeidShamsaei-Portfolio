@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {languages,useSiteLocale} from '@/components/LocaleProvider';
+import {siteText} from '@/data/siteTranslations';
 
 export function LanguageSwitcher(){
  const {locale,setLocale}=useSiteLocale();
@@ -24,13 +25,13 @@ export function LanguageSwitcher(){
  },[open]);
  return <div ref={host} className="sx-language-switcher" dir="ltr">
   <button type="button" className="sx-language-trigger"
-   aria-label="Choose site language" aria-haspopup="true" aria-expanded={open}
+   aria-label={siteText(locale).uiLanguage} aria-haspopup="true" aria-expanded={open}
    onClick={()=>setOpen(value=>!value)}>
    <span className="sx-language-globe" aria-hidden="true">◎</span>
    <span>{selected.short}</span>
    <span className="sx-language-caret" aria-hidden="true">{open?'−':'+'}</span>
   </button>
-  {open&&<div className="sx-language-menu" role="group" aria-label="Available languages">
+  {open&&<div className="sx-language-menu" role="group" aria-label={siteText(locale).uiLanguage}>
    {languages.map(item=><button type="button" key={item.code}
     className={locale===item.code?'is-selected':''}
     lang={item.code} dir={item.dir}
