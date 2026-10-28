@@ -274,11 +274,12 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      const backgroundHold=hasBackgroundChange[state.index];
      if(horizontalHold||backgroundHold){
       if(!state.arrivedAt)state.arrivedAt=time;
-      // Reveal the heading, then each successive line. Only when the
-      // complete current panel is readable do we start its 2s hold.
-      // A short safety bound handles missing intersection callbacks.
+      // The horizontal panel must genuinely finish ALL of its lines.
+      // Never invoke a timeout fallback there: the offscreen progress event
+      // now guarantees fresh completion state on each animation frame.
+      // Keep the bounded settle guard only for vertical section boundaries.
       if(textHasFinished(stops[state.index])||
-         time-state.arrivedAt>=COPY_SETTLE_MAX_MS){
+         (!horizontalHold&&time-state.arrivedAt>=COPY_SETTLE_MAX_MS)){
        if(state.holdStartedAt===null){
         state.holdStartedAt=time;
         root.dataset.portfolioTourHold=horizontalHold?'horizontal-frame':'background-change';
