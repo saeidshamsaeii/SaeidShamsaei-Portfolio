@@ -51,10 +51,8 @@ function scrollDestination(stop:Stop){
  */
 export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
  const [mode,setMode]=useState<Mode>('playing');
- const [displaySpeed,setDisplaySpeed]=useState<number>(2);
  const [surface,setSurface]=useState<'light'|'dark'>('light');
  const [step,setStep]=useState(0);
- const [percent,setPercent]=useState(0);
  const [label,setLabel]=useState('Introduction');
  const [count,setCount]=useState(0);
  const onExitRef=useRef(onExit);
@@ -125,12 +123,10 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    const next=findNextFromScroll();
    if(next<0){
     setPlayback('finished');
-    setPercent(1);
     onExitRef.current();
     return;
    }
    goTo(next);
-   setPercent(next/stops.length);
    setPlayback('playing');
   };
   const scheduleResume=()=>{
@@ -207,13 +203,12 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
     scriptedScroll=state.start+(state.end-state.start)*fraction;
     window.scrollTo({top:scriptedScroll,behavior:'instant'});
     if(time-hudAt>100){
-     hudAt=time;setPercent((state.index+fraction)/stops.length);
-     setDisplaySpeed(Math.round(currentSpeed*10)/10);
+     hudAt=time;
      refreshSurface();
     }
     if(fraction>=1){
      if(state.index===stops.length-1){
-      setPlayback('finished');setPercent(1);onExitRef.current();return;
+      setPlayback('finished');onExitRef.current();return;
      }
      goTo(state.index+1);
     }
@@ -221,7 +216,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    raf=requestAnimationFrame(frame);
   };
 
-  setStep(0);setCount(stops.length);setPercent(0);setLabel(stops[0].label);
+  setStep(0);setCount(stops.length);setLabel(stops[0].label);
   refreshSurface();
   root.dataset.portfolioTour='playing';
   const first=findNextFromScroll();
@@ -258,11 +253,6 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   <span className="sx-v11-top-label" title={label}>
    {mode==='manual'?'EXPLORING — AUTO RESUMES':mode==='paused'?'TOUR PAUSED':'AUTO STORY'} · {format(step+1)}/{format(count)} · {label}
   </span>
-  <div className="sx-v11-top-progress" role="progressbar" aria-label="Tour progress"
-   aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(percent*100)}>
-   <i style={{width:percent*100+'%'}}/>
-  </div>
-  <span className="sx-v11-top-speed" aria-label="Current cinematic playback pace">{displaySpeed.toFixed(1)}×</span>
   <button type="button" className="sx-v11-top-button"
    onClick={()=>{if(mode==='paused')explicitResumeRef.current();else explicitPauseRef.current();}}
    aria-label={mode==='paused'?'Resume tour':'Pause tour'} title={mode==='paused'?'Resume':'Pause'}>
