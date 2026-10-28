@@ -51,16 +51,16 @@ test('readable word reveal is linked to native scroll and respects reduced motio
  assert.match(css,/sx-word-piece/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 });
-test('headless 2x-based director preserves auto scroll, manual override and idle resume',()=>{
+test('headless moderate director preserves auto scroll, manual override and idle resume',()=>{
  const director=read('components/GuidedTour.tsx');
  const horizontal=read('components/HorizontalCaseChapter.tsx');
  const homepage=read('components/PortfolioExperience.tsx');
  const cases=read('components/CaseStudy.tsx');
  assert.ok(director.includes("querySelectorAll<HTMLElement>('[data-tour-stop]')"));
- assert.ok(director.includes('const BASE_SPEED=2'));
- assert.ok(director.includes('paceBound'));
- assert.ok(director.includes('currentSpeed+=(targetSpeed-currentSpeed)'));
- assert.ok(director.includes('data-tour-pace')||director.includes('dataset.tourPace'));
+ assert.ok(director.includes('const READING_SPEED_PX_PER_SECOND=315'));
+ assert.ok(director.includes('const MIN_SEGMENT_MS=1700'));
+ assert.ok(director.includes('state.elapsed+=delta;'));
+ assert.ok(!director.includes('targetSpeed=BASE_SPEED*stops[index].pace'));
  assert.ok(!director.includes('Current cinematic playback pace'));
  assert.ok(director.includes('const IDLE_RESUME_MS=3500'));
  assert.ok(director.includes('findNextFromScroll'));
@@ -230,6 +230,8 @@ test('Edition 20 keeps motion without visible Auto Story and reveals real wrappe
  assert.ok(word.includes('const before=sizes.slice(0,self)'));
  assert.ok(word.includes('.sx-v10-case-section'));
  assert.ok(word.includes('new ResizeObserver(invalidate)'));
+ assert.ok(word.includes('sectionClocks=new WeakMap'));
+ assert.ok(word.includes('pacedSection(container,goal,total)'));
  assert.ok(word.includes('ready=true'));
  assert.ok(cover.includes('ready={ready}'));
  assert.ok(home.includes('<SignatureOpening ready={loaded}/>'));
@@ -238,4 +240,25 @@ test('Edition 20 keeps motion without visible Auto Story and reveals real wrappe
  assert.match(css,/object-fit:cover!important/);
  assert.match(css,/sx-v20-ordered/);
  assert.ok(read('app/layout.tsx').includes("import './edition20.css';"));
+});
+
+test('Edition 21 restores actual first-screen words and prevents simultaneous paragraphs while scrolling at a moderate speed',()=>{
+ const cover=read('components/SignatureOpening.tsx');
+ const style=read('app/edition20.css');
+ const reveal=read('components/WordReveal.tsx');
+ const director=read('components/GuidedTour.tsx');
+ assert.match(cover,/I make complex digital systems/);
+ assert.match(cover,/feel considered, useful and human\./);
+ assert.match(cover,/ready=\{ready\}/);
+ assert.match(style,/font-size:clamp\(45px,5\.8vw,90px\)/);
+ assert.match(style,/transition:none!important/);
+ assert.match(reveal,/const sectionClocks=new WeakMap/);
+ assert.match(reveal,/const rate=Math\.max\(\.34/);
+ assert.match(reveal,/const before=sizes\.slice\(0,self\)/);
+ assert.doesNotMatch(reveal,/getBoundingClientRect\(\)\.bottom<0[^\n]+render\(1\)/);
+ assert.match(director,/READING_SPEED_PX_PER_SECOND=315/);
+ assert.match(director,/distance\/READING_SPEED_PX_PER_SECOND\*1000/);
+ assert.match(director,/MIN_SEGMENT_MS=1700/);
+ assert.doesNotMatch(director,/currentSpeed|targetSpeed|paceBound/);
+ assert.match(director,/return null;/);
 });
