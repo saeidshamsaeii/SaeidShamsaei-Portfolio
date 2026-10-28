@@ -180,3 +180,27 @@ html,body{background:#000!important;}
   opacity:1!important;clip-path:none!important;transition:none!important;
  }
 }
+
+/* Force the punctuation to appear on the visual right, regardless of an
+   inherited RTL direction or Unicode bidirectional punctuation rules. */
+.sx-v18-loader .sx-v19-hello-ltr{
+ direction:ltr!important;
+ unicode-bidi:isolate;
+ white-space:nowrap;
+}
+.sx-v18-loader .sx-v19-hello-content{
+ display:inline-flex;
+ flex-direction:row;
+ direction:ltr!important;
+ align-items:baseline;
+ justify-content:center;
+ gap:0;
+ white-space:nowrap;
+}
+.sx-v18-loader .sx-v19-hello-dots{
+ display:inline-block;
+ direction:ltr!important;
+ unicode-bidi:isolate;
+ flex:none;
+ white-space:pre;
+}
