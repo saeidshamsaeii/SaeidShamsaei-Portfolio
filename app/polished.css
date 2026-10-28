@@ -1,5 +1,5 @@
 /* Final editorial redesign, Oct 2026. No JS-driven pinning or overlapping art layers. */
-:root{--pf-paper:#f8f5ed;--pf-gold:#f1c783;--pf-gold-dark:#b68949;}
+:root{--pf-paper:#f8f5ed;--pf-gold:#ffffff;--pf-gold-dark:#ffffff;}
 html{scroll-padding-top:88px;}
 .pf-site{background:#080b0e;color:var(--pf-paper);font-family:Inter,'DM Sans','Segoe UI',system-ui,sans-serif;min-width:0;overflow-x:clip;}
 .pf-site *{box-sizing:border-box;}
@@ -16,7 +16,7 @@ html{scroll-padding-top:88px;}
 .pf-nav a,.pf-footer a{transition:color .18s;}
 .pf-nav a:hover,.pf-footer a:hover{color:var(--pf-gold);}
 .pf-header-contact{border:1px solid #b48a53a8;color:#f7d39a!important;padding:12px 17px;border-radius:7px;font-size:12px;font-weight:700;white-space:nowrap;}
-.pf-header-contact:hover{background:#f1c783;color:#161009!important;}
+.pf-header-contact:hover{background:#ffffff;color:#161009!important;}
 .pf-header-contact span{margin-left:17px;}
 .pf-hero{position:relative;isolation:isolate;background:linear-gradient(118deg,#070a0d 4%,#10151a 70%,#17120e 100%);overflow:hidden;}
 .pf-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 72% 48%,#926e3b33,transparent 38%),linear-gradient(127deg,transparent 47%,#e8af5722 47.2%,transparent 47.5%),repeating-linear-gradient(105deg,transparent 0 146px,#ffffff04 147px 148px);pointer-events:none;}
@@ -33,7 +33,7 @@ html{scroll-padding-top:88px;}
 .pf-hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:13px;}
 .pf-button{display:inline-flex;min-height:48px;align-items:center;justify-content:center;gap:25px;padding:12px 20px;border-radius:7px;font-size:12px;font-weight:800;line-height:1.3;transition:transform .18s,background .18s,border-color .18s;white-space:nowrap;}
 .pf-button:hover{transform:translateY(-2px);}
-.pf-button--gold{color:#17120c!important;background:linear-gradient(130deg,#f7dda9,#e4ac61);box-shadow:0 10px 32px #9b632820;}
+.pf-button--gold{color:#17120c!important;background:linear-gradient(130deg,#ffffff,#ffffff);box-shadow:0 10px 32px #ffffff20;}
 .pf-button--outline{color:#f5ead6!important;border:1px solid #d2ab715c;background:#0b0d10a3;}
 .pf-button--outline:hover{border-color:#e7bd81;}
 .pf-hero-facts{margin-top:52px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-width:540px;}
