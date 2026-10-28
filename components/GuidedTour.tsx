@@ -104,9 +104,12 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   // is a blank canvas: its copy cannot peek into the viewport below.
   // This is removed immediately for manual scrolling and reduced motion.
   let awaitingNext:HTMLElement|null=null;
+  let awaitingLater:HTMLElement[]=[];
   const clearAwaiting=()=>{
    if(awaitingNext)delete awaitingNext.dataset.tourAwaiting;
+   for(const later of awaitingLater)delete later.dataset.tourAwaiting;
    awaitingNext=null;
+   awaitingLater=[];
   };
   const reserveNext=(index:number)=>{
    clearAwaiting();
@@ -114,6 +117,13 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    if(next){
     awaitingNext=next;
     awaitingNext.dataset.tourAwaiting='true';
+   }
+   // Do not reveal any more distant section just because the viewport is
+   // tall or the current stop is short. Every future beat stays blank until
+   // it becomes the active stop; manual input removes all reservations.
+   for(const later of stops.slice(index+2)){
+    later.element.dataset.tourAwaiting='true';
+    awaitingLater.push(later.element);
    }
   };
   const setPlayback=(next:Mode)=>{
