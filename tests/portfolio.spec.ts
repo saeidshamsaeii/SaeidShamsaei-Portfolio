@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 const ids=['gartal','factory','digirezhim','petiwoo'] as const;
 
-test('full portfolio pins four image-free, five distinct editorial horizontal scenes',async({page})=>{
+test('full portfolio pins four image-free, three concise editorial horizontal scenes',async({page})=>{
  const errors:string[]=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.emulateMedia({reducedMotion:'reduce'});
@@ -35,18 +35,18 @@ test('full portfolio pins four image-free, five distinct editorial horizontal sc
 test('vertical scrolling advances each project sideways, then releases to the next project',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- // Disable the default autoplay before checking precise native scroll positions.
- const tour=page.getByRole('region',{name:'Guided portfolio tour'});
- await expect(tour).toBeVisible({timeout:6000});
- await tour.getByRole('button',{name:'Exit guided tour'}).click();
+ // Pause the invisible director before checking exact native positions.
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await page.keyboard.press('Escape');
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','paused');
  for(const id of ids){
   const chapter=page.locator('#project-'+id);
   const info=await chapter.evaluate(e=>({
    top:e.getBoundingClientRect().top+window.scrollY,
    distance:e.getBoundingClientRect().height-window.innerHeight
   }));
-  expect(info.distance).toBeGreaterThan(3000);
-  await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.top+info.distance*.24);
+  expect(info.distance).toBeGreaterThan(1100);
+  await page.evaluate(y=>window.scrollTo({top:y,behavior:'instant'}),info.top+info.distance*.42);
   await expect.poll(()=>chapter.getAttribute('data-active-frame')).not.toBe('0');
   const track=chapter.locator('.sx-v11-rail');
   const horizontal=await track.evaluate(e=>getComputedStyle(e).transform);
@@ -74,29 +74,24 @@ test('native scroll reveals code and words without drawing a code screenshot',as
  expect(Number(visible)).toBeGreaterThanOrEqual(0);
 });
 
-test('automatic tour varies speed by scene but allows temporary manual interruption',async({page})=>{
+test('headless autoplay still yields to manual input and resumes after idle',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const tour=page.getByRole('region',{name:'Guided portfolio tour'});
- await expect(tour).toBeVisible({timeout:6000});
- await expect(tour).toHaveAttribute('data-playback','playing');
- await expect(page.getByRole('button',{name:'Restart guided site tour'})).toHaveCount(0);
- await expect(tour.locator('.sx-v11-top-progress,.sx-v11-top-speed')).toHaveCount(0);
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing');
  await page.mouse.wheel(0,180);
- await expect(tour).toHaveAttribute('data-playback','manual');
- await expect(tour).toHaveAttribute('data-playback','playing',{timeout:6500});
- await tour.getByRole('button',{name:'Pause tour'}).click();
- await expect(tour).toHaveAttribute('data-playback','paused');
- await tour.getByRole('button',{name:'Resume tour'}).click();
- await expect(tour).toHaveAttribute('data-playback','playing');
- await tour.getByRole('button',{name:'Exit guided tour'}).click();
- await expect(tour).toHaveCount(0);
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','manual');
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:6500});
+ await page.keyboard.press('Escape');
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','paused');
 });
+
 
 test('unwritten lines begin fully invisible and reveal in order as native scroll advances',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const tour=page.getByRole('region',{name:'Guided portfolio tour'});
- if(await tour.isVisible())await tour.getByRole('button',{name:'Exit guided tour'}).click();
- const future=page.locator('#project-gartal-origin .sx-v14-editorial-copy h3 [data-reveal-line]').first();
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await page.keyboard.press('Escape');
+ const future=page.locator('#project-gartal-origin .sx-v14-editorial-copy h3 [data-reveal-word]').first();
  expect(await future.evaluate(el=>getComputedStyle(el).opacity)).toBe('0');
  const chapter=page.locator('#project-gartal');
  const info=await chapter.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,travel:el.getBoundingClientRect().height-innerHeight}));
@@ -145,9 +140,8 @@ test('horizontal chapters do not widen the page at phone widths during the live 
  for(const width of [360,390,430]){
   const page=await browser.newPage({viewport:{width,height:844}});
   await page.goto('/',{waitUntil:'domcontentloaded'});
-  const tour=page.getByRole('region',{name:'Guided portfolio tour'});
-  await expect(tour).toBeVisible({timeout:6000});
-  await tour.getByRole('button',{name:'Exit guided tour'}).click();
+  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+  await page.keyboard.press('Escape');
   const chapter=page.locator('#project-digirezhim');
   await chapter.evaluate(e=>{
    const rect=e.getBoundingClientRect();
