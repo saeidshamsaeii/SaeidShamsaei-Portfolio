@@ -64,6 +64,37 @@ export function SelectedWorkIndex(){
    if(raf)cancelAnimationFrame(raf);
   };
  },[]);
+ // Link the exit fade to actual scroll movement AFTER the two-second
+ // fully typed reading hold. The heading and four rows rise as they fade;
+ // revisiting the section restores them with no replay/blanking glitch.
+ useEffect(()=>{
+  const host=section.current;
+  if(!host)return;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  let exitFrame=0;
+  const renderExit=()=>{
+   exitFrame=0;
+   const rect=host.getBoundingClientRect();
+   const distance=Math.max(130,Math.min(260,window.innerHeight*.32));
+   const progress=reduced.matches?0:
+    Math.max(0,Math.min(1,-rect.top/distance));
+   host.style.setProperty('--sx-work-exit',String(progress));
+  };
+  const requestExit=()=>{
+   if(!exitFrame)exitFrame=requestAnimationFrame(renderExit);
+  };
+  window.addEventListener('scroll',requestExit,{passive:true});
+  window.addEventListener('resize',requestExit);
+  reduced.addEventListener('change',requestExit);
+  requestExit();
+  return()=>{
+   window.removeEventListener('scroll',requestExit);
+   window.removeEventListener('resize',requestExit);
+   reduced.removeEventListener('change',requestExit);
+   if(exitFrame)cancelAnimationFrame(exitFrame);
+   host.style.removeProperty('--sx-work-exit');
+  };
+ },[]);
  return <section ref={section} className="sx-v16-index sx-v18-index" id="work-index"
   data-work-reveal-progress="0"
   aria-labelledby="sx-v16-work-title" data-active-project={active}
