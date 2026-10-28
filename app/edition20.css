@@ -548,3 +548,82 @@
   will-change:auto;
  }
 }
+
+/* Edition 30 — five independently drawn rules.
+ * All borders must begin INVISIBLE; a rule is drawn only AFTER the text in
+ * its own block finishes. The 2s hold then runs before the next block types.
+ * The exiting fade-up remains scroll-linked and begins after the final hold. */
+.sx-v18-site #work-index .sx-v18-index-heading,
+.sx-v18-site #work-index .sx-v18-index-entry{
+ position:relative;
+ border-bottom-color:transparent!important;
+}
+.sx-v18-site #work-index .sx-v18-index-heading::after,
+.sx-v18-site #work-index .sx-v18-index-entry::after{
+ content:"";
+ position:absolute;
+ z-index:4;
+ bottom:-1px;
+ left:0;
+ right:0;
+ height:1px;
+ background:#ffffffa8;
+ transform:scaleX(var(--sx-work-rule,0));
+ transform-origin:left center;
+ pointer-events:none;
+ transition:none!important;
+}
+.sx-v18-site #work-index .sx-v18-index-entry::after{
+ background:#ffffff69;
+}
+.sx-v18-site #work-index .sx-v18-index-heading>span,
+.sx-v18-site #work-index .sx-v18-index-entry .sx-v18-index-direct,
+.sx-v18-site #work-index .sx-v18-index-entry .sx-v16-index-row>span:last-child{
+ opacity:0;
+ transition:opacity .28s ease!important;
+}
+.sx-v18-site #work-index [data-work-stage-state="line"].sx-v18-index-heading>span,
+.sx-v18-site #work-index [data-work-stage-state="holding"].sx-v18-index-heading>span,
+.sx-v18-site #work-index [data-work-stage-state="complete"].sx-v18-index-heading>span,
+.sx-v18-site #work-index [data-work-stage-state="line"].sx-v18-index-entry .sx-v18-index-direct,
+.sx-v18-site #work-index [data-work-stage-state="holding"].sx-v18-index-entry .sx-v18-index-direct,
+.sx-v18-site #work-index [data-work-stage-state="complete"].sx-v18-index-entry .sx-v18-index-direct,
+.sx-v18-site #work-index [data-work-stage-state="line"].sx-v18-index-entry .sx-v16-index-row>span:last-child,
+.sx-v18-site #work-index [data-work-stage-state="holding"].sx-v18-index-entry .sx-v16-index-row>span:last-child,
+.sx-v18-site #work-index [data-work-stage-state="complete"].sx-v18-index-entry .sx-v16-index-row>span:last-child{
+ opacity:1;
+}
+.sx-v18-site #work-index [data-work-stage-state="pending"].sx-v18-index-entry .sx-v18-index-direct,
+.sx-v18-site #work-index [data-work-stage-state="typing"].sx-v18-index-entry .sx-v18-index-direct{
+ pointer-events:none;
+}
+.sx-v18-site #work-index .sx-v18-index-entry:focus-within .sx-v18-index-direct,
+.sx-v18-site #work-index .sx-v18-index-entry:focus-within .sx-v16-index-row>span:last-child{
+ opacity:1!important;
+ pointer-events:auto;
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-v18-site #work-index .sx-v18-index-heading::after,
+ .sx-v18-site #work-index .sx-v18-index-entry::after{
+  transform:scaleX(1)!important;
+ }
+ .sx-v18-site #work-index .sx-v18-index-heading>span,
+ .sx-v18-site #work-index .sx-v18-index-entry .sx-v18-index-direct,
+ .sx-v18-site #work-index .sx-v18-index-entry .sx-v16-index-row>span:last-child{
+  opacity:1!important;
+  pointer-events:auto;
+  transition:none!important;
+ }
+}
+@media(scripting:none){
+ .sx-v18-site #work-index .sx-v18-index-heading::after,
+ .sx-v18-site #work-index .sx-v18-index-entry::after{
+  transform:scaleX(1)!important;
+ }
+ .sx-v18-site #work-index .sx-v18-index-heading>span,
+ .sx-v18-site #work-index .sx-v18-index-entry .sx-v18-index-direct,
+ .sx-v18-site #work-index .sx-v18-index-entry .sx-v16-index-row>span:last-child{
+  opacity:1!important;
+  pointer-events:auto;
+ }
+}
