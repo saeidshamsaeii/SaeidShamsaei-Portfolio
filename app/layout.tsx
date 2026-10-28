@@ -21,6 +21,7 @@ import './edition13.css';
 import './edition14.css';
 import './edition16.css';
 import './edition18.css';
+import './edition19.css';
 
 const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL;
 const validUrl=typeof configuredUrl==='string'&&/^https:\/\/[^/]+\.[^/]+/.test(configuredUrl)&&!configuredUrl.includes('example.invalid');
@@ -36,7 +37,7 @@ export const metadata:Metadata={
  twitter:{card:'summary_large_image',title,description,images:['/assets/hires/logo.webp']},
  icons:{icon:'/assets/hires/logo.webp'}
 };
-export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:'#0b0d0f'};
+export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:'#000000'};
 const identity={
  '@context':'https://schema.org','@type':'Person',name:'Saeid Shamsaei',
  jobTitle:'Software Architect and Product Engineer',
