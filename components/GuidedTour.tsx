@@ -314,7 +314,12 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
        return rect.height>innerHeight+12||
         (rect.top>=-12&&rect.bottom<=innerHeight+12);
       })();
-      if(workFullyFramed&&
+      // Reading is complete only after the directory's own animation
+      // reaches its final frame AND every title/description acknowledges it.
+      // No time-based fallback may ever start this particular hold early.
+      const workTypingFinished=!selectedWorkHold||
+       Number(stops[state.index].element.dataset.workRevealProgress||'0')>=.999;
+      if(workFullyFramed&&workTypingFinished&&
          (textHasFinished(stops[state.index])||
           (!strictCopy&&time-state.arrivedAt>=COPY_SETTLE_MAX_MS))){
        if(state.holdStartedAt===null){
