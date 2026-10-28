@@ -1,5 +1,5 @@
 'use client';
-import {createContext,useContext,useEffect,useMemo,useState} from 'react';
+import {createContext,useCallback,useContext,useEffect,useMemo,useState} from 'react';
 
 export const languages=[
  {code:'en',native:'English',short:'EN',dir:'ltr'},
@@ -42,7 +42,17 @@ export function LocaleProvider({children}:{children:React.ReactNode}){
   document.documentElement.dir=directionFor(locale);
   try{window.localStorage.setItem(STORAGE_KEY,locale);}catch{/* Private mode */}
  },[locale,hydrated]);
- const value=useMemo(()=>({locale,setLocale}),[locale]);
+ // An explicit selection is also shareable as ?lang=fa / ?lang=de,
+ // while storage preserves the choice when navigating between page routes.
+ const chooseLocale=useCallback((next:SiteLocale)=>{
+  setLocale(next);
+  try{
+   const url=new URL(window.location.href);
+   url.searchParams.set('lang',next);
+   window.history.replaceState(window.history.state,'',url.pathname+url.search+url.hash);
+  }catch{/* URL updates are optional; language state still works. */}
+ },[]);
+ const value=useMemo(()=>({locale,setLocale:chooseLocale}),[locale,chooseLocale]);
  return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }
 export function useSiteLocale(){
