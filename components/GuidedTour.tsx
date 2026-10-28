@@ -216,6 +216,6 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
 
  // The tour is deliberately headless. It still performs the complete
  // automatic native-scroll narrative, yields to user input, and resumes
- // after idle without exposing an AUTO STORY overlay or speed bar.
+ // after idle without rendering any on-screen playback controls.
  return null;
 }
