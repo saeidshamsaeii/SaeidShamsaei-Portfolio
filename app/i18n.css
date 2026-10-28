@@ -85,6 +85,21 @@
  }
 }
 
+/* In medium desktop widths the fully expanded ribbon must not collide
+   with the left wordmark. Only the expanded state stacks inside the header. */
+@media(min-width:901px) and (max-width:1250px){
+ .sx-v18-site .sx-header.sx-v18-header:has(
+  .sx-language-switcher[data-language-open="true"]){
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;gap:12px!important;
+ }
+ .sx-v18-site .sx-header.sx-v18-header:has(
+  .sx-language-switcher[data-language-open="true"]) nav{
+  display:flex!important;justify-content:center!important;
+  align-items:center!important;flex-wrap:wrap!important;
+  max-width:100%!important;width:100%!important;
+ }
+}
 /* Correct native writing directions. Only Persian and Arabic are RTL.
    The horizontal scroll rail must stay LTR for its translateX geometry. */
 html[dir=rtl] :is(.sx-site,.sx-v10-case-page,.sx-ei){direction:rtl;}
