@@ -16,6 +16,28 @@ export default function PortfolioExperience(){
  const [tour,setTour]=useState(true);
  const finishGreeting=useCallback(()=>setLoaded(true),[]);
 
+ // One-screen intro is the viewport MINUS the actual responsive header.
+ // ResizeObserver accounts for mobile nav wrapping, browser zoom and any
+ // font loading that changes its size; a hardcoded 110px was unreliable.
+ useEffect(()=>{
+  const shell=document.querySelector<HTMLElement>('.sx-v18-site');
+  const header=shell?.querySelector<HTMLElement>('.sx-v18-header');
+  if(!shell||!header)return;
+  const measure=()=>{
+   const height=Math.ceil(header.getBoundingClientRect().height);
+   shell.style.setProperty('--sx-intro-header-height',height+'px');
+  };
+  measure();
+  const observer=typeof ResizeObserver==='undefined'?null:new ResizeObserver(measure);
+  observer?.observe(header);
+  window.addEventListener('resize',measure);
+  return()=>{
+   observer?.disconnect();
+   window.removeEventListener('resize',measure);
+   shell.style.removeProperty('--sx-intro-header-height');
+  };
+ },[]);
+
  // The mobile photo pause starts *when Hello is gone*, independently of the
  // scroll director. Previously the hold lived inside GuidedTour and could be
  // bypassed by its initial scroll/restore state. Do not mount the director
