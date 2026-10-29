@@ -10,8 +10,8 @@ export const homeStories:Record<ProjectId,{signature:string;beats:[HomeBeat,Home
  gartal:{
   signature:'A service website for project inquiries. A separate platform for product contracts.',
   beats:[
-   {eyebrow:'01 / THE FRONT DOOR',headline:'34 service pages. A real inquiry workflow.',
-    copy:'GARTAL-SITE keeps 34 public pages for web design, custom software and automation. Project inquiries have a dedicated form and validation. The separate Gartal-Platform repository defines versioned contracts for independent products; it is not the studio website.',
+   {eyebrow:'01 / THE FRONT DOOR',headline:'Service routes. A real inquiry workflow.',
+    copy:'GARTAL-SITE implements a Next.js service website for web design, custom software and automation, with localized public routes and a validated project-request API backed by PostgreSQL. The separate Gartal-Platform repository defines versioned contracts for independent products; it is not the studio website.',
     notes:['Services shaped around client intent','Dedicated inquiry and privacy flows'],
     pace:.69,duration:12,mode:'statement'},
    {eyebrow:'02 / THE FOUNDATIONS',headline:'Four applications. Shared contracts.',
