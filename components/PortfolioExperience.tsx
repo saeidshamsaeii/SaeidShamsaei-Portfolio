@@ -87,6 +87,9 @@ export default function PortfolioExperience(){
    document.removeEventListener('pointerdown',onNavigation);
    delete root.dataset.portfolioTourHold;
    if(manual){
+    // Explicit manual input may reveal the copy by scroll geometry.
+    // Absence of GuidedTour during its first mount must never imply manual.
+    cover.dataset.mobileCopyManual='true';
     revealCopy();
     setTour(false);
    }else{
