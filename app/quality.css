@@ -285,10 +285,22 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 /* During a pinned frame transition, future note text must never peek
  * through while its headline and paragraphs are still hidden. */
 .sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
- .sx-v30-case-notes{visibility:hidden!important;}
+ .sx-v30-case-notes,
+.sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
+ .sx-v30-case-meta,
+.sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
+ .sx-v30-case-eyebrow,
+.sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
+ .sx-v30-case-footer{visibility:hidden!important;}
 @media (prefers-reduced-motion:reduce){
  .sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
-  .sx-v30-case-notes{visibility:visible!important;}
+  .sx-v30-case-notes,
+ .sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
+  .sx-v30-case-meta,
+ .sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
+  .sx-v30-case-eyebrow,
+ .sx-v18-site .sx-v11-horizontal-chapter [data-frame-state="upcoming"]
+  .sx-v30-case-footer{visibility:visible!important;}
 }
 @media (max-width:760px){
  .sx-v18-site .sx-v11-horizontal-chapter .sx-v30-case-slide{
