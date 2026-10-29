@@ -550,7 +550,7 @@ test('mobile introduction has no image-to-title dead zone or first-paint text fl
  const word=read('components/WordReveal.tsx');
  assert.match(opening,/data-mobile-photo-phase="photo"/);
  assert.match(css,/justify-content:flex-start!important/);
- assert.match(css,/padding:clamp\(6px,1svh,12px\)/);
+ assert.match(css,/padding:clamp\(14px,2svh,21px\)/);
  assert.match(css,/scale\(1\.075\)!important/);
  assert.match(css,/transparent 57%,rgba\(0,0,0,\.08\) 72%/);
  assert.match(css,/@media \(max-width:760px\) and \(prefers-reduced-motion:no-preference\)\{/);
