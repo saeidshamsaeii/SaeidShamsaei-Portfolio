@@ -42,6 +42,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   const workIndex=host.closest<HTMLElement>('#work-index');
   const started=performance.now();
   let raf=0;
+  let disposed=false;
   let layoutCache=new WeakMap<HTMLElement,HTMLElement[][]>();
 
   // Browser layout, not word counts, determines the line breaks at any
@@ -130,9 +131,10 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    }
    return grouped(container,goal);
   };
-  const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
+  const request=()=>{if(!disposed&&!raf)raf=requestAnimationFrame(update);};
   const update=()=>{
    raf=0;
+   if(disposed)return;
    if(reduced.matches){clear();return;}
    const chapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
    const panel=host.closest<HTMLElement>('[data-frame-index]');
@@ -225,9 +227,10 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   sizing.observe(host);
   const onMotion=()=>reduced.matches?clear():request();
   reduced.addEventListener('change',onMotion);
-  if(document.fonts)void document.fonts.ready.then(invalidate);
+  if(document.fonts)void document.fonts.ready.then(()=>{if(!disposed)invalidate();});
   if(reduced.matches)clear();else request();
   return()=>{
+   disposed=true;
    observer.disconnect();sizing.disconnect();
    horizontalChapter?.removeEventListener('sx-horizontal-progress',update);
    workIndex?.removeEventListener('sx-work-progress',update);
