@@ -14,7 +14,15 @@ export default function PortfolioExperience(){
  const [loaded,setLoaded]=useState(false);
  const [introHoldFinished,setIntroHoldFinished]=useState(false);
  const [tour,setTour]=useState(true);
- const finishGreeting=useCallback(()=>setLoaded(true),[]);
+ const finishGreeting=useCallback(()=>{
+  // Restore the initial camera BEFORE React removes the opaque Hello layer.
+  // Moving to scrollY=0 in a post-Hello effect caused a visible upward nudge.
+  // Explicit anchors and genuine back/forward navigation keep their position.
+  const nav=performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming|undefined;
+  if(!window.location.hash&&nav?.type!=='back_forward')
+   window.scrollTo({top:0,behavior:'instant'});
+  setLoaded(true);
+ },[]);
 
  // One-screen intro is the viewport MINUS the actual responsive header.
  // ResizeObserver accounts for mobile nav wrapping, browser zoom and any
@@ -64,7 +72,8 @@ export default function PortfolioExperience(){
    setIntroHoldFinished(true);
    return;
   }
-  window.scrollTo({top:0,behavior:'instant'});
+  // Any initial camera reset already happened behind the Hello overlay;
+  // never change scrollY after the portrait becomes visible.
 
   // At this point the Hello overlay has unmounted, the portrait is visible,
   // and neither the guided scroll nor intro typing has started.
