@@ -96,7 +96,7 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
  * uses only the upper part; the remainder is reserved for typed copy. */
 @media (max-width:760px){
  .sx-v18-site #intro.sx-v19-cover{
-  --sx-intro-photo-height:clamp(145px,34svh,340px);
+  --sx-intro-photo-height:clamp(185px,42svh,405px);
   min-height:max(0px,calc(100svh - var(--sx-intro-header-height,110px)))!important;
  }
  .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background{
@@ -107,11 +107,11 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
   box-sizing:border-box!important;
   margin-top:var(--sx-intro-photo-height)!important;
   min-height:max(0px,calc(100svh - var(--sx-intro-header-height,110px) - var(--sx-intro-photo-height)))!important;
-  padding:clamp(15px,2.4svh,28px) clamp(16px,5vw,28px) clamp(18px,3svh,35px)!important;
+  padding:clamp(6px,1svh,12px) clamp(16px,5vw,28px) clamp(18px,3svh,35px)!important;
   gap:clamp(12px,2.1svh,20px)!important;
   width:100%!important;
   max-width:100%!important;
-  justify-content:center!important;
+  justify-content:flex-start!important;
  }
  .sx-v18-site #intro.sx-v19-cover h1{
   font-size:clamp(39px,11.7vw,68px)!important;
@@ -128,7 +128,7 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 }
 @media (max-width:760px) and (max-height:660px){
  .sx-v18-site #intro.sx-v19-cover{
-  --sx-intro-photo-height:clamp(118px,25svh,175px);
+  --sx-intro-photo-height:clamp(142px,31svh,215px);
  }
  .sx-v18-site .sx-header.sx-v18-header{
   padding:10px 12px!important;
@@ -138,7 +138,7 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
   gap:5px clamp(9px,3vw,18px)!important;
  }
  .sx-v18-site #intro.sx-v19-cover .sx-v19-cover-content{
-  padding:10px 16px 15px!important;
+  padding:5px 16px 15px!important;
   gap:10px!important;
  }
  .sx-v18-site #intro.sx-v19-cover h1{
@@ -151,7 +151,7 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 }
 @media (max-width:760px) and (max-height:470px){
  .sx-v18-site #intro.sx-v19-cover{
-  --sx-intro-photo-height:clamp(82px,20svh,120px);
+  --sx-intro-photo-height:clamp(105px,25svh,135px);
  }
 }
 /* Let narrow landscape/mobile zoom use natural height rather than clipping.
@@ -159,7 +159,7 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 /* During the first two seconds, the portrait is the only editorial
  * content; the text below is present in layout but still fully hidden.
  * Reduced-motion and no-script readers see the complete copy instead. */
-@media (max-width:760px) and (prefers-reduced-motion:no-preference) and (scripting:enabled){
+@media (max-width:760px) and (prefers-reduced-motion:no-preference){
  .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content{
   visibility:hidden!important;
   pointer-events:none!important;
@@ -167,5 +167,37 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
  /* Earlier CSS forces the h1 visible, so override descendants too. */
  .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content *{
   visibility:hidden!important;
+ }
+}
+
+/* Preserve the original owner portrait, but remove the artificial 90%
+ * zoom-out and the premature black fade that created a visual void above
+ * SAEID. The image still dissolves naturally into the pure-black copy. */
+@media (max-width:760px){
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background img{
+  transform:translateY(-1%) scale(1.075)!important;
+  transform-origin:center top!important;
+  object-position:center 4%!important;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 59%,rgba(0,0,0,.94) 75%,rgba(0,0,0,.6) 90%,transparent 100%)!important;
+  mask-image:linear-gradient(to bottom,#000 0%,#000 59%,rgba(0,0,0,.94) 75%,rgba(0,0,0,.6) 90%,transparent 100%)!important;
+ }
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background::before{
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,transparent 68%,rgba(0,0,0,.20) 84%,#000 100%)!important;
+  mask-image:linear-gradient(to bottom,transparent 0%,transparent 68%,rgba(0,0,0,.20) 84%,#000 100%)!important;
+ }
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background::after{
+  background:linear-gradient(to bottom,transparent 57%,rgba(0,0,0,.08) 72%,rgba(0,0,0,.46) 90%,#000 100%)!important;
+ }
+}
+
+/* Flash-of-unanimated-copy guard. The phase attribute exists in server HTML,
+ * so the cover is hidden from FIRST PAINT, including browsers that don't
+ * support the newer (scripting:enabled) media query. React later advances
+ * from 'photo' to 'copy', and WordReveal owns per-word opacity. */
+@media (max-width:760px) and (prefers-reduced-motion:no-preference){
+ .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="copy"]
+ .sx-word-reveal:not([data-motion="on"]) [data-reveal-word]{
+  opacity:0!important;
+  clip-path:inset(0 100% 0 0)!important;
  }
 }
