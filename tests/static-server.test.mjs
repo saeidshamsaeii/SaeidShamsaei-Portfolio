@@ -40,9 +40,18 @@ test('static export preview serves routes, 404 and unsafe-path refusals',async t
  const child=spawn(process.execPath,[script],{
   cwd:temp,env:{...process.env,PORT:String(port)},stdio:['ignore','pipe','pipe']
  });
- t.after(()=>{
-  child.kill();
-  rmSync(temp,{recursive:true,force:true});
+ t.after(async()=>{
+  // On Windows, allow the subprocess to actually exit before unlinking
+  // its temporary working directory (otherwise cleanup can hit EBUSY).
+  if(child.exitCode===null&&child.signalCode===null){
+   const closed=new Promise(done=>{
+    const timer=setTimeout(done,3000);
+    child.once('exit',()=>{clearTimeout(timer);done();});
+   });
+   child.kill();
+   await closed;
+  }
+  rmSync(temp,{recursive:true,force:true,maxRetries:5,retryDelay:100});
  });
  await new Promise((ok,fail)=>{
   const timeout=setTimeout(()=>fail(new Error('Preview server failed to start')),6000);
