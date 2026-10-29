@@ -163,9 +163,9 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
      const byScroll=clamp(-rect.top/Math.max(1,rect.height*.72));
      const mobile=window.matchMedia('(max-width:760px)').matches;
      const phase=cover.dataset.mobilePhotoPhase;
-     if(mobile&&(phase==='photo'||phase==='moving')){
+     if(mobile&&phase==='photo'){
       // The first two seconds belong to the portrait, never the words.
-      // During travel to the lower text stage, nothing types offscreen.
+      // Name and description remain blank until the photo hold finishes.
       progress=0;
      }else{
       const mobileStarted=Number(cover.dataset.mobileCopyStartedAt||0);
