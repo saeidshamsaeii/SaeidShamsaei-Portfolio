@@ -80,11 +80,18 @@ test('mobile opens with portrait above copy in ONE section, waits 2s, types, the
   return {photo:image.getBoundingClientRect().height,
    portraitEnd:image.getBoundingClientRect().bottom,
    textStart:copy.getBoundingClientRect().top,
+   firstLineTop:section.querySelector<HTMLElement>('h1')!.getBoundingClientRect().top,
+   imageTransform:getComputedStyle(image.querySelector('img')!).transform,
    introHeight:section.getBoundingClientRect().height};
  });
  expect(imageLayout.photo).toBeGreaterThan(190);
  expect(imageLayout.photo).toBeLessThan(400);
  expect(Math.abs(imageLayout.textStart-imageLayout.portraitEnd)).toBeLessThanOrEqual(3);
+ // Name starts immediately under the photo, not vertically centered below
+ // a large empty black strip.
+ expect(imageLayout.firstLineTop-imageLayout.portraitEnd).toBeGreaterThanOrEqual(-2);
+ expect(imageLayout.firstLineTop-imageLayout.portraitEnd).toBeLessThanOrEqual(18);
+ expect(imageLayout.imageTransform).not.toBe('none');
  expect(imageLayout.introHeight).toBeLessThan(844);
  const initialY=await page.evaluate(()=>scrollY);
  expect(initialY).toBeLessThanOrEqual(2);
@@ -105,6 +112,27 @@ test('mobile opens with portrait above copy in ONE section, waits 2s, types, the
  await expect(intro.locator('.sx-word-reveal[data-reveal-complete="true"]'))
   .toHaveCount(2,{timeout:9000});
  await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:7000}).toBeGreaterThan(55);
+});
+
+test('mobile first paint hides the entire intro copy even without hydration',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ // Keep HTML/CSS, but block Next client scripts to inspect server HTML before
+ // hydration. This catches an early flash that animation timing alone misses.
+ await page.route(/\\/_next\\/static\\/.*\\.(?:js|mjs)(?:\\?.*)?$/,route=>route.abort());
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const intro=page.locator('#intro');
+ await expect(intro).toHaveAttribute('data-mobile-photo-phase','photo');
+ await expect(intro.locator('.sx-v19-cover-content')).toHaveCSS('visibility','hidden');
+ await expect(intro.locator('h1')).toHaveCSS('visibility','hidden');
+ await expect(intro.locator('.sx-v18-cover-lead')).toHaveCSS('visibility','hidden');
+});
+
+test('mobile no-script fallback keeps introductory copy readable',async({browser})=>{
+ const page=await browser.newPage({viewport:{width:390,height:844},javaScriptEnabled:false});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#intro .sx-v19-cover-content')).toHaveCSS('visibility','visible');
+ await expect(page.locator('#intro h1')).toHaveCSS('visibility','visible');
+ await page.close();
 });
 
 test('first intro block tracks real header height and fills available responsive viewport',async({browser})=>{
