@@ -421,3 +421,27 @@ test('mobile introduction starts typing without first showing the complete text'
   element=>Number(getComputedStyle(element).opacity));
  expect(progress).toBeLessThan(.99);
 });
+
+test('first SAEID word begins smoothly without a stray typing caret',async({page})=>{
+ test.setTimeout(22000);
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ const intro=page.locator('#intro');
+ await expect(intro).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:9000});
+ const firstWord=intro.locator('h1 [data-reveal-word]').first();
+ await expect(firstWord).toHaveCSS('transition','none');
+ const caret=await firstWord.evaluate(node=>getComputedStyle(node,'::after').content);
+ expect(caret).toBe('none');
+ const samples=await firstWord.evaluate(async word=>{
+  const values:number[]=[];
+  for(let i=0;i<15;i++){
+   await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
+   values.push(Number(getComputedStyle(word).opacity));
+  }
+  return values;
+ });
+ // A font refresh or animation handoff must not reset visible title text.
+ for(let i=1;i<samples.length;i++)
+  expect(samples[i]+.025).toBeGreaterThanOrEqual(samples[i-1]);
+});
