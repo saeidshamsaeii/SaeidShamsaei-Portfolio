@@ -100,4 +100,11 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
   visibility:hidden!important;
   pointer-events:none!important;
  }
+ /* Earlier edition CSS explicitly forces h1 visibility:visible!important.
+    Visibility is inherited, but that child override could leak text through
+    a hidden parent. Hide descendants explicitly only during the photo stages. */
+ .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content *,
+ .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="moving"] .sx-v19-cover-content *{
+  visibility:hidden!important;
+ }
 }
