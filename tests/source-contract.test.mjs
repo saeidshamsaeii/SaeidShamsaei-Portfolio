@@ -518,6 +518,9 @@ test('mobile opening holds the portrait first, then begins visible copy typing',
  assert.match(tour,/introCover\.dataset\.mobilePhotoPhase='moving'/);
  assert.match(tour,/copy\.getBoundingClientRect\(\)\.top<=innerHeight\*\.78/);
  assert.match(tour,/const mobileIntroCopy=state\.index===0&&introMobile/);
+ assert.match(tour,/if\(introCover&&state\.index===0&&introMobile/);
+ assert.match(tour,/Boolean\(introCover\)/);
+ assert.match(css,/\.sx-v19-cover-content \*/);
  assert.match(tour,/const duration=mobileIntroCopy\?0:/);
  assert.match(word,/phase==='photo'\|\|phase==='moving'/);
  assert.match(word,/mobileCopyStartedAt/);
