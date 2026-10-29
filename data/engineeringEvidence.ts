@@ -24,16 +24,16 @@ export const engineeringEvidence:EngineeringRecord[]=[
   differentiator:'The GARTAL studio website is not the GARTAL product runtime.',
   boundary:'Independent marketing, platform contract and product repositories must not be described as a single deployed service.',
   files:[
-   {label:'Studio scope & operational boundaries',repo:'GARTAL-SITE',path:'README.md',why:'WSGI, service routes, intake, privacy, SEO and deployment gates'},
-   {label:'Canonical marketing content',repo:'GARTAL-SITE',path:'content.py',why:'Actual page inventory and service copy'},
+   {label:'Studio scope & operational boundaries',repo:'GARTAL-SITE',path:'README.md',why:'Current Next.js service routes, lead intake, privacy, localization and release gates'},
+   {label:'Validated project request endpoint',repo:'GARTAL-SITE',path:'app/api/leads/route.ts',why:'Zod validation, same-origin check and truthful database failure handling'},
    {label:'Cross-product platform architecture',repo:'Gartal-Platform',path:'README.md',why:'Independent server, admin, store and licensing runtimes'},
    {label:'Industry pack version contract',repo:'Gartal-Platform',path:'platform/industry-packs/README.md',why:'Industry-pack contracts and ownership'}
   ],
   decisions:[
    {id:'studio',discipline:'experience',question:'How should a potential client discover the right service?',
-    design:'Distinct service-focused routes and a validated project-inquiry flow in a server-rendered studio site.',
+    design:'Distinct Next.js App Router service paths, localized content and a Zod-validated, database-backed project-inquiry API.',
     tradeoff:'A purpose-built marketing layer is simpler to explain but must remain separate from transactional applications.',
-    evidence:'The studio README documents service pages, request validation, lead administration and privacy controls.',
+    evidence:'The current studio README and lead API source document multilingual service routes, validation, PostgreSQL persistence, administrative review and privacy controls.',
     files:[0,1]},
    {id:'contracts',discipline:'architecture',question:'How can multiple vertical products reuse infrastructure without merging runtimes?',
     design:'Cross-product manifests and versioned industry packs coordinate four separately owned application runtimes.',
@@ -141,7 +141,7 @@ export const engineeringEvidence:EngineeringRecord[]=[
 // SHA values were read from the repositories' GitHub main branches during the
 // October 2026 portfolio research audit. Deployment verification is separate.
 export const sourceSnapshots:Record<string,string>={
- 'GARTAL-SITE':'f0a98cae736d19f20ba6b4b1d879c1c9a172a666',
+ 'GARTAL-SITE':'8807047e306304051d74db7596b5fdfed0be1606',
  'Gartal-Platform':'1169fa3c862a942899aa49c96bdeeabc838f5b57',
  'AI-Development-Factory':'6813e65f9709ef1be83be62511dd75f4468d6f8b',
  'DigiRezhim':'c9b35ca732d8fe8957b1b2e75337b6bb227a4c56',
