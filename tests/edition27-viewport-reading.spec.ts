@@ -107,6 +107,50 @@ test('mobile opens with portrait above copy in ONE section, waits 2s, types, the
  await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:7000}).toBeGreaterThan(55);
 });
 
+test('first intro block tracks real header height and fills available responsive viewport',async({browser})=>{
+ for(const viewport of [
+  {width:320,height:568},{width:390,height:844},{width:768,height:1024},
+  {width:1440,height:900},{width:320,height:430}
+ ]){
+  const page=await browser.newPage({viewport,reducedMotion:'reduce'});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const site=page.locator('.sx-v18-site');
+  await expect.poll(()=>site.evaluate(node=>
+   Number.parseFloat(node.style.getPropertyValue('--sx-intro-header-height'))
+  )).toBeGreaterThan(35);
+  const result=await page.locator('#intro').evaluate(section=>{
+   const header=document.querySelector<HTMLElement>('.sx-v18-header')!;
+   const h=header.getBoundingClientRect();
+   const intro=section.getBoundingClientRect();
+   const computed=getComputedStyle(section);
+   const photo=section.querySelector<HTMLElement>('.sx-v19-photo-background')!;
+   const copy=section.querySelector<HTMLElement>('.sx-v19-cover-content')!;
+   const image=photo.getBoundingClientRect(),text=copy.getBoundingClientRect();
+   return {
+    headerBottom:h.bottom,
+    introTop:intro.top,
+    introHeight:intro.height,
+    expectedHeight:innerHeight-h.height,
+    minHeight:Number.parseFloat(computed.minHeight),
+    noHorizontalOverflow:section.scrollWidth<=section.clientWidth+2,
+    photoOnTop:image.bottom<=text.top+3,
+    copyInSection:text.bottom<=intro.bottom+3,
+    portraitIsPartialScreen:image.height<innerHeight*.55
+   };
+  });
+  expect(Math.abs(result.introTop-result.headerBottom),'intro follows header').toBeLessThanOrEqual(3);
+  expect(Math.abs(result.minHeight-result.expectedHeight),'viewport/header height contract').toBeLessThanOrEqual(3);
+  expect(result.introHeight).toBeGreaterThanOrEqual(result.expectedHeight-3);
+  expect(result.noHorizontalOverflow,'intro should not overflow horizontally').toBe(true);
+  expect(result.copyInSection,'intro text must never be clipped by section').toBe(true);
+  if(viewport.width<=760){
+   expect(result.photoOnTop).toBe(true);
+   expect(result.portraitIsPartialScreen).toBe(true);
+  }
+  await page.close();
+ }
+});
+
 test('short mobile viewports keep portrait above copy without horizontal overflow',async({browser})=>{
  for(const viewport of [{width:320,height:568},{width:390,height:844}]){
   const page=await browser.newPage({viewport,reducedMotion:'reduce'});
