@@ -203,6 +203,16 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 }
 
 
+/* The portfolio intro uses letter disclosure only, not a typing caret.
+ * Legacy .is-typing and global word pseudo-elements must never draw an
+ * isolated line ahead of the first recognizable SAEID character. */
+.sx-v18-site #intro [data-reveal-word]::after,
+.sx-v18-site #intro .sx-word-piece.is-typing::after{
+ content:none!important;
+ display:none!important;
+ animation:none!important;
+}
+
 /* Three real slides per project: problem, implementation, current evidence.
  * This is a reading surface rather than an oversized slogan screen.
  * No faux KPIs; short source-bound points remain legible at mobile widths. */
