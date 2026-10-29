@@ -8,7 +8,7 @@ function approvedOrigin():string|null {
  try{
   const url=new URL(raw);
   const blocked=['localhost','127.0.0.1','0.0.0.0','example.invalid','example.com'];
-  if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||
+  if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/'||
    blocked.includes(url.hostname)||url.hostname.endsWith('.local')||url.hostname.endsWith('.invalid'))
    return null;
   return url.origin;
