@@ -369,11 +369,55 @@ test('mobile reader can skip photo hold, and case pages have no portrait delay',
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  await page.keyboard.press('Escape');
- await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','paused');
+ // During the initial photo-only gate GuidedTour has not mounted yet.
+ // Escape skips the hold and disables autoplay without claiming "paused".
+ await expect(page.locator('html')).not.toHaveAttribute('data-portfolio-tour-hold','intro-photo');
  await expect(page.locator('#intro')).toHaveAttribute('data-mobile-photo-phase','copy');
  await expect(page.locator('#intro .sx-v19-cover-content')).toHaveCSS('visibility','visible');
  await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#intro')).toHaveCount(0);
  await expect(page.locator('html')).not.toHaveAttribute('data-portfolio-tour-hold','intro-photo');
  await expect(page.locator('.sx-v10-case-cover')).toHaveCount(1);
+});
+
+test('every portfolio project has exactly three substantive slides and a final source link',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ for(const id of ['gartal','factory','digirezhim','petiwoo']){
+  const chapter=page.locator('#project-'+id);
+  const slides=chapter.locator('[data-frame-index]');
+  await expect(slides).toHaveCount(3);
+  await expect(chapter).toHaveAttribute('data-frame-count','3');
+  for(let index=0;index<3;index++){
+   const slide=slides.nth(index);
+   await expect(slide.locator('.sx-v30-case-meta')).toContainText(String(index+1).padStart(2,'0')+' / 03');
+   const title=await slide.locator('.sx-v30-case-copy h3').innerText();
+   const description=await slide.locator('.sx-v30-case-copy p').innerText();
+   expect(title.trim().length,id+' slide '+index+' must have a meaningful title').toBeGreaterThan(18);
+   expect(description.trim().length,id+' slide '+index+' must explain real scope').toBeGreaterThan(125);
+   await expect(slide.locator('.sx-v30-case-notes li')).toHaveCount(2);
+  }
+  await expect(slides.nth(0).locator('.sx-v30-case-eyebrow')).toContainText('THE PROBLEM');
+  await expect(slides.nth(1).locator('.sx-v30-case-eyebrow')).toContainText('IMPLEMENTATION');
+  await expect(slides.nth(2).locator('.sx-v30-case-eyebrow')).toContainText('WHAT IS VERIFIED');
+  await expect(slides.nth(2).getByRole('link',{name:/READ FULL CASE STUDY/}))
+   .toHaveAttribute('href','/work/'+id+'/');
+ }
+});
+
+test('mobile introduction starts typing without first showing the complete text',async({page})=>{
+ test.setTimeout(20000);
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await expect(page.locator('#intro')).toHaveAttribute('data-mobile-photo-phase','photo');
+ await expect(page.locator('#intro .sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(0);
+ await expect(page.locator('#intro')).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:8500});
+ // The old bug treated "tour is not mounted yet" as manual, showed all copy,
+ // then reset it to zero when the tour mounted. Now it remains mid-typing.
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:4500});
+ await expect(page.locator('#intro .sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(0);
+ const progress=await page.locator('#intro .sx-v18-cover-lead [data-reveal-word]').last().evaluate(
+  element=>Number(getComputedStyle(element).opacity));
+ expect(progress).toBeLessThan(.99);
 });
