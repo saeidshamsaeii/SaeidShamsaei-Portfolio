@@ -62,7 +62,9 @@ export default function PortfolioExperience(){
     revealCopy();
     setTour(false);
    }else{
-    cover.dataset.mobilePhotoPhase='moving';
+    // Both portrait and copy are now in the opening viewport. Start the
+    // sequential typing clock here, without scrolling away from the image.
+    revealCopy();
    }
    setIntroHoldFinished(true);
   };
