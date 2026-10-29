@@ -81,8 +81,9 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 
 /* Mobile opening, owner-directed sequence (2026-10-29).
  * Photo fills its own mobile viewport before the typography stage. A 2s hold
- * is controlled by GuidedTour after the photo loads; no pause is imposed on
- * desktop or reduced-motion readers. These selectors never affect cases. */
+ * starts directly after the Hello overlay unmounts. PortfolioExperience
+ * owns the timer; GuidedTour starts only afterward. Desktop retains its own
+ * existing introduction. These selectors never affect case-study routes. */
 @media (max-width:760px){
  .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background{
   height:100svh!important;
