@@ -2,24 +2,18 @@
 import {useEffect,useRef} from 'react';
 import Link from 'next/link';
 import {homeStories} from '@/data/homeStories';
-import {projects,type Project,type ProjectId} from '@/data/portfolio';
+import {projects,type Project} from '@/data/portfolio';
 import {WordReveal} from '@/components/WordReveal';
 
 const clamp=(v:number)=>Math.max(0,Math.min(1,v));
 
-// Authored editorial beats. The newline is a real animation boundary, not
-// a viewport-dependent word-count guess. All copy retains its original meaning.
-const signatureLines:Record<ProjectId,string>={
- gartal:'A studio at the front. A platform\nunderneath.',
- factory:'One guarded Windows Worker.\nGitHub remains the source of truth.',
- digirezhim:'A physician workspace.\nFour separate web and API services.',
- petiwoo:'Products. Search. Cart.\nA connected checkout flow.'
-};
+// Each project uses three substantive, source-bounded editorial scenes.
+// No decorative introduction or empty CTA-only frame.
 
 /**
  * A short horizontal editorial sequence, not a gallery of identical cards.
- * 3 distinct scenes: identity, one verified idea, and the case-study handoff.
- * Detailed technical chapters remain in the dedicated work page.
+ * 3 distinct scenes per project: problem, implementation, verified scope.
+ * The final scene also links to the detailed, source-backed case study.
  * Only native vertical document scroll controls the pinned horizontal track.
  */
 export function HorizontalCaseChapter({project,index}:{project:Project;index:number}){
@@ -27,7 +21,6 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
  const rail=useRef<HTMLDivElement>(null);
  const count=3;
  const story=homeStories[project.id];
- const lead=story.beats[0];
  const next=projects[index+1];
 
  useEffect(()=>{
@@ -97,34 +90,41 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
   aria-labelledby={'title-'+project.id}>
   <div className="sx-v11-sticky">
    <div className="sx-v11-rail" ref={rail}>
-    <article className="sx-v11-slide sx-v14-scene sx-v14-opening" data-frame-index="0" data-frame-state="active"
-     data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / opening'} data-tour-duration="10" data-tour-pace=".72">
-     <div className="sx-v14-opening-inner">
-      <WordReveal as="h2" id={'title-'+project.id} text={project.brand}/>
-      <WordReveal as="p" text={signatureLines[project.id]}/>
-     </div>
-     <div className="sx-v14-opening-foot">
-      <a href={'/work/'+project.id+'/'}>FULL CASE STUDY ↗</a>
-     </div>
-    </article>
-    <article id={'project-'+project.id+'-origin'}
-     className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+lead.mode}
-     data-frame-index="1" data-frame-state="upcoming" data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / core idea'}
-     data-tour-duration={String(lead.duration)} data-tour-pace={String(lead.pace)}>
-     <div className="sx-v14-editorial-copy">
-      <WordReveal as="h3" text={lead.headline}/>
-      <WordReveal as="p" text={lead.copy}/>
-     </div>
-    </article>
-    <article className="sx-v11-slide sx-v14-scene sx-v14-ending" data-frame-index="2" data-frame-state="upcoming"
-     data-tour-stop data-tour-hold="horizontal-frame" data-tour-label={project.brand+' / handoff'} data-tour-duration="8" data-tour-pace="1.24">
-     <div className="sx-v14-ending-inner"><WordReveal as="h3" text={story.ending}/>
-      <div className="sx-v14-ending-actions">
-       <Link href={'/work/'+project.id+'/'}>READ THE CASE STUDY ↗</Link>
-       <a href={next?'#project-'+next.id:'#contact'}>{next?'NEXT / '+next.brand:'LET’S TALK'} ↓</a>
+    {story.beats.map((beat,slideIndex)=>
+     <article key={slideIndex}
+      id={'project-'+project.id+'-slide-'+(slideIndex+1)}
+      className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+beat.mode+' sx-v30-case-slide'}
+      data-frame-index={slideIndex} data-frame-state={slideIndex===0?'active':'upcoming'}
+      data-tour-stop data-tour-hold="horizontal-frame"
+      data-tour-label={project.brand+' / '+beat.eyebrow}
+      data-tour-duration={String(beat.duration)} data-tour-pace={String(beat.pace)}
+      aria-label={project.brand+' / '+beat.eyebrow+' / slide '+(slideIndex+1)+' of 3'}>
+      <div className="sx-v30-case-meta">
+       <span>{project.index} / {project.brand}</span>
+       <span>{String(slideIndex+1).padStart(2,'0')} / 03</span>
       </div>
-     </div>
-    </article>
+      <div className="sx-v14-editorial-copy sx-v30-case-copy">
+       <span className="sx-v30-case-eyebrow">{beat.eyebrow}</span>
+       <WordReveal as="h3" id={slideIndex===0?'title-'+project.id:undefined}
+        text={beat.headline}/>
+       <WordReveal as="p" text={beat.copy}/>
+       <ul className="sx-v30-case-notes" aria-label="Specific implementation points">
+        {beat.notes.map((note,noteIndex)=><li key={note}>
+         <span aria-hidden="true">{String(noteIndex+1).padStart(2,'0')}</span>
+         <span>{note}</span>
+        </li>)}
+       </ul>
+      </div>
+      <div className="sx-v30-case-footer">
+       <span>{slideIndex===0?'PROBLEM':slideIndex===1?'IMPLEMENTATION':'CURRENT EVIDENCE'}</span>
+       {slideIndex===2?
+        <div className="sx-v14-ending-actions">
+         <Link href={'/work/'+project.id+'/'}>READ FULL CASE STUDY ↗</Link>
+         <a href={next?'#project-'+next.id:'#contact'}>{next?'NEXT / '+next.brand:'CONTACT'} ↓</a>
+        </div>:
+        <span>SCROLL FOR {slideIndex===0?'IMPLEMENTATION':'EVIDENCE'} ↓</span>}
+      </div>
+     </article>)}
    </div>
   </div>
  </section>;
