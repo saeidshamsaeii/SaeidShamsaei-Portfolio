@@ -522,7 +522,7 @@ test('mobile Hello exits before a separate two-second photo hold and any automat
  assert.match(home,/window\.setTimeout\(startHold,4500\)/);
  assert.match(home,/revealCopy\(\)/);
  assert.match(tour,/introCover\.dataset\.mobilePhotoPhase==='copy'/);
- assert.match(tour,/if\(textHasFinished\(stops\[0\]\)&&beyond<=2\)/);
+ assert.match(tour,/const fullCopyReady=copyEnabled&&textHasFinished\(stops\[0\]\)&&/);
  assert.match(tour,/if\(stops\.length>1\)goTo\(1,window\.scrollY\)/);
  assert.doesNotMatch(tour,/photoWaitStartedAt|photoVisible\|\|time-photoWaitStartedAt/);
  assert.match(opening,/data-mobile-photo-phase="photo"/);
