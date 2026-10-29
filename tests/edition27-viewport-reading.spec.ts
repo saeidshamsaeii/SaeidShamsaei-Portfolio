@@ -430,7 +430,7 @@ test('first SAEID word begins smoothly without a stray typing caret',async({page
  const intro=page.locator('#intro');
  await expect(intro).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:9000});
  const firstWord=intro.locator('h1 [data-reveal-word]').first();
- await expect(firstWord).toHaveCSS('transition','none');
+ await expect(firstWord).toHaveCSS('transition-duration','0s');
  const caret=await firstWord.evaluate(node=>getComputedStyle(node,'::after').content);
  expect(caret).toBe('none');
  const samples=await firstWord.evaluate(async word=>{
