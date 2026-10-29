@@ -32,11 +32,17 @@ export default function PortfolioExperience(){
    cover.dataset.mobileCopyStartedAt=String(performance.now());
    cover.dispatchEvent(new Event('sx-mobile-intro-copy'));
   };
-  if(!mobile||reduced||window.scrollY>12){
+  // A normal reload may restore a stale scrollY before Hello disappears.
+  // Such restoration must not silently skip the requested photo pause.
+  // Respect explicit anchor navigation and genuine back/forward restoration.
+  const historyReturn=(performance.getEntriesByType('navigation')[0] as
+   PerformanceNavigationTiming|undefined)?.type==='back_forward';
+  if(!mobile||reduced||Boolean(window.location.hash)||historyReturn){
    if(mobile)revealCopy();
    setIntroHoldFinished(true);
    return;
   }
+  window.scrollTo({top:0,behavior:'instant'});
 
   // At this point the Hello overlay has unmounted, the portrait is visible,
   // and neither the guided scroll nor intro typing has started.
@@ -68,7 +74,7 @@ export default function PortfolioExperience(){
   window.addEventListener('wheel',onManual,{passive:true});
   window.addEventListener('touchmove',onManual,{passive:true});
   window.addEventListener('keydown',onKey);
-  timer=window.setTimeout(()=>release(window.scrollY>12),2000);
+  timer=window.setTimeout(()=>release(false),2000);
   return()=>{
    window.clearTimeout(timer);
    window.removeEventListener('wheel',onManual);
