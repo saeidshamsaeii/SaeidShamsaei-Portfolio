@@ -411,8 +411,8 @@ test('Edition 27 fits the entire Selected Work directory and slows every reading
  assert.match(director,/MIN_SEGMENT_MS=2400/);
  assert.match(director,/const modestReadingMs=Math\.min\(6000,words\*120\)/);
  assert.match(director,/const INTRO_PHOTO_HOLD_MS=2000/);
- assert.match(director,/root\.dataset\.portfolioTourHold='intro-photo'/);
- assert.match(director,/time-state\.holdStartedAt>=INTRO_PHOTO_HOLD_MS/);
+ assert.match(director,/root\.dataset\.portfolioTourHold='intro-copy'/);
+ assert.match(director,/time-state\.holdStartedAt>=INTRO_COPY_HOLD_MS/);
  assert.match(director,/mobileIntroCopy\?0:/);
  assert.match(director,/stops\[state\.index\]\.element\.id==='work-index'/);
 });
@@ -635,4 +635,30 @@ test('homepage introduction holds the native camera still through typing on phon
  const photoEffect=homepage.indexOf('if(!loaded)return');
  assert.ok(greetingCompleted>=0&&photoEffect>greetingCompleted);
  assert.doesNotMatch(homepage.slice(photoEffect),/window\.scrollTo\(\{top:0,behavior:'instant'\}\)/);
+});
+
+test('intro actions appear only after the full typed lead, then both viewports hold 2s',()=>{
+ const opening=read('components/SignatureOpening.tsx');
+ const css=read('app/quality.css');
+ const director=read('components/GuidedTour.tsx');
+ const layout=read('app/layout.tsx');
+ assert.match(opening,/WordReveal as="p" className="sx-v18-cover-lead"/);
+ assert.match(opening,/<div className="sx-v18-cover-links">/);
+ assert.match(opening,/View work/);
+ assert.match(opening,/Engineering/);
+ assert.match(css,/#intro\.sx-v19-cover \.sx-v18-cover-links\{/);
+ assert.match(css,/visibility:hidden!important;/);
+ assert.match(css,/pointer-events:none!important;/);
+ assert.match(css,/\.sx-v18-cover-lead\[data-reveal-complete="true"\] \+ \.sx-v18-cover-links/);
+ assert.match(css,/visibility:visible!important;/);
+ assert.match(css,/transition:none!important;/);
+ assert.match(director,/const INTRO_COPY_HOLD_MS=2000/);
+ assert.match(director,/const fullCopyReady=copyEnabled&&textHasFinished\(stops\[0\]\)&&/);
+ assert.match(director,/introCover\.querySelector\('\.sx-v18-cover-lead\[data-reveal-complete="true"\]'\)/);
+ assert.match(director,/if\(fullCopyReady\)\{/);
+ assert.match(director,/root\.dataset\.portfolioTourHold='intro-copy'/);
+ assert.match(director,/time-state\.holdStartedAt>=INTRO_COPY_HOLD_MS/);
+ assert.match(director,/if\(stops\.length>1\)goTo\(1,window\.scrollY\)/);
+ assert.doesNotMatch(director,/if\(introMobile\)\{[\s\S]{0,140}Advance only after BOTH/);
+ assert.match(layout,/\.sx-v18-site #intro\.sx-v19-cover \.sx-v18-cover-links\{/);
 });
