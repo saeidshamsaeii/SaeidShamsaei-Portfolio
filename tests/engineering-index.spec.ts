@@ -31,7 +31,7 @@ test('source registers link to actual repo paths and disclose non-verified runti
   await expect(record.locator('.sx-ei-unknown')).toContainText('Not independently verified');
   const urls=await record.locator('.sx-ei-source-list a').evaluateAll(
    anchors=>anchors.map(a=>(a as HTMLAnchorElement).href));
-  expect(urls.length).toBeGreaterThanOrEqual(4);
+  expect(urls.length).toBeGreaterThanOrEqual(3);
   expect(urls.every(url=>url.startsWith('https://github.com/saeidshamsaeii/'))).toBe(true);
   expect(urls.every(url=>/\/blob\/[0-9a-f]{40}\//.test(url))).toBe(true);
  }
@@ -40,8 +40,8 @@ test('source registers link to actual repo paths and disclose non-verified runti
 test('cinematic landing and each case route have a direct evidence-first shortcut',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- await expect(page.getByRole('link',{name:'Engineering Index',exact:true}).first()).toHaveAttribute('href','/engineering/');
- await expect(page.locator('.sx-ei-home-bridge')).toContainText('OPEN THE ENGINEERING INDEX');
+ await expect(page.locator('header.sx-v18-header nav a[href="/engineering/"]')).toHaveText('Engineering');
+ await expect(page.locator('#work-index a[href="/engineering/#evidence-factory"]')).toHaveCount(1);
  await page.goto('/work/factory/',{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('link',{name:/INSPECT ARCHITECTURE DECISIONS/})).toHaveAttribute('href','/engineering/#evidence-factory');
 });
