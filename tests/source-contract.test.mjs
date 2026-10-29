@@ -502,25 +502,26 @@ test('English-only portfolio has no locale picker or translated routes',()=>{
  assert.match(read('components/SelectedWorkIndex.tsx'),/LINE_DRAW_MS=500/);
 });
 
-test('mobile opening holds the portrait first, then begins visible copy typing',()=>{
+test('mobile Hello exits before a separate two-second photo hold and any automatic scroll',()=>{
+ const home=read('components/PortfolioExperience.tsx');
  const tour=read('components/GuidedTour.tsx');
  const opening=read('components/SignatureOpening.tsx');
  const word=read('components/WordReveal.tsx');
  const css=read('app/quality.css');
+ assert.match(home,/!loaded&&<EnglishGreeting onComplete=\{finishGreeting\}\/>/);
+ assert.match(home,/if\(!loaded\)return/);
+ assert.match(home,/root\.dataset\.portfolioTourHold='intro-photo'/);
+ assert.match(home,/window\.setTimeout\(\(\)=>release\(window\.scrollY>12\),2000\)/);
+ assert.match(home,/active=\{loaded&&introHoldFinished&&tour\}/);
+ assert.match(home,/cover\.dataset\.mobilePhotoPhase='moving'/);
+ assert.match(tour,/introCover\?\.dataset\.mobilePhotoPhase==='moving'/);
+ assert.doesNotMatch(tour,/photoWaitStartedAt|photoVisible\|\|time-photoWaitStartedAt/);
  assert.match(opening,/data-mobile-photo-phase="photo"/);
  assert.match(css,/height:100svh!important/);
  assert.match(css,/margin-top:100svh!important/);
  assert.match(css,/data-mobile-photo-phase="photo"/);
  assert.match(css,/data-mobile-photo-phase="moving"/);
- assert.match(tour,/state\.index===0&&introMobile&&!introHoldComplete&&state\.start<12/);
- assert.match(tour,/photoVisible\|\|time-photoWaitStartedAt>=4500/);
- assert.match(tour,/time-state\.holdStartedAt>=INTRO_PHOTO_HOLD_MS/);
- assert.match(tour,/introCover\.dataset\.mobilePhotoPhase='moving'/);
- assert.match(tour,/copy\.getBoundingClientRect\(\)\.top<=innerHeight\*\.78/);
  assert.match(tour,/const mobileIntroCopy=state\.index===0&&introMobile/);
- assert.match(tour,/if\(introCover&&state\.index===0&&introMobile/);
- assert.match(tour,/Boolean\(introCover\)/);
- assert.match(css,/\.sx-v19-cover-content \*/);
  assert.match(tour,/const duration=mobileIntroCopy\?0:/);
  assert.match(word,/phase==='photo'\|\|phase==='moving'/);
  assert.match(word,/mobileCopyStartedAt/);
