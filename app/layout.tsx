@@ -48,6 +48,20 @@ const identity={
 export default function RootLayout({children}:{children:React.ReactNode}){
  return <html lang="en" dir="ltr">
   <head>
+   {/* The first paint hides mobile intro words until the photo hold ends.
+       Without JS there is no phase transition, so keep content readable. */}
+   <noscript><style>{`
+    @media (max-width:760px){
+     .sx-v18-site #intro.sx-v19-cover .sx-v19-cover-content,
+     .sx-v18-site #intro.sx-v19-cover .sx-v19-cover-content *,
+     .sx-v18-site #intro.sx-v19-cover [data-reveal-word]{
+      visibility:visible!important;
+      opacity:1!important;
+      clip-path:none!important;
+      pointer-events:auto!important;
+     }
+    }
+   `}</style></noscript>
    {/* Avoid preloading home-only images on the five non-home routes.
        The hero portrait itself has fetchPriority="high" on the homepage. */}
    {siteApproved&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(identity).replace(/</g,'\\u003c')}}/>}
