@@ -524,9 +524,13 @@ test('mobile Hello exits before a separate two-second photo hold and any automat
  assert.match(tour,/if\(stops\.length>1\)goTo\(1,window\.scrollY\)/);
  assert.doesNotMatch(tour,/photoWaitStartedAt|photoVisible\|\|time-photoWaitStartedAt/);
  assert.match(opening,/data-mobile-photo-phase="photo"/);
- assert.match(css,/height:clamp\(190px,36svh,390px\)!important/);
- assert.match(css,/margin-top:clamp\(190px,36svh,390px\)!important/);
- assert.match(css,/min-height:calc\(100svh - 110px\)!important/);
+ assert.match(home,/new ResizeObserver\(measure\)/);
+ assert.match(home,/--sx-intro-header-height/);
+ assert.match(css,/min-height:max\(0px,calc\(100svh - var\(--sx-intro-header-height,72px\)\)\)!important/);
+ assert.match(css,/--sx-intro-photo-height:clamp\(145px,34svh,340px\)/);
+ assert.match(css,/height:var\(--sx-intro-photo-height\)!important/);
+ assert.match(css,/margin-top:var\(--sx-intro-photo-height\)!important/);
+ assert.match(css,/min-height:max\(0px,calc\(100svh - var\(--sx-intro-header-height,110px\) - var\(--sx-intro-photo-height\)\)\)!important/);
  assert.match(css,/data-mobile-photo-phase="photo"/);
  assert.match(tour,/const mobileIntroCopy=state\.index===0&&introMobile/);
  assert.match(tour,/const duration=mobileIntroCopy\?0:/);
