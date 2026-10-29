@@ -46,6 +46,40 @@ test('Selected Work types title and projects in one slower ordered sequence',asy
   {timeout:36000}).toBe(9);
 });
 
+test('opening never scrolls before both intro text blocks finish on mobile or desktop',async({browser})=>{
+ test.setTimeout(60000);
+ for(const viewport of [{width:390,height:844},{width:1440,height:900}]){
+  const page=await browser.newPage({viewport});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+  const result=await page.evaluate(async()=>{
+   const section=document.querySelector<HTMLElement>('#intro')!;
+   const introTexts=()=>Array.from(section.querySelectorAll<HTMLElement>('.sx-word-reveal'));
+   const startY=window.scrollY;
+   let minY=startY,maxY=startY,complete=false;
+   // Measure actual camera position every animation frame, from post-Hello
+   // through the photo hold and ALL typing. This catches even a 1-frame nudge.
+   const deadline=performance.now()+12000;
+   while(performance.now()<deadline){
+    minY=Math.min(minY,window.scrollY);
+    maxY=Math.max(maxY,window.scrollY);
+    if(introTexts().length===2&&
+       introTexts().every(el=>el.dataset.revealComplete==='true')){
+     complete=true;
+     break;
+    }
+    await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
+   }
+   return {startY,minY,maxY,complete};
+  });
+  expect(result.complete,'intro typing must finish on '+viewport.width+'px').toBe(true);
+  expect(result.maxY-result.minY,'unexpected camera movement on '+viewport.width+'px')
+   .toBeLessThanOrEqual(2);
+  expect(Math.abs(result.maxY-result.startY)).toBeLessThanOrEqual(2);
+  await page.close();
+ }
+});
+
 test('portrait opening finishes typing and holds completely still for two seconds',async({page})=>{
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
