@@ -60,14 +60,31 @@ test('portrait opening finishes typing and holds completely still for two second
  await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:5000}).toBeGreaterThan(y+4);
 });
 
-test('mobile portrait hold occurs after scrolling to the stacked readable copy',async({page})=>{
+test('mobile shows only Saeid portrait for 2s, then moves to typed introduction',async({page})=>{
+ test.setTimeout(45000);
  await page.setViewportSize({width:390,height:844});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  const html=page.locator('html');
- await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:18000});
- await expect(page.locator('#intro .sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(2);
- expect(await page.evaluate(()=>scrollY)).toBeGreaterThan(100);
+ const intro=page.locator('#intro');
+ const copy=intro.locator('.sx-v19-cover-content');
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:12000});
+ await expect(intro).toHaveAttribute('data-mobile-photo-phase','photo');
+ await expect(copy).toHaveCSS('visibility','hidden');
+ await expect(intro.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(0);
+ const start=await page.evaluate(()=>scrollY);
+ expect(start).toBeLessThanOrEqual(2);
+ const portraitHeight=await intro.locator('.sx-v19-photo-background')
+  .evaluate(el=>el.getBoundingClientRect().height);
+ expect(Math.abs(portraitHeight-844)).toBeLessThanOrEqual(2);
+ await page.waitForTimeout(650);
+ expect(Math.abs((await page.evaluate(()=>scrollY))-start)).toBeLessThanOrEqual(2);
+ await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:4000});
+ await expect(intro).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:13000});
+ await expect(copy).toHaveCSS('visibility','visible');
+ await expect.poll(()=>page.evaluate(()=>scrollY)).toBeGreaterThan(100);
+ await expect(intro.locator('.sx-word-reveal[data-reveal-complete="true"]'))
+  .toHaveCount(2,{timeout:9000});
 });
 
 test('black Selected Work freezes only AFTER all nine word blocks finish and fit the viewport',async({page})=>{
