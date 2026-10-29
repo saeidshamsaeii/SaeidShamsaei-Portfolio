@@ -1,4 +1,5 @@
 import type {Metadata,Viewport} from 'next';
+import {siteApproved,siteOrigin,publicCanonical} from '@/lib/siteRelease';
 import './globals.css';
 import './motion.css';
 import './cinematic.css';
@@ -24,16 +25,12 @@ import './edition18.css';
 import './edition19.css';
 import './edition20.css';
 
-const configuredUrl=process.env.NEXT_PUBLIC_SITE_URL;
-const validUrl=typeof configuredUrl==='string'&&/^https:\/\/[^/]+\.[^/]+/.test(configuredUrl)&&!configuredUrl.includes('example.invalid');
-const ready=process.env.NEXT_PUBLIC_SITE_READY==='true'&&validUrl;
-const origin=ready?configuredUrl!:'https://example.invalid';
 const title='Saeid Shamsaei — Software Architecture & Product Engineering';
 const description='Independent software architecture, product engineering and source-informed case studies for GARTAL, DigiRezhim, AI Factory and Petiwoo.';
 export const metadata:Metadata={
- title,description,metadataBase:new URL(origin),
- robots:{index:ready,follow:ready},
- alternates:ready?{canonical:'/'}:undefined,
+ title,description,metadataBase:new URL(siteOrigin||'https://example.invalid'),
+ robots:{index:siteApproved,follow:siteApproved},
+ alternates:siteApproved?{canonical:publicCanonical('/')}:undefined,
  openGraph:{type:'website',locale:'en_US',title,description,siteName:'Saeid Shamsaei',images:[{url:'/assets/hires/logo.webp',width:1254,height:1254,alt:'Saeid Shamsaei'}]},
  twitter:{card:'summary_large_image',title,description,images:['/assets/hires/logo.webp']},
  icons:{icon:'/assets/hires/logo.webp'}
@@ -42,7 +39,7 @@ export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:'
 const identity={
  '@context':'https://schema.org','@type':'Person',name:'Saeid Shamsaei',
  jobTitle:'Software Architect and Product Engineer',
- url:ready?origin:undefined,
+ url:siteApproved?siteOrigin!:undefined,
  email:'saeidshamsaeii00@gmail.com',
  telephone:'+989017470729',
  sameAs:['https://github.com/saeidshamsaeii','https://www.linkedin.com/in/saeidshamsaei/','https://t.me/sd_shms']
@@ -52,7 +49,7 @@ export default function RootLayout({children}:{children:React.ReactNode}){
   <head>
    <link rel="preload" href="/assets/hires/logo.webp" as="image"/>
    <link rel="preload" href="/assets/hires/portrait.webp" as="image" type="image/webp"/>
-   {ready&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(identity).replace(/</g,'\\u003c')}}/>}
+   {siteApproved&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(identity).replace(/</g,'\\u003c')}}/>}
   </head>
   <body>{children}</body>
  </html>;

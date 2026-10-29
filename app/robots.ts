@@ -1,6 +1,7 @@
 import type {MetadataRoute} from 'next';
+import {siteApproved} from '@/lib/siteRelease';
 export const dynamic='force-static';
 export default function robots():MetadataRoute.Robots {
-const ready=process.env.NEXT_PUBLIC_SITE_READY==='true';
-return {rules:{userAgent:'*',allow:ready?'/':undefined,disallow:ready?undefined:'/'}};
+ if(!siteApproved)return {rules:{userAgent:'*',disallow:'/'}};
+ return {rules:{userAgent:'*',allow:'/'}};
 }
