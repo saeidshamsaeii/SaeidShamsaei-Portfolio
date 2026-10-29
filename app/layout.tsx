@@ -61,6 +61,11 @@ export default function RootLayout({children}:{children:React.ReactNode}){
       pointer-events:auto!important;
      }
     }
+    .sx-v18-site #intro.sx-v19-cover .sx-v18-cover-links{
+     visibility:visible!important;
+     opacity:1!important;
+     pointer-events:auto!important;
+    }
    `}</style></noscript>
    {/* Avoid preloading home-only images on the five non-home routes.
        The hero portrait itself has fetchPriority="high" on the homepage. */}
