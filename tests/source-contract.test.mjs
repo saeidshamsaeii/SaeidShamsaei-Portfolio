@@ -597,3 +597,22 @@ test('intro types once, with deliberate photo-to-name spacing and no false manua
  assert.match(css,/padding:10px 16px 15px!important/);
  assert.match(css,/data-mobile-photo-phase="photo"/);
 });
+
+test('first intro glyph has no isolated one-pixel typing artifact',()=>{
+ const word=read('components/WordReveal.tsx');
+ const css=read('app/quality.css');
+ assert.match(word,/const introTitle=onIntro&&Boolean\(host\.closest\('h1'\)\)/);
+ assert.match(word,/const firstIntroWord=introTitle&&i===0&&j===0/);
+ assert.match(word,/const shown=firstIntroWord\?clamp\(\(amount-\.18\)\/\.17\):amount/);
+ assert.match(word,/const clipped=firstIntroWord&&amount<\.18\?0:amount/);
+ assert.match(css,/#intro \[data-reveal-word\]::after/);
+ assert.match(css,/content:none!important/);
+ // The first letter stays fully invisible while only a hairline of the
+ // word would have been clipped into view, then advances monotonically.
+ const clamp=value=>Math.max(0,Math.min(1,value));
+ const samples=[0,.01,.10,.17,.18,.20,.24,.30,.35,.60,1];
+ const shown=samples.map(amount=>clamp((amount-.18)/.17));
+ assert.deepEqual(shown.slice(0,5),[0,0,0,0,0]);
+ assert.ok(shown.every((value,i)=>i===0||value>=shown[i-1]));
+ assert.equal(shown[shown.length-1],1);
+});
