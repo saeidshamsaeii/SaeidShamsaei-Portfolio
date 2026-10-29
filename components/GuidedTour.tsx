@@ -9,7 +9,7 @@ const READING_SPEED_PX_PER_SECOND=150;
 const MIN_SEGMENT_MS=2400;
 const IDLE_RESUME_MS=3500;
 const BACKGROUND_PAUSE_MS=2000;
-const INTRO_PHOTO_HOLD_MS=2000;
+const INTRO_COPY_HOLD_MS=2000;
 const HORIZONTAL_FRAME_PAUSE_MS=2000;
 const SELECTED_WORK_HOLD_MS=2000;
 const COPY_SETTLE_MAX_MS=2600;
@@ -274,31 +274,26 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const frame=(time:number)=>{
    if(disposed)return;
    if(playback==='playing'&&!document.hidden){
-    // The first image and its introduction are ONE stationary composition.
-    // Never scroll to a lower copy target or perform a small compensating
-    // camera adjustment while letters are appearing, on ANY viewport.
+    // The opening is one stationary composition on BOTH desktop and mobile.
+    // Never move the camera while typing. The visible links are the final
+    // beat: they appear only once the entire introduction is complete.
     if(state.index===0&&introCover&&state.start<=12&&window.scrollY<=12){
      state.last=time;
      scriptedScroll=window.scrollY;
      const copyEnabled=!introMobile||introCover.dataset.mobilePhotoPhase==='copy';
-     if(copyEnabled&&textHasFinished(stops[0])){
-      if(introMobile){
-       // Mobile already held the photo for two seconds after Hello.
-       // Advance only after BOTH title and lead finish typing.
+     const fullCopyReady=copyEnabled&&textHasFinished(stops[0])&&
+      Boolean(introCover.querySelector('.sx-v18-cover-lead[data-reveal-complete="true"]'));
+     if(fullCopyReady){
+      if(state.holdStartedAt===null){
+       state.holdStartedAt=time;
+       root.dataset.portfolioTourHold='intro-copy';
+      }
+      // Links are now visible in their reserved position, so the viewer
+      // gets two uninterrupted seconds with the COMPLETE first block.
+      if(time-state.holdStartedAt>=INTRO_COPY_HOLD_MS){
+       delete root.dataset.portfolioTourHold;
        if(stops.length>1)goTo(1,window.scrollY);
        else {setPlayback('finished');onExitRef.current();return;}
-      }else{
-       // Keep the original desktop 2s reading hold, but never move the
-       // camera before or during it.
-       if(state.holdStartedAt===null){
-        state.holdStartedAt=time;
-        root.dataset.portfolioTourHold='intro-photo';
-       }
-       if(time-state.holdStartedAt>=INTRO_PHOTO_HOLD_MS){
-        delete root.dataset.portfolioTourHold;
-        if(stops.length>1)goTo(1,window.scrollY);
-        else {setPlayback('finished');onExitRef.current();return;}
-       }
       }
      }
      raf=requestAnimationFrame(frame);
