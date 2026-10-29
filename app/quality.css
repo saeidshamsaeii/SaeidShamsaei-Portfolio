@@ -84,6 +84,10 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
  * introduction have room below it BEFORE the next section enters view.
  * Desktop remains untouched; the Hello -> photo timer is in the homepage. */
 @media (max-width:760px){
+ .sx-v18-site #intro.sx-v19-cover{
+  /* The next chapter never peeks up under an unfinished introduction. */
+  min-height:calc(100svh - 110px)!important;
+ }
  .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background{
   height:clamp(190px,36svh,390px)!important;
   width:100%!important;
