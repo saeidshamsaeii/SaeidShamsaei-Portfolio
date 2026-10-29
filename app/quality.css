@@ -79,17 +79,32 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 }
 .sx-not-found nav a:hover{border-color:#fff;}
 
-/* Mobile opening, owner-directed sequence (2026-10-29).
- * Photo fills its own mobile viewport before the typography stage. A 2s hold
- * starts directly after the Hello overlay unmounts. PortfolioExperience
- * owns the timer; GuidedTour starts only afterward. Desktop retains its own
- * existing introduction. These selectors never affect case-study routes. */
+/* Mobile opening: ONE uninterrupted vertical block, image above copy.
+ * The portrait is intentionally shorter than the viewport so the name and
+ * introduction have room below it BEFORE the next section enters view.
+ * Desktop remains untouched; the Hello -> photo timer is in the homepage. */
 @media (max-width:760px){
  .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background{
-  height:100svh!important;
+  height:clamp(190px,36svh,390px)!important;
+  width:100%!important;
  }
  .sx-v18-site #intro.sx-v19-cover .sx-v19-cover-content{
-  margin-top:100svh!important;
+  margin-top:clamp(190px,36svh,390px)!important;
+  padding:clamp(18px,2.8svh,30px) 20px clamp(25px,4svh,42px)!important;
+  gap:clamp(13px,2.4svh,20px)!important;
+  width:100%!important;
+  max-width:100%!important;
+ }
+}
+@media (max-width:760px) and (max-height:660px){
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background{
+  height:clamp(170px,30svh,230px)!important;
+ }
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-cover-content{
+  margin-top:clamp(170px,30svh,230px)!important;
+  padding-top:16px!important;
+  padding-bottom:24px!important;
+  gap:12px!important;
  }
 }
 /* Keep all intro text and its focusable actions out of the frame until the
