@@ -108,6 +108,35 @@ export function SelectedWorkIndex(){
    if(raf)cancelAnimationFrame(raf);
   };
  },[]);
+ // Keep the original five-stage choreography. Only grow the black section
+ // when real measured text cannot fit a short viewport (e.g. mobile landscape
+ // or increased browser text size). Never silently clip project names.
+ useEffect(()=>{
+  const host=section.current;
+  if(!host)return;
+  const rows=Array.from(host.querySelectorAll<HTMLElement>('[data-work-stage]'));
+  let frame=0;
+  const measure=()=>{
+   frame=0;
+   const style=getComputedStyle(host);
+   const space=window.innerHeight-parseFloat(style.paddingTop||'0')-
+    parseFloat(style.paddingBottom||'0');
+   const required=rows.reduce((total,row)=>total+row.scrollHeight,0);
+   const tall=required>space+4;
+   if(host.dataset.workOversize!==(tall?'true':'false'))
+    host.dataset.workOversize=tall?'true':'false';
+  };
+  const schedule=()=>{if(!frame)frame=requestAnimationFrame(measure);};
+  const observer=new ResizeObserver(schedule);
+  rows.forEach(row=>observer.observe(row));
+  window.addEventListener('resize',schedule);
+  schedule();
+  return()=>{
+   observer.disconnect();
+   window.removeEventListener('resize',schedule);
+   if(frame)cancelAnimationFrame(frame);
+  };
+ },[]);
  // Link the exit fade to actual scroll movement AFTER the two-second
  // fully typed reading hold. The heading and four rows rise as they fade;
  // revisiting the section restores them with no replay/blanking glitch.
