@@ -171,7 +171,15 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
       const mobileStarted=Number(cover.dataset.mobileCopyStartedAt||0);
       const entryStart=mobile&&mobileStarted>0?mobileStarted:started;
       const byEntry=clamp((performance.now()-entryStart)/4700);
-      progress=grouped(container,Math.max(byEntry,byScroll));
+      // Automatic mobile narration must actually TYPE in the visible copy
+      // stage, not jump ahead because the portrait has scrolled offscreen.
+      const manualMobile=mobile&&document.documentElement.dataset.portfolioTour!=='playing';
+      const copyRect=container.getBoundingClientRect();
+      const manualCopyProgress=clamp((window.innerHeight*.78-copyRect.top)/
+       Math.max(1,copyRect.height*.85));
+      progress=grouped(container,mobile?
+       (manualMobile?Math.max(byEntry,manualCopyProgress):byEntry):
+       Math.max(byEntry,byScroll));
       // The clock starts when mobile copy actually comes into view.
       if(byEntry<1)request();
      }
