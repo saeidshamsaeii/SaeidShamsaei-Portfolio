@@ -26,7 +26,7 @@ test('all four case studies replace images and visual simulations with detailed 
  assert.doesNotMatch(home,/SourceProductPreview|project-'\+project\.id|sx-v4-project-art|sx-slide--overview/);
  assert.doesNotMatch(detail,/SourceProductPreview|project-'\+p\.id|case-hero-art/);
  assert.match(home,/HorizontalCaseChapter/);
- assert.match(horizontal,/const lead=story\.beats\[0\]/);
+ assert.match(horizontal,/story\.beats\.map\(\(beat,slideIndex\)=>/);
  assert.match(detail,/story\.chapters\.map/);
  assert.match(horizontal,/WordReveal/);
  assert.match(detail,/WordReveal/);
@@ -95,7 +95,7 @@ test('five distinct scroll-pinned editorial scenes preserve source-backed contex
  const word=read('components/WordReveal.tsx');
  assert.match(home,/HorizontalCaseChapter key=\{project\.id\}/);
  assert.match(chapter,/const count=3/);
- assert.match(chapter,/const lead=story\.beats\[0\]/);
+ assert.match(chapter,/story\.beats\.map\(\(beat,slideIndex\)=>/);
  assert.match(chapter,/window\.addEventListener\('scroll',request/);
  assert.match(chapter,/translate3d\(/);
  assert.match(chapter,/data-frame-count=\{count\}/);
@@ -201,8 +201,8 @@ test('ordered opening animation never overlaps its next sentence beat',()=>{
  const loader=read('components/EnglishGreeting.tsx');
  const mono=read('app/edition19.css');
  assert.match(component,/const count=3/);
- assert.ok(component.includes(String.raw`A studio at the front. A platform\nunderneath.`));
- assert.match(component,/text=\{signatureLines\[project\.id\]\}/);
+ assert.ok(component.includes('data-tour-label={project.brand+\' / \'+beat.eyebrow}'));
+ assert.match(component,/text=\{beat\.headline\}/);
  assert.match(word,/const before=sizes\.slice\(0,self\)/);
  assert.match(word,/return clamp\(\(clamp\(local\)\*total-before\)\/sizes\[self\]\)/);
  assert.match(word,/data-reveal-line/);
@@ -341,7 +341,9 @@ test('Edition 25 holds every horizontal panel 2 seconds after its text and befor
  const director=read('components/GuidedTour.tsx');
  const chapter=read('components/HorizontalCaseChapter.tsx');
  const reveal=read('components/WordReveal.tsx');
- assert.equal((chapter.match(/data-tour-hold="horizontal-frame"/g)||[]).length,3);
+ assert.equal((chapter.match(/data-tour-hold="horizontal-frame"/g)||[]).length,1);
+ assert.match(chapter,/story\.beats\.map\(\(beat,slideIndex\)=>/);
+ assert.match(chapter,/data-frame-index=\{slideIndex\}/);
  assert.match(chapter,/const count=3/);
  assert.match(chapter,/const departure=clamp\(\(fraction-\.67\)\/\.33\)/);
  assert.match(director,/const HORIZONTAL_FRAME_PAUSE_MS=2000/);
