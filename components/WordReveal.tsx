@@ -173,7 +173,10 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
       const byEntry=clamp((performance.now()-entryStart)/4700);
       // Automatic mobile narration must actually TYPE in the visible copy
       // stage, not jump ahead because the portrait has scrolled offscreen.
-      const manualMobile=mobile&&document.documentElement.dataset.portfolioTour!=='playing';
+      // A missing tour dataset during the handoff from Hello is NOT manual
+      // navigation. Previously it made copy jump to 100%, then rewind when
+      // GuidedTour mounted: the visible flash/retyping bug.
+      const manualMobile=mobile&&cover.dataset.mobileCopyManual==='true';
       const copyRect=container.getBoundingClientRect();
       const manualCopyProgress=clamp((window.innerHeight*.78-copyRect.top)/
        Math.max(1,copyRect.height*.85));
