@@ -71,6 +71,8 @@ test('mobile shows only Saeid portrait for 2s, then moves to typed introduction'
  await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:12000});
  await expect(intro).toHaveAttribute('data-mobile-photo-phase','photo');
  await expect(copy).toHaveCSS('visibility','hidden');
+ await expect(intro.locator('h1')).toHaveCSS('visibility','hidden');
+ await expect(intro.locator('.sx-v18-cover-links a').first()).toHaveCSS('visibility','hidden');
  await expect(intro.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(0);
  const start=await page.evaluate(()=>scrollY);
  expect(start).toBeLessThanOrEqual(2);
@@ -215,4 +217,18 @@ test('work rules draw one at a time and next block waits until predecessor hold 
  }
  await expect.poll(()=>section.getAttribute('data-work-reveal-progress'),{timeout:3500}).toBe('1');
  await expect(section.locator('[data-work-stage-state="complete"]')).toHaveCount(5);
+});
+
+test('mobile reader can skip photo hold, and case pages have no portrait delay',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await page.keyboard.press('Escape');
+ await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','paused');
+ await expect(page.locator('#intro')).toHaveAttribute('data-mobile-photo-phase','copy');
+ await expect(page.locator('#intro .sx-v19-cover-content')).toHaveCSS('visibility','visible');
+ await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#intro')).toHaveCount(0);
+ await expect(page.locator('html')).not.toHaveAttribute('data-portfolio-tour-hold','intro-photo');
+ await expect(page.locator('.sx-v10-case-cover')).toHaveCount(1);
 });
