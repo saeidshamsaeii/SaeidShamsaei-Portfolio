@@ -30,11 +30,11 @@ export const caseNarratives:Record<ProjectId,CaseNarrative>={
     details:['Explicit service discovery','Permission-aware project requests','Independent runtimes'],durationSeconds:12},
    {id:'studio',eyebrow:'03 / THE STUDIO WEBSITE',title:'A focused client journey.',
     paragraphs:[
-     'The GARTAL-SITE repository contains a server-rendered Python WSGI application. Its content registry defines individual pages for website design, ecommerce, custom development, industry services and project inquiries instead of reusing the same sales copy everywhere.',
-     'The code includes project request validation, escaping, administrative lead review, privacy and SEO metadata, canonical URLs and an indexing policy that remains conservative before deployment approval.',
+     'The current GARTAL-SITE main branch is a Next.js App Router application using React and TypeScript. It retains service-specific content for website design, ecommerce, custom development, automation and project inquiries, and now also defines localized public routes with language-specific metadata.',
+     'The Next.js source includes a Zod-validated project-intake endpoint, an administrative lead interface, PostgreSQL persistence through Drizzle, honeypot and same-origin checks, privacy content and canonical SEO metadata. If storage is unavailable, the intake endpoint returns HTTP 503 rather than claiming a request was saved.',
      'The GARTAL repository documents an owner-approved upward-arrow brand mark and wordmark, superseding earlier orange/G explorations. This portfolio presents that work in its own neutral black-and-white system; a visual identity does not prove a released service or a customer result.'
     ],
-    details:['Python WSGI baseline; Next.js migration separately reviewed','Validated inquiry intake','Owner-approved current brand assets'],durationSeconds:13},
+    details:['Current Next.js App Router and multilingual public pages','Validated PostgreSQL-backed inquiry intake','Owner-approved current brand assets'],durationSeconds:13},
    {id:'platform',eyebrow:'04 / SYSTEM ARCHITECTURE',title:'Shared contracts. Separate applications.',
     paragraphs:[
      'The Gartal-Platform repository describes four independent runtime responsibilities: an API and persistence server, a shared administration interface, a tenant-facing storefront and a licensing or tenant-lifecycle control plane.',
@@ -51,7 +51,7 @@ export const caseNarratives:Record<ProjectId,CaseNarrative>={
     details:['Sales-oriented information architecture','Operational domain separation','Accessible, responsive presentation'],durationSeconds:12},
    {id:'delivery',eyebrow:'06 / DELIVERY & EVIDENCE',title:'A documented foundation, not a fabricated success story.',
     paragraphs:[
-     'The public source establishes real marketing routes, lead-intake functions, brand definitions and platform contracts. It does not independently prove that a production rollout, client contract or business KPI has succeeded.',
+     'The current Next.js source establishes service routes, localized metadata, protected lead-intake logic, brand definitions and platform contracts. This documents implementation, not a verified production rollout, client contract or business KPI.',
      'Security gates, runtime checks, deployment templates and visual reviews are documented as work to complete or verify. They are engineering evidence, not a substitute for owner acceptance.',
      'The next stage is to validate the deployed experiences, obtain permissioned screenshots and connect actual outcomes only when verifiable records exist.'
     ],
