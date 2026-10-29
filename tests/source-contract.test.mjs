@@ -616,3 +616,23 @@ test('first intro glyph has no isolated one-pixel typing artifact',()=>{
  assert.ok(shown.every((value,i)=>i===0||value>=shown[i-1]));
  assert.equal(shown[shown.length-1],1);
 });
+
+test('homepage introduction holds the native camera still through typing on phone and desktop',()=>{
+ const tour=read('components/GuidedTour.tsx');
+ const homepage=read('components/PortfolioExperience.tsx');
+ assert.match(tour,/if\(stop\.element\.id==='intro'\)\{[\s\S]*?return top;[\s\S]*?\}/);
+ assert.match(tour,/state\.index===0&&introCover&&state\.start<=12&&window\.scrollY<=12/);
+ assert.match(tour,/const copyEnabled=!introMobile\|\|introCover\.dataset\.mobilePhotoPhase==='copy'/);
+ assert.match(tour,/if\(copyEnabled&&textHasFinished\(stops\[0\]\)\)/);
+ assert.match(tour,/if\(stops\.length>1\)goTo\(1,window\.scrollY\)/);
+ assert.match(tour,/const first=introCover&&window\.scrollY<=12\?/);
+ assert.doesNotMatch(tour,/Math\.min\(beyond,delta\*\.12\)/);
+ assert.doesNotMatch(tour,/return top\+box\.height\*\.72/);
+ assert.doesNotMatch(tour,/copy\.getBoundingClientRect\(\)\.top\+window\.scrollY-window\.innerHeight\*\.15/);
+ assert.match(homepage,/window\.scrollTo\(\{top:0,behavior:'instant'\}\);[\s\S]*?setLoaded\(true\)/);
+ assert.match(homepage,/if\(!window\.location\.hash&&nav\?\.type!=='back_forward'\)/);
+ const greetingCompleted=homepage.indexOf('const finishGreeting=useCallback');
+ const photoEffect=homepage.indexOf('if(!loaded)return');
+ assert.ok(greetingCompleted>=0&&photoEffect>greetingCompleted);
+ assert.doesNotMatch(homepage.slice(photoEffect),/window\.scrollTo\(\{top:0,behavior:'instant'\}\)/);
+});
