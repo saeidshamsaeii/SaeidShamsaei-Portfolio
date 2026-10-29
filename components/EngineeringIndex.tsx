@@ -1,7 +1,7 @@
 'use client';
 import {useMemo,useState} from 'react';
 import Link from 'next/link';
-import {engineeringEvidence,fileUrl,sourceSnapshots,type Discipline,type EngineeringRecord} from '@/data/engineeringEvidence';
+import {engineeringEvidence,fileUrl,sourceSnapshots,type Discipline,type EngineeringRecord,type EngineeringDecision} from '@/data/engineeringEvidence';
 import {projects} from '@/data/portfolio';
 
 type Filter='all'|Discipline;
@@ -11,18 +11,25 @@ const filterLabels:{id:Filter;label:string}[]=[
  {id:'experience',label:'Product experience'},
  {id:'delivery',label:'Delivery & evidence'}
 ];
-const normalized=(value:string)=>value.toLocaleLowerCase('en-US').trim();
+const normalized=(value:string)=>value.toLocaleLowerCase('en-US').trim().replace(/\s+/g,' ');
 
-function EvidenceProject({entry,filter,query}:{entry:EngineeringRecord;filter:Filter;query:string}){
- const project=projects.find(item=>item.id===entry.id)!;
- const decisions=entry.decisions.filter(item=>{
+/** One matching rule for project visibility, result count and the rendered rows. */
+function matchingDecisions(entry:EngineeringRecord,filter:Filter,query:string):EngineeringDecision[]{
+ const brand=projects.find(item=>item.id===entry.id)?.brand||entry.id;
+ return entry.decisions.filter(item=>{
   if(filter!=='all'&&item.discipline!==filter)return false;
-  const corpus=[entry.id,item.question,item.design,item.tradeoff,item.evidence,
-   entry.scope,entry.differentiator,project.brand,
-   ...item.files.map(index=>entry.files[index].label+' '+entry.files[index].path)].join(' ');
-  return !query||normalized(corpus).includes(query);
+  if(!query)return true;
+  const corpus=[entry.id,brand,entry.scope,entry.differentiator,entry.boundary,
+   item.question,item.design,item.tradeoff,item.evidence,
+   ...item.files.map(index=>entry.files[index].label+' '+entry.files[index].path)
+  ].join(' ');
+  return normalized(corpus).includes(query);
  });
- if(!decisions.length)return null;
+}
+
+function EvidenceProject({entry,decisions}:{entry:EngineeringRecord;decisions:EngineeringDecision[]}){
+ const project=projects.find(item=>item.id===entry.id)!;
+
  return <section id={'evidence-'+entry.id} className={'sx-ei-project sx-ei-project--'+entry.id}
   aria-labelledby={'ei-title-'+entry.id}>
   <div className="sx-ei-project-intro">
@@ -79,22 +86,11 @@ export default function EngineeringIndex(){
  const [query,setQuery]=useState('');
  const [project,setProject]=useState<string>('all');
  const safeQuery=normalized(query);
- const visible=useMemo(()=>engineeringEvidence.filter(entry=>{
-  if(project!=='all'&&entry.id!==project)return false;
-  if(!safeQuery&&filter==='all')return true;
-  return entry.decisions.some(item=>{
-   if(filter!=='all'&&item.discipline!==filter)return false;
-   const corpus=[entry.id,entry.scope,entry.differentiator,entry.boundary,
-    ...item.files.map(i=>entry.files[i].label+' '+entry.files[i].path),item.question,item.design,
-    item.tradeoff,item.evidence].join(' ');
-   return !safeQuery||normalized(corpus).includes(safeQuery);
-  });
- }),[filter,project,safeQuery]);
- const count=visible.reduce((sum,entry)=>sum+entry.decisions.filter(item=>
-  (filter==='all'||item.discipline===filter)&&
-  (!safeQuery||normalized([entry.id,entry.scope,entry.differentiator,item.question,item.design,
-   item.tradeoff,item.evidence,...item.files.map(i=>entry.files[i].label+' '+entry.files[i].path)].join(' ')).includes(safeQuery))
- ).length,0);
+ const visible=useMemo(()=>engineeringEvidence
+  .filter(entry=>project==='all'||entry.id===project)
+  .map(entry=>({entry,decisions:matchingDecisions(entry,filter,safeQuery)}))
+  .filter(result=>result.decisions.length>0),[filter,project,safeQuery]);
+ const count=visible.reduce((sum,result)=>sum+result.decisions.length,0);
 
  return <main className="sx-ei">
   <div className="sx-ei-skip"><a href="#evidence-results">Skip to engineering evidence</a></div>
@@ -137,11 +133,11 @@ export default function EngineeringIndex(){
     </div>
    </aside>
    <div className="sx-ei-results">
-    <div className="sx-ei-results-head"><span>{visible.length} projects / {count} matching decisions</span>
+    <div className="sx-ei-results-head" role="status" aria-live="polite" aria-atomic="true"><span>{visible.length} projects / {count} matching decisions</span>
      {(query||project!=='all'||filter!=='all')&&<button type="button" onClick={()=>{setQuery('');setProject('all');setFilter('all');}}>Clear filters ↺</button>}
     </div>
-    {visible.length?visible.map(entry=><EvidenceProject key={entry.id} entry={entry}
-     query={safeQuery} filter={filter}/>):<div className="sx-ei-empty">
+    {visible.length?visible.map(result=><EvidenceProject key={result.entry.id}
+     entry={result.entry} decisions={result.decisions}/>):<div className="sx-ei-empty">
      <h2>No matching source evidence.</h2><p>Try another project or clear the filters. Results only include material documented in the repositories.</p>
      <button type="button" onClick={()=>{setQuery('');setProject('all');setFilter('all');}}>Show all evidence</button>
     </div>}
