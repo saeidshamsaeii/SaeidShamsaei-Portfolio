@@ -527,7 +527,7 @@ test('mobile Hello exits before a separate two-second photo hold and any automat
  assert.match(home,/new ResizeObserver\(measure\)/);
  assert.match(home,/--sx-intro-header-height/);
  assert.match(css,/min-height:max\(0px,calc\(100svh - var\(--sx-intro-header-height,72px\)\)\)!important/);
- assert.match(css,/--sx-intro-photo-height:clamp\(145px,34svh,340px\)/);
+ assert.match(css,/--sx-intro-photo-height:clamp\(185px,42svh,405px\)/);
  assert.match(css,/height:var\(--sx-intro-photo-height\)!important/);
  assert.match(css,/margin-top:var\(--sx-intro-photo-height\)!important/);
  assert.match(css,/min-height:max\(0px,calc\(100svh - var\(--sx-intro-header-height,110px\) - var\(--sx-intro-photo-height\)\)\)!important/);
@@ -539,4 +539,22 @@ test('mobile Hello exits before a separate two-second photo hold and any automat
  assert.doesNotMatch(tour,/mobilePhotoPhase==='moving'/);
  assert.match(word,/mobileCopyStartedAt/);
  assert.match(word,/sx-mobile-intro-copy/);
+});
+
+test('mobile introduction has no image-to-title dead zone or first-paint text flash',()=>{
+ const css=read('app/quality.css');
+ const layout=read('app/layout.tsx');
+ const opening=read('components/SignatureOpening.tsx');
+ const word=read('components/WordReveal.tsx');
+ assert.match(opening,/data-mobile-photo-phase="photo"/);
+ assert.match(css,/justify-content:flex-start!important/);
+ assert.match(css,/padding:clamp\(6px,1svh,12px\)/);
+ assert.match(css,/scale\(1\.075\)!important/);
+ assert.match(css,/transparent 57%,rgba\(0,0,0,\.08\) 72%/);
+ assert.match(css,/@media \(max-width:760px\) and \(prefers-reduced-motion:no-preference\)\{/);
+ assert.match(css,/\[data-mobile-photo-phase="photo"\] \.sx-v19-cover-content \*/);
+ assert.match(css,/\[data-mobile-photo-phase="copy"\]/);
+ assert.match(css,/\.sx-word-reveal:not\(\[data-motion="on"\]\) \[data-reveal-word\]/);
+ assert.match(layout,/<noscript><style>/);
+ assert.match(word,/host\.dataset\.motion='on'/);
 });
