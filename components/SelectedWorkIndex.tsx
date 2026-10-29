@@ -22,6 +22,17 @@ export function SelectedWorkIndex(){
   if(!host)return;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   const stages=Array.from(host.querySelectorAll<HTMLElement>('[data-work-stage]'));
+  const stageLinks=stages.map(stage=>Array.from(stage.querySelectorAll<HTMLAnchorElement>('a')));
+  // Invisible future links must not remain in the keyboard tab order or the
+  // screen-reader link list before their words and divider are revealed.
+  const exposeLinks=(index:number,expose:boolean)=>{
+   for(const link of stageLinks[index]){
+    link.tabIndex=expose?0:-1;
+    if(expose)link.removeAttribute('aria-hidden');
+    else link.setAttribute('aria-hidden','true');
+   }
+  };
+  stages.forEach((_,index)=>exposeLinks(index,false));
   const TITLE_TYPE_MS=2300;
   const ROW_TYPE_MS=2600;
   const LINE_DRAW_MS=500;
@@ -37,6 +48,7 @@ export function SelectedWorkIndex(){
    if(reduced.matches){
     stages.forEach(stage=>{
      stage.dataset.workStageState='complete';
+     exposeLinks(stages.indexOf(stage),true);
      stage.style.setProperty('--sx-work-rule','1');
     });
     host.dataset.workStageIndex=String(stages.length);
@@ -76,12 +88,15 @@ export function SelectedWorkIndex(){
    host.dataset.workStageProgress=String(typingProgress);
    for(let index=0;index<stages.length;index++){
     const stage=stages[index];
+    const prior=stage.dataset.workStageState;
     const typing=index===current&&local<typeDuration;
     const line=index===current&&local>=typeDuration&&
      local<typeDuration+LINE_DRAW_MS;
     const holding=index===current&&local>=typeDuration+LINE_DRAW_MS;
     stage.dataset.workStageState=index<current?'complete':
      index>current?'pending':typing?'typing':line?'line':'holding';
+    if(prior!==stage.dataset.workStageState)
+     exposeLinks(index,!['pending','typing'].includes(stage.dataset.workStageState||''));
     const draw=index<current?1:index>current?0:
      Math.min(1,Math.max(0,(local-typeDuration)/LINE_DRAW_MS));
     stage.style.setProperty('--sx-work-rule',String(draw));
@@ -106,6 +121,7 @@ export function SelectedWorkIndex(){
    window.removeEventListener('resize',request);
    reduced.removeEventListener('change',request);
    if(raf)cancelAnimationFrame(raf);
+   stages.forEach((_,index)=>exposeLinks(index,true));
   };
  },[]);
  // Keep the original five-stage choreography. Only grow the black section
