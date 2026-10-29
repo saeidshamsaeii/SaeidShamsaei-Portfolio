@@ -66,13 +66,9 @@ function scrollDestination(stop:Stop){
  // The owner name, surname and concise role are an ordered introduction,
  // not three unrelated reveals rushed past by the automatic director.
  if(stop.element.id==='intro'){
-  // On mobile the portrait fills its own viewport. Settle the next camera
-  // frame on the ACTUAL copy container, never a guessed section percentage.
-  if(window.matchMedia('(max-width:760px)').matches){
-   const copy=stop.element.querySelector<HTMLElement>('.sx-v19-cover-content');
-   if(copy)return copy.getBoundingClientRect().top+window.scrollY-window.innerHeight*.15;
-  }
-  return top+box.height*.72;
+  // The introduction must remain at its original viewport position.
+  // Its portrait and type are revealed in place; only the NEXT stop scrolls.
+  return top;
  }
  if(stop.fraction!==null){
   const stage=stop.element.closest<HTMLElement>('#top')||stop.element;
@@ -165,7 +161,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    const stop=stops[index];
    // Finish every line before changing black ↔ white. Pinned horizontal
    // panels and the Linux stage use their own normalized frame positions.
-   if(hasBackgroundChange[index]&&stop.element.id!=='work-index'&&
+   if(hasBackgroundChange[index]&&stop.element.id!=='work-index'&&stop.element.id!=='intro'&&
       !stop.element.closest('[data-frame-index],.sx-v8-hero-slide')){
     const lines=Array.from(stop.element.querySelectorAll<HTMLElement>('.sx-word-reveal'));
     const last=lines[lines.length-1];
@@ -279,44 +275,31 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const frame=(time:number)=>{
    if(disposed)return;
    if(playback==='playing'&&!document.hidden){
-    // Mobile introduction is ONE photo-above-copy block. Hello has gone,
-    // and the photograph has already remained still for exactly two seconds.
-    // Type the name and description in-place before advancing to any other
-    // block. Only on short screens is a minimal in-block camera adjustment
-    // permitted to keep the final lines inside the readable viewport.
-    if(state.index===0&&introMobile&&introCover&&state.start<12&&
-       introCover.dataset.mobilePhotoPhase==='copy'){
-     const delta=state.last?Math.min(100,time-state.last):0;
-     state.last=time;
-     const copy=introCover.querySelector<HTMLElement>('.sx-v19-cover-content');
-     const beyond=copy?Math.max(0,copy.getBoundingClientRect().bottom-innerHeight+12):0;
-     if(beyond>1&&delta){
-      scriptedScroll=window.scrollY+Math.min(beyond,delta*.12);
-      window.scrollTo({top:scriptedScroll,behavior:'instant'});
-     }else scriptedScroll=window.scrollY;
-     if(textHasFinished(stops[0])&&beyond<=2){
-      if(stops.length>1)goTo(1,window.scrollY);
-      else {setPlayback('finished');onExitRef.current();return;}
-     }
-     raf=requestAnimationFrame(frame);
-     return;
-    }
-    // Desktop portrait and copy are visible in the same opening view.
-    // Hold the camera completely still until EVERY word has actually typed,
-    // then keep that complete composition visible for a full two seconds.
-    if(state.index===0&&!introMobile&&!introHoldComplete&&state.start<12){
+    // The first image and its introduction are ONE stationary composition.
+    // Never scroll to a lower copy target or perform a small compensating
+    // camera adjustment while letters are appearing, on ANY viewport.
+    if(state.index===0&&introCover&&state.start<=12&&window.scrollY<=12){
      state.last=time;
      scriptedScroll=window.scrollY;
-     if(textHasFinished(stops[0])){
-      if(state.holdStartedAt===null){
-       state.holdStartedAt=time;
-       root.dataset.portfolioTourHold='intro-photo';
-      }
-      if(time-state.holdStartedAt>=INTRO_PHOTO_HOLD_MS){
-       introHoldComplete=true;
-       state.holdStartedAt=null;
-       state.last=time;
-       delete root.dataset.portfolioTourHold;
+     const copyEnabled=!introMobile||introCover.dataset.mobilePhotoPhase==='copy';
+     if(copyEnabled&&textHasFinished(stops[0])){
+      if(introMobile){
+       // Mobile already held the photo for two seconds after Hello.
+       // Advance only after BOTH title and lead finish typing.
+       if(stops.length>1)goTo(1,window.scrollY);
+       else {setPlayback('finished');onExitRef.current();return;}
+      }else{
+       // Keep the original desktop 2s reading hold, but never move the
+       // camera before or during it.
+       if(state.holdStartedAt===null){
+        state.holdStartedAt=time;
+        root.dataset.portfolioTourHold='intro-photo';
+       }
+       if(time-state.holdStartedAt>=INTRO_PHOTO_HOLD_MS){
+        delete root.dataset.portfolioTourHold;
+        if(stops.length>1)goTo(1,window.scrollY);
+        else {setPlayback('finished');onExitRef.current();return;}
+       }
       }
      }
      raf=requestAnimationFrame(frame);
@@ -388,7 +371,10 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   };
 
   root.dataset.portfolioTour='playing';
-  const first=findNextFromScroll();
+  // At the top of the homepage the intro is a reading stop even though its
+  // new (stationary) scroll destination equals current scrollY.
+  const first=introCover&&window.scrollY<=12?
+   stops.findIndex(stop=>stop.element===introCover):findNextFromScroll();
   if(first>=0){goTo(first);scriptedScroll=window.scrollY;}
   else {setPlayback('finished');onExitRef.current();return;}
   window.addEventListener('wheel',manualInput,{passive:true});
