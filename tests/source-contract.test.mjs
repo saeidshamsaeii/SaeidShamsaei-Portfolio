@@ -410,7 +410,7 @@ test('Edition 27 fits the entire Selected Work directory and slows every reading
  assert.match(director,/READING_SPEED_PX_PER_SECOND=150/);
  assert.match(director,/MIN_SEGMENT_MS=2400/);
  assert.match(director,/const modestReadingMs=Math\.min\(6000,words\*120\)/);
- assert.match(director,/const INTRO_PHOTO_HOLD_MS=2000/);
+ assert.match(director,/const INTRO_COPY_HOLD_MS=2000/);
  assert.match(director,/root\.dataset\.portfolioTourHold='intro-copy'/);
  assert.match(director,/time-state\.holdStartedAt>=INTRO_COPY_HOLD_MS/);
  assert.match(director,/mobileIntroCopy\?0:/);
