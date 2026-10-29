@@ -349,9 +349,9 @@ test('Edition 25 holds every horizontal panel 2 seconds after its text and befor
  assert.match(director,/stop\.element\.dataset\.tourHold==='horizontal-frame'/);
  assert.match(director,/const horizontalHold=isHorizontalFrame\[state\.index\]/);
  assert.match(director,/const backgroundHold=hasBackgroundChange\[state\.index\]/);
- assert.match(director,/if\(horizontalHold\|\|backgroundHold\|\|mobileIntroHold\|\|selectedWorkHold\)/);
+ assert.match(director,/if\(horizontalHold\|\|backgroundHold\|\|mobileIntroCopy\|\|selectedWorkHold\)/);
  assert.match(director,/textHasFinished\(stops\[state\.index\]\)/);
- assert.match(director,/root\.dataset\.portfolioTourHold=mobileIntroHold\?'intro-photo':/);
+ assert.match(director,/root\.dataset\.portfolioTourHold=mobileIntroCopy\?'intro-copy':/);
  assert.match(director,/horizontalHold\?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS/);
  assert.match(director,/time-state\.holdStartedAt>=duration/);
  assert.match(director,/delete root\.dataset\.portfolioTourHold/);
@@ -404,14 +404,14 @@ test('Edition 27 fits the entire Selected Work directory and slows every reading
  assert.match(directory,/host\.hasAttribute\('data-tour-awaiting'\)/);
  assert.match(word,/grouped\(stage,local\)/);
  assert.match(word,/workIndex\.addEventListener\('sx-work-progress',update\)/);
- assert.match(word,/const byEntry=clamp\(\(performance\.now\(\)-started\)\/4700\)/);
+ assert.match(word,/const byEntry=clamp\(\(performance\.now\(\)-entryStart\)\/4700\)/);
  assert.match(director,/READING_SPEED_PX_PER_SECOND=150/);
  assert.match(director,/MIN_SEGMENT_MS=2400/);
  assert.match(director,/const modestReadingMs=Math\.min\(6000,words\*120\)/);
  assert.match(director,/const INTRO_PHOTO_HOLD_MS=2000/);
  assert.match(director,/root\.dataset\.portfolioTourHold='intro-photo'/);
  assert.match(director,/time-state\.holdStartedAt>=INTRO_PHOTO_HOLD_MS/);
- assert.match(director,/mobileIntroHold\?INTRO_PHOTO_HOLD_MS:/);
+ assert.match(director,/mobileIntroCopy\?0:/);
  assert.match(director,/stops\[state\.index\]\.element\.id==='work-index'/);
 });
 
@@ -500,4 +500,26 @@ test('English-only portfolio has no locale picker or translated routes',()=>{
  assert.doesNotMatch(greeting,/سلام|مرحباً|Bonjour|Ciao|Привет/);
  assert.match(read('components/SelectedWorkIndex.tsx'),/BETWEEN_BLOCK_HOLD_MS=2000/);
  assert.match(read('components/SelectedWorkIndex.tsx'),/LINE_DRAW_MS=500/);
+});
+
+test('mobile opening holds the portrait first, then begins visible copy typing',()=>{
+ const tour=read('components/GuidedTour.tsx');
+ const opening=read('components/SignatureOpening.tsx');
+ const word=read('components/WordReveal.tsx');
+ const css=read('app/quality.css');
+ assert.match(opening,/data-mobile-photo-phase="photo"/);
+ assert.match(css,/height:100svh!important/);
+ assert.match(css,/margin-top:100svh!important/);
+ assert.match(css,/data-mobile-photo-phase="photo"/);
+ assert.match(css,/data-mobile-photo-phase="moving"/);
+ assert.match(tour,/state\.index===0&&introMobile&&!introHoldComplete&&state\.start<12/);
+ assert.match(tour,/photoVisible\|\|time-photoWaitStartedAt>=4500/);
+ assert.match(tour,/time-state\.holdStartedAt>=INTRO_PHOTO_HOLD_MS/);
+ assert.match(tour,/introCover\.dataset\.mobilePhotoPhase='moving'/);
+ assert.match(tour,/copy\.getBoundingClientRect\(\)\.top<=innerHeight\*\.78/);
+ assert.match(tour,/const mobileIntroCopy=state\.index===0&&introMobile/);
+ assert.match(tour,/const duration=mobileIntroCopy\?0:/);
+ assert.match(word,/phase==='photo'\|\|phase==='moving'/);
+ assert.match(word,/mobileCopyStartedAt/);
+ assert.match(word,/sx-mobile-intro-copy/);
 });
