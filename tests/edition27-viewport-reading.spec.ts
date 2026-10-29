@@ -79,9 +79,16 @@ test('mobile shows only Saeid portrait for 2s, then moves to typed introduction'
  const portraitHeight=await intro.locator('.sx-v19-photo-background')
   .evaluate(el=>el.getBoundingClientRect().height);
  expect(Math.abs(portraitHeight-844)).toBeLessThanOrEqual(2);
- await page.waitForTimeout(650);
+ // After Hello has disappeared, one full second later the guided
+ // director must STILL be unmounted and the portrait camera stationary.
+ await page.waitForTimeout(1050);
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-photo');
+ await expect(html).not.toHaveAttribute('data-portfolio-tour','playing');
+ await expect(intro).toHaveAttribute('data-mobile-photo-phase','photo');
  expect(Math.abs((await page.evaluate(()=>scrollY))-start)).toBeLessThanOrEqual(2);
+ // Only after the two-second timer may the director begin moving down.
  await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:4000});
+ await expect(html).toHaveAttribute('data-portfolio-tour','playing',{timeout:4000});
  await expect(intro).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:13000});
  await expect(copy).toHaveCSS('visibility','visible');
  await expect.poll(()=>page.evaluate(()=>scrollY)).toBeGreaterThan(100);
