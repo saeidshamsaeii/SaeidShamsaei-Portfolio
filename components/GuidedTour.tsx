@@ -65,7 +65,15 @@ function scrollDestination(stop:Stop){
  if(stop.element.id==='work-index')return top;
  // The owner name, surname and concise role are an ordered introduction,
  // not three unrelated reveals rushed past by the automatic director.
- if(stop.element.id==='intro')return top+box.height*.72;
+ if(stop.element.id==='intro'){
+  // On mobile the portrait fills its own viewport. Settle the next camera
+  // frame on the ACTUAL copy container, never a guessed section percentage.
+  if(window.matchMedia('(max-width:760px)').matches){
+   const copy=stop.element.querySelector<HTMLElement>('.sx-v19-cover-content');
+   if(copy)return copy.getBoundingClientRect().top+window.scrollY-window.innerHeight*.15;
+  }
+  return top+box.height*.72;
+ }
  if(stop.fraction!==null){
   const stage=stop.element.closest<HTMLElement>('#top')||stop.element;
   return stage.getBoundingClientRect().top+window.scrollY+
@@ -97,7 +105,16 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let raf=0, idleTimer:ReturnType<typeof setTimeout>|undefined;
   let scriptedScroll=-1, touchActive=false, disposed=false;
   const introMobile=window.matchMedia('(max-width:760px)').matches;
-  let introHoldComplete=false;
+  const introCover=stops.find(stop=>stop.element.id==='intro')?.element;
+  let introHoldComplete=false,photoWaitStartedAt=0;
+  const revealMobileCopy=()=>{
+   if(!introMobile||!introCover||introCover.dataset.mobilePhotoPhase==='copy')return;
+   introCover.dataset.mobilePhotoPhase='copy';
+   introCover.dataset.mobileCopyStartedAt=String(performance.now());
+   introCover.dispatchEvent(new Event('sx-mobile-intro-copy'));
+  };
+  // A returning visitor at a saved scroll position must not have copy hidden.
+  if(introMobile&&window.scrollY>12){introHoldComplete=true;revealMobileCopy();}
   // A pause is required for every marked horizontal panel, even between
   // black panels. A color transition also requires one pause. Both reasons
   // share ONE hold at a stop (never two consecutive two-second delays).
@@ -171,9 +188,9 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    delete root.dataset.portfolioTourHold;
    state.start=from;
    state.end=target(index);
-   // Desktop waits for the entire photograph-side introduction to type,
-   // then holds it for 2s before scrolling at all. On narrow mobile screens
-   // the portrait is above the text, so that hold occurs at arrival instead.
+   // Desktop waits for the side-by-side copy to finish, then holds for 2s.
+   // Mobile holds on the photo BEFORE scrolling; arriving at text has no
+   // second fixed delay. Keep a bounded pace for the approach to the copy.
    // Use actual travel distance to prevent one section racing while the
    // next crawls. Keep a bounded minimum for short reading beats.
    const distance=Math.abs(state.end-state.start);
@@ -212,6 +229,9 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   };
   const temporarilyYield=()=>{
    if(playback==='paused'||playback==='finished')return;
+   // User scrolling or touching during the mobile photo pause skips autoplay
+   // but must never leave the text hidden behind the photo-only phase.
+   if(introMobile){introHoldComplete=true;revealMobileCopy();}
    setPlayback('manual');
    // An in-flight playback frame must not advance from an old position.
    state.last=0;
@@ -245,6 +265,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    }
    if(event.key==='Escape'){
     clearIdle();
+    if(introMobile){introHoldComplete=true;revealMobileCopy();}
     setPlayback('paused');
    }
   };
@@ -258,6 +279,31 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const frame=(time:number)=>{
    if(disposed)return;
    if(playback==='playing'&&!document.hidden){
+    // Mobile: show the actual photo on the first screen for two full seconds,
+    // only then move towards text. Do not spend that time typing offscreen.
+    if(state.index===0&&introMobile&&!introHoldComplete&&state.start<12){
+     state.last=time;
+     scriptedScroll=window.scrollY;
+     if(!photoWaitStartedAt)photoWaitStartedAt=time;
+     const photo=introCover?.querySelector<HTMLImageElement>('.sx-v19-photo-background img');
+     const photoVisible=Boolean(photo?.complete&&photo.naturalWidth>0);
+     // A failed image must never trap the visitor in a permanent hold.
+     if(photoVisible||time-photoWaitStartedAt>=4500){
+      if(state.holdStartedAt===null){
+       state.holdStartedAt=time;
+       root.dataset.portfolioTourHold='intro-photo';
+      }
+      if(time-state.holdStartedAt>=INTRO_PHOTO_HOLD_MS){
+       introHoldComplete=true;
+       state.holdStartedAt=null;
+       state.last=time;
+       delete root.dataset.portfolioTourHold;
+       if(introCover)introCover.dataset.mobilePhotoPhase='moving';
+      }
+     }
+     raf=requestAnimationFrame(frame);
+     return;
+    }
     // Desktop portrait and copy are visible in the same opening view.
     // Hold the camera completely still until EVERY word has actually typed,
     // then keep that complete composition visible for a full two seconds.
@@ -290,6 +336,12 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
     // physical scroll pace, not from restarting a CSS easing on each panel.
     scriptedScroll=state.start+(state.end-state.start)*fraction;
     window.scrollTo({top:scriptedScroll,behavior:'instant'});
+    if(introMobile&&state.index===0&&introHoldComplete&&
+       introCover?.dataset.mobilePhotoPhase==='moving'){
+     const copy=introCover.querySelector<HTMLElement>('.sx-v19-cover-content');
+     if(copy&&copy.getBoundingClientRect().top<=innerHeight*.78)
+      revealMobileCopy();
+    }
     if(fraction>=1){
      if(state.index===stops.length-1){
       setPlayback('finished');onExitRef.current();return;
@@ -299,14 +351,14 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      // This black one-screen directory always gets its OWN reading hold,
      // even if a future theme change removes the white following section.
      const selectedWorkHold=stops[state.index].element.id==='work-index';
-     // On mobile the first photo is stacked ABOVE the copy. Pause after
-     // arriving at the readable text rather than holding an empty image.
-     const mobileIntroHold=state.index===0&&introMobile&&!introHoldComplete;
-     if(horizontalHold||backgroundHold||mobileIntroHold||selectedWorkHold){
+     // Mobile copy waits for actual typing completion, not another two-
+     // second photo hold; the photo pause already happened before travel.
+     const mobileIntroCopy=state.index===0&&introMobile;
+     if(horizontalHold||backgroundHold||mobileIntroCopy||selectedWorkHold){
       if(!state.arrivedAt)state.arrivedAt=time;
-      // Wait for genuine text completion on horizontal panels, the
-      // full-screen work directory, and the mobile opening portrait.
-      const strictCopy=horizontalHold||mobileIntroHold||selectedWorkHold;
+      // Wait for genuine text completion on the mobile intro and
+      // all strict reading stages; no arbitrary timeout for the copy.
+      const strictCopy=horizontalHold||mobileIntroCopy||selectedWorkHold;
       const workFullyFramed=!selectedWorkHold||(()=>{
        const rect=stops[state.index].element.getBoundingClientRect();
        // Short landscape windows cannot fit the whole section: never
@@ -324,15 +376,14 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
           (!strictCopy&&time-state.arrivedAt>=COPY_SETTLE_MAX_MS))){
        if(state.holdStartedAt===null){
         state.holdStartedAt=time;
-        root.dataset.portfolioTourHold=mobileIntroHold?'intro-photo':
+        root.dataset.portfolioTourHold=mobileIntroCopy?'intro-copy':
          selectedWorkHold?'selected-work':
          horizontalHold?'horizontal-frame':'background-change';
        }
-       const duration=mobileIntroHold?INTRO_PHOTO_HOLD_MS:
+       const duration=mobileIntroCopy?0:
         selectedWorkHold?SELECTED_WORK_HOLD_MS:
         horizontalHold?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS;
        if(time-state.holdStartedAt>=duration){
-        if(mobileIntroHold)introHoldComplete=true;
         delete root.dataset.portfolioTourHold;
         goTo(state.index+1);
        }
