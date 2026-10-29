@@ -59,3 +59,16 @@ test('manual performance audit exists and does not remove editorial CSS',()=>{
  assert.ok(read('app/layout.tsx').includes("import './quality.css';"));
  assert.ok(fs.existsSync(path.join(root,'docs','RELEASE-ACCEPTANCE-2026.md')));
 });
+
+test('GARTAL case study uses current Next.js source, not superseded Python WSGI',()=>{
+ const portfolio=read('data/portfolio.ts');
+ const narrative=read('data/caseNarratives.ts');
+ const evidence=read('data/engineeringEvidence.ts');
+ assert.match(portfolio,/GARTAL-SITE \/ Next\.js App Router/);
+ assert.match(portfolio,/PostgreSQL, Drizzle/);
+ assert.match(narrative,/Next\.js App Router application using React and TypeScript/);
+ assert.doesNotMatch(narrative.slice(0,narrative.indexOf(' factory:{')),/server-rendered Python WSGI application/);
+ assert.match(evidence,/8807047e306304051d74db7596b5fdfed0be1606/);
+ assert.match(evidence,/app\/api\/leads\/route\.ts/);
+ assert.doesNotMatch(evidence,/content\.py/);
+});
