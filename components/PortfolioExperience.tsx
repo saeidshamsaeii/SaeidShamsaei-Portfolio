@@ -1,5 +1,5 @@
 'use client';
-import {useCallback,useState} from 'react';
+import {useCallback,useEffect,useState} from 'react';
 import Link from 'next/link';
 import {SignatureOpening} from '@/components/SignatureOpening';
 import {EnglishGreeting} from '@/components/EnglishGreeting';
@@ -12,11 +12,75 @@ import {projects,publicContact} from '@/data/portfolio';
 
 export default function PortfolioExperience(){
  const [loaded,setLoaded]=useState(false);
+ const [introHoldFinished,setIntroHoldFinished]=useState(false);
  const [tour,setTour]=useState(true);
  const finishGreeting=useCallback(()=>setLoaded(true),[]);
+
+ // The mobile photo pause starts *when Hello is gone*, independently of the
+ // scroll director. Previously the hold lived inside GuidedTour and could be
+ // bypassed by its initial scroll/restore state. Do not mount the director
+ // until this full 2000ms hold has elapsed.
+ useEffect(()=>{
+  if(!loaded)return;
+  const cover=document.getElementById('intro');
+  if(!cover){setIntroHoldFinished(true);return;}
+  const mobile=window.matchMedia('(max-width:760px)').matches;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root=document.documentElement;
+  const revealCopy=()=>{
+   cover.dataset.mobilePhotoPhase='copy';
+   cover.dataset.mobileCopyStartedAt=String(performance.now());
+   cover.dispatchEvent(new Event('sx-mobile-intro-copy'));
+  };
+  if(!mobile||reduced||window.scrollY>12){
+   if(mobile)revealCopy();
+   setIntroHoldFinished(true);
+   return;
+  }
+
+  // At this point the Hello overlay has unmounted, the portrait is visible,
+  // and neither the guided scroll nor intro typing has started.
+  root.dataset.portfolioTourHold='intro-photo';
+  let released=false;
+  let timer=0;
+  const release=(manual:boolean)=>{
+   if(released)return;
+   released=true;
+   window.clearTimeout(timer);
+   delete root.dataset.portfolioTourHold;
+   if(manual){
+    revealCopy();
+    setTour(false);
+   }else{
+    cover.dataset.mobilePhotoPhase='moving';
+   }
+   setIntroHoldFinished(true);
+  };
+  const onManual=()=>release(true);
+  const onKey=(event:KeyboardEvent)=>{
+   if(['ArrowDown','ArrowUp','PageDown','PageUp',' ','Home','End','Escape'].includes(event.key))
+    onManual();
+  };
+  const onScroll=()=>{if(window.scrollY>12)onManual();};
+  window.addEventListener('wheel',onManual,{passive:true});
+  window.addEventListener('touchmove',onManual,{passive:true});
+  window.addEventListener('keydown',onKey);
+  window.addEventListener('scroll',onScroll,{passive:true});
+  timer=window.setTimeout(()=>release(false),2000);
+  return()=>{
+   window.clearTimeout(timer);
+   window.removeEventListener('wheel',onManual);
+   window.removeEventListener('touchmove',onManual);
+   window.removeEventListener('keydown',onKey);
+   window.removeEventListener('scroll',onScroll);
+   if(root.dataset.portfolioTourHold==='intro-photo')
+    delete root.dataset.portfolioTourHold;
+  };
+ },[loaded]);
+
  return <div className="sx-site sx-v18-site">
   {!loaded&&<EnglishGreeting onComplete={finishGreeting}/>}
-  <GuidedTour active={loaded&&tour} onExit={()=>setTour(false)}/>
+  <GuidedTour active={loaded&&introHoldFinished&&tour} onExit={()=>setTour(false)}/>
   <a className="skip-link" href="#work-index">Skip to work</a>
   <header className="sx-header sx-v18-header">
    <Link className="sx-v18-brand" href="#intro" aria-label="Back to start">SAEID SHAMSAEI.</Link>
