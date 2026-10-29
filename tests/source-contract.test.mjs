@@ -178,7 +178,7 @@ test('Edition 19 starts Hello... and displays a high clear portrait with sequent
  const directory=read('components/SelectedWorkIndex.tsx');
  const css=read('app/edition19.css');
  assert.match(home,/EnglishGreeting onComplete=\{finishGreeting\}/);
- assert.match(home,/active=\{loaded&&tour\}/);
+ assert.match(home,/active=\{loaded&&introHoldFinished&&tour\}/);
  assert.match(opening,/sx-v19-photo-background/);
  assert.match(css,/object-fit:cover/);
  assert.doesNotMatch(opening,/sx-v16-cover-photo-note|sx-v16-cover-edge|sx-v16-cover-meta/);
@@ -559,4 +559,41 @@ test('mobile introduction has no image-to-title dead zone or first-paint text fl
  assert.match(css,/\.sx-word-reveal:not\(\[data-motion="on"\]\) \[data-reveal-word\]/);
  assert.match(layout,/<noscript><style>/);
  assert.match(word,/host\.dataset\.motion='on'/);
+});
+
+test('exactly three substantive slides per project: problem, implementation, evidence',()=>{
+ const chapter=read('components/HorizontalCaseChapter.tsx');
+ const stories=read('data/homeStories.ts');
+ const css=read('app/quality.css');
+ assert.match(chapter,/const count=3/);
+ assert.match(chapter,/story\.beats\.map\(\(beat,slideIndex\)=>/);
+ assert.match(chapter,/data-frame-index=\{slideIndex\}/);
+ assert.match(chapter,/text=\{beat\.headline\}/);
+ assert.match(chapter,/text=\{beat\.copy\}/);
+ assert.match(chapter,/beat\.notes\.map/);
+ assert.match(chapter,/slideIndex===2\?/);
+ assert.match(chapter,/READ FULL CASE STUDY/);
+ for(const id of ['gartal','factory','digirezhim','petiwoo']){
+  assert.match(stories,new RegExp('\\b'+id+':\\{beats:\\['));
+ }
+ assert.equal((stories.match(/eyebrow:'01 \/ THE PROBLEM'/g)||[]).length,4);
+ assert.equal((stories.match(/eyebrow:'02 \/ IMPLEMENTATION'/g)||[]).length,4);
+ assert.equal((stories.match(/eyebrow:'03 \/ WHAT IS VERIFIED'/g)||[]).length,4);
+ assert.equal((stories.match(/notes:\[/g)||[]).length,12);
+ assert.doesNotMatch(stories,/paying customers (?:have|were)|(?:increased|grew) sales by \d+%/);
+ assert.match(css,/sx-v30-case-copy/);
+ assert.match(css,/sx-v30-case-notes/);
+});
+
+test('intro types once, with deliberate photo-to-name spacing and no false manual state',()=>{
+ const reveal=read('components/WordReveal.tsx');
+ const home=read('components/PortfolioExperience.tsx');
+ const css=read('app/quality.css');
+ assert.match(reveal,/cover\.dataset\.mobileCopyManual==='true'/);
+ assert.doesNotMatch(reveal,/document\.documentElement\.dataset\.portfolioTour!=='playing'/);
+ assert.match(home,/cover\.dataset\.mobileCopyManual='true'/);
+ assert.match(home,/timer=window\.setTimeout\(\(\)=>release\(false\),2000\)/);
+ assert.match(css,/padding:clamp\(14px,2svh,21px\)/);
+ assert.match(css,/padding:10px 16px 15px!important/);
+ assert.match(css,/data-mobile-photo-phase="photo"/);
 });
