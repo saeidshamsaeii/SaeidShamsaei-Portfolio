@@ -60,40 +60,76 @@ test('portrait opening finishes typing and holds completely still for two second
  await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:5000}).toBeGreaterThan(y+4);
 });
 
-test('mobile shows only Saeid portrait for 2s, then moves to typed introduction',async({page})=>{
+test('mobile opens with portrait above copy in ONE section, waits 2s, types, then advances',async({page})=>{
  test.setTimeout(45000);
  await page.setViewportSize({width:390,height:844});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  const html=page.locator('html');
  const intro=page.locator('#intro');
+ const photo=intro.locator('.sx-v19-photo-background');
  const copy=intro.locator('.sx-v19-cover-content');
  await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:12000});
  await expect(intro).toHaveAttribute('data-mobile-photo-phase','photo');
  await expect(copy).toHaveCSS('visibility','hidden');
  await expect(intro.locator('h1')).toHaveCSS('visibility','hidden');
- await expect(intro.locator('.sx-v18-cover-links a').first()).toHaveCSS('visibility','hidden');
  await expect(intro.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(0);
- const start=await page.evaluate(()=>scrollY);
- expect(start).toBeLessThanOrEqual(2);
- const portraitHeight=await intro.locator('.sx-v19-photo-background')
-  .evaluate(el=>el.getBoundingClientRect().height);
- expect(Math.abs(portraitHeight-844)).toBeLessThanOrEqual(2);
- // After Hello has disappeared, one full second later the guided
- // director must STILL be unmounted and the portrait camera stationary.
- await page.waitForTimeout(1050);
+ const imageLayout=await intro.evaluate(section=>{
+  const image=section.querySelector<HTMLElement>('.sx-v19-photo-background')!;
+  const copy=section.querySelector<HTMLElement>('.sx-v19-cover-content')!;
+  return {photo:image.getBoundingClientRect().height,
+   portraitEnd:image.getBoundingClientRect().bottom,
+   textStart:copy.getBoundingClientRect().top,
+   introHeight:section.getBoundingClientRect().height};
+ });
+ expect(imageLayout.photo).toBeGreaterThan(190);
+ expect(imageLayout.photo).toBeLessThan(400);
+ expect(Math.abs(imageLayout.textStart-imageLayout.portraitEnd)).toBeLessThanOrEqual(3);
+ expect(imageLayout.introHeight).toBeLessThan(844);
+ const initialY=await page.evaluate(()=>scrollY);
+ expect(initialY).toBeLessThanOrEqual(2);
+ await page.waitForTimeout(850);
  await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-photo');
  await expect(html).not.toHaveAttribute('data-portfolio-tour','playing');
- await expect(intro).toHaveAttribute('data-mobile-photo-phase','photo');
- expect(Math.abs((await page.evaluate(()=>scrollY))-start)).toBeLessThanOrEqual(2);
- // Only after the two-second timer may the director begin moving down.
+ expect(Math.abs((await page.evaluate(()=>scrollY))-initialY)).toBeLessThanOrEqual(2);
+
  await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:4000});
- await expect(html).toHaveAttribute('data-portfolio-tour','playing',{timeout:4000});
- await expect(intro).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:13000});
+ await expect(intro).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:4000});
  await expect(copy).toHaveCSS('visibility','visible');
- await expect.poll(()=>page.evaluate(()=>scrollY)).toBeGreaterThan(100);
+ await expect(html).toHaveAttribute('data-portfolio-tour','playing');
+ // Typing begins in-place: a new chapter cannot start before BOTH copy
+ // blocks have completed, and normal phones do not jump off the photograph.
+ await page.waitForTimeout(650);
+ await expect(intro.locator('.sx-word-reveal[data-reveal-complete="true"]')).not.toHaveCount(2);
+ expect(await page.evaluate(()=>scrollY)).toBeLessThan(45);
  await expect(intro.locator('.sx-word-reveal[data-reveal-complete="true"]'))
   .toHaveCount(2,{timeout:9000});
+ await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:7000}).toBeGreaterThan(55);
+});
+
+test('short mobile viewports keep portrait above copy without horizontal overflow',async({browser})=>{
+ for(const viewport of [{width:320,height:568},{width:390,height:844}]){
+  const page=await browser.newPage({viewport,reducedMotion:'reduce'});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  const data=await page.locator('#intro').evaluate(section=>{
+   const photo=section.querySelector<HTMLElement>('.sx-v19-photo-background')!;
+   const copy=section.querySelector<HTMLElement>('.sx-v19-cover-content')!;
+   const p=photo.getBoundingClientRect(),c=copy.getBoundingClientRect();
+   return {
+    imageAboveText:p.bottom<=c.top+3,
+    sameSection:section.contains(photo)&&section.contains(copy),
+    noOverflow:section.scrollWidth<=section.clientWidth+2,
+    textVisible:getComputedStyle(copy).visibility==='visible',
+    photoHeight:p.height
+   };
+  });
+  expect(data.sameSection).toBe(true);
+  expect(data.imageAboveText).toBe(true);
+  expect(data.noOverflow).toBe(true);
+  expect(data.textVisible).toBe(true);
+  expect(data.photoHeight).toBeLessThan(viewport.height*.55);
+  await page.close();
+ }
 });
 
 test('black Selected Work freezes only AFTER all nine word blocks finish and fit the viewport',async({page})=>{
