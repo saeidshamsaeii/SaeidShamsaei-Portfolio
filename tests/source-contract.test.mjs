@@ -530,7 +530,9 @@ test('mobile Hello exits before a separate two-second photo hold and any automat
  assert.match(css,/data-mobile-photo-phase="photo"/);
  assert.match(tour,/const mobileIntroCopy=state\.index===0&&introMobile/);
  assert.match(tour,/const duration=mobileIntroCopy\?0:/);
- assert.match(word,/phase==='photo'\|\|phase==='moving'/);
+ assert.match(word,/if\(mobile&&phase==='photo'\)/);
+ assert.doesNotMatch(home,/mobilePhotoPhase='moving'/);
+ assert.doesNotMatch(tour,/mobilePhotoPhase==='moving'/);
  assert.match(word,/mobileCopyStartedAt/);
  assert.match(word,/sx-mobile-intro-copy/);
 });
