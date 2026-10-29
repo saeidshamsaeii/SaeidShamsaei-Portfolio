@@ -38,6 +38,9 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   const host=root.current;if(!host)return;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   const onIntro=Boolean(host.closest('#intro'));
+  // The very first "SAEID" glyph must not show as a 1px slice ("tick")
+  // while its whole-word clipping animation advances from zero.
+  const introTitle=onIntro&&Boolean(host.closest('h1'));
   const horizontalChapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
   const workIndex=host.closest<HTMLElement>('#work-index');
   const started=performance.now();
@@ -86,8 +89,14 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     const words=lines[i],typed=fraction*words.length;
     for(let j=0;j<words.length;j++){
      const amount=clamp(typed-j);
-     words[j].style.opacity=String(amount);
-     words[j].style.clipPath='inset(0 '+((1-amount)*100)+'% 0 0)';
+     const firstIntroWord=introTitle&&i===0&&j===0;
+     // Keep the first glyph completely invisible until the clipping area
+     // can hold a recognizable letter. Then fade it in, continuously:
+     // no isolated vertical stroke and no extra typing restart.
+     const shown=firstIntroWord?clamp((amount-.18)/.17):amount;
+     const clipped=firstIntroWord&&amount<.18?0:amount;
+     words[j].style.opacity=String(shown);
+     words[j].style.clipPath='inset(0 '+((1-clipped)*100)+'% 0 0)';
      words[j].style.transform='none';
     }
    }
