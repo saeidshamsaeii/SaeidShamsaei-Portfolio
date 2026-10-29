@@ -78,3 +78,26 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
  color:#fff;text-decoration:none;padding:12px 0;border-bottom:1px solid #a1a1a1;
 }
 .sx-not-found nav a:hover{border-color:#fff;}
+
+/* Mobile opening, owner-directed sequence (2026-10-29).
+ * Photo fills its own mobile viewport before the typography stage. A 2s hold
+ * is controlled by GuidedTour after the photo loads; no pause is imposed on
+ * desktop or reduced-motion readers. These selectors never affect cases. */
+@media (max-width:760px){
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background{
+  height:100svh!important;
+ }
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-cover-content{
+  margin-top:100svh!important;
+ }
+}
+/* Keep all intro text and its focusable actions out of the frame until the
+ * photo hold AND the approach to the text are finished. With no scripting or
+ * reduced motion there is no hidden-content gate. */
+@media (max-width:760px) and (prefers-reduced-motion:no-preference) and (scripting:enabled){
+ .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content,
+ .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="moving"] .sx-v19-cover-content{
+  visibility:hidden!important;
+  pointer-events:none!important;
+ }
+}
