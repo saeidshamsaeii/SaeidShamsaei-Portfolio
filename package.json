@@ -10,7 +10,7 @@
     "test:e2e": "playwright test",
     "images:audit": "node scripts/media-pipeline.mjs --audit",
     "images:build": "node scripts/media-pipeline.mjs --build",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/source-contract.test.mjs tests/quality-gates.test.mjs",
     "check": "npm run typecheck && npm test && npm run build",
     "qa:css": "node scripts/css-audit.mjs",
     "qa:browser": "playwright test tests/quality-acceptance.spec.ts"
