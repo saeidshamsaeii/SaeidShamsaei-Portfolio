@@ -189,8 +189,8 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.start=from;
    state.end=target(index);
    // Desktop waits for the side-by-side copy to finish, then holds for 2s.
-   // Mobile's portrait pause has already finished before this effect mounts.
-   // Arriving at the text stage must not add another fixed photo delay.
+   // On mobile, the photo's initial two-second pause has finished before
+   // GuidedTour mounts; typed copy is read inside the SAME opening block.
    // Use actual travel distance to prevent one section racing while the
    // next crawls. Keep a bounded minimum for short reading beats.
    const distance=Math.abs(state.end-state.start);
@@ -279,8 +279,28 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const frame=(time:number)=>{
    if(disposed)return;
    if(playback==='playing'&&!document.hidden){
-    // The 2s mobile portrait pause is completed by PortfolioExperience
-    // immediately after Hello. Never pause twice or start scrolling early.
+    // Mobile introduction is ONE photo-above-copy block. Hello has gone,
+    // and the photograph has already remained still for exactly two seconds.
+    // Type the name and description in-place before advancing to any other
+    // block. Only on short screens is a minimal in-block camera adjustment
+    // permitted to keep the final lines inside the readable viewport.
+    if(state.index===0&&introMobile&&introCover&&state.start<12&&
+       introCover.dataset.mobilePhotoPhase==='copy'){
+     const delta=state.last?Math.min(100,time-state.last):0;
+     state.last=time;
+     const copy=introCover.querySelector<HTMLElement>('.sx-v19-cover-content');
+     const beyond=copy?Math.max(0,copy.getBoundingClientRect().bottom-innerHeight+12):0;
+     if(beyond>1&&delta){
+      scriptedScroll=window.scrollY+Math.min(beyond,delta*.12);
+      window.scrollTo({top:scriptedScroll,behavior:'instant'});
+     }else scriptedScroll=window.scrollY;
+     if(textHasFinished(stops[0])&&beyond<=2){
+      if(stops.length>1)goTo(1,window.scrollY);
+      else {setPlayback('finished');onExitRef.current();return;}
+     }
+     raf=requestAnimationFrame(frame);
+     return;
+    }
     // Desktop portrait and copy are visible in the same opening view.
     // Hold the camera completely still until EVERY word has actually typed,
     // then keep that complete composition visible for a full two seconds.
