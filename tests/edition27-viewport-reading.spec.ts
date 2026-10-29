@@ -118,7 +118,8 @@ test('mobile first paint hides the entire intro copy even without hydration',asy
  await page.setViewportSize({width:390,height:844});
  // Keep HTML/CSS, but block Next client scripts to inspect server HTML before
  // hydration. This catches an early flash that animation timing alone misses.
- await page.route(/\\/_next\\/static\\/.*\\.(?:js|mjs)(?:\\?.*)?$/,route=>route.abort());
+ await page.route('**/_next/static/**/*.js',route=>route.abort());
+ await page.route('**/_next/static/**/*.mjs',route=>route.abort());
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const intro=page.locator('#intro');
  await expect(intro).toHaveAttribute('data-mobile-photo-phase','photo');
