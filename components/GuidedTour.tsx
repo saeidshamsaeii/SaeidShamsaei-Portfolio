@@ -333,12 +333,6 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
     // physical scroll pace, not from restarting a CSS easing on each panel.
     scriptedScroll=state.start+(state.end-state.start)*fraction;
     window.scrollTo({top:scriptedScroll,behavior:'instant'});
-    if(introMobile&&state.index===0&&introHoldComplete&&
-       introCover?.dataset.mobilePhotoPhase==='moving'){
-     const copy=introCover.querySelector<HTMLElement>('.sx-v19-cover-content');
-     if(copy&&copy.getBoundingClientRect().top<=innerHeight*.78)
-      revealMobileCopy();
-    }
     if(fraction>=1){
      if(state.index===stops.length-1){
       setPlayback('finished');onExitRef.current();return;
