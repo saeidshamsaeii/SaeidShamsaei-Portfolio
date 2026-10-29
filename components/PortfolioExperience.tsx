@@ -62,6 +62,7 @@ export default function PortfolioExperience(){
    window.removeEventListener('wheel',onManual);
    window.removeEventListener('touchmove',onManual);
    window.removeEventListener('keydown',onKey);
+   document.removeEventListener('pointerdown',onNavigation);
    delete root.dataset.portfolioTourHold;
    if(manual){
     revealCopy();
@@ -78,6 +79,11 @@ export default function PortfolioExperience(){
    if(['ArrowDown','ArrowUp','PageDown','PageUp',' ','Home','End','Escape'].includes(event.key))
     onManual();
   };
+  // Navigation remains immediately usable while the portrait is held.
+  const onNavigation=(event:PointerEvent)=>{
+   if(event.target instanceof Element&&event.target.closest('a,button'))
+    onManual();
+  };
   const startHold=()=>{
    if(released||photoTimerStarted)return;
    photoTimerStarted=true;
@@ -87,6 +93,7 @@ export default function PortfolioExperience(){
   window.addEventListener('wheel',onManual,{passive:true});
   window.addEventListener('touchmove',onManual,{passive:true});
   window.addEventListener('keydown',onKey);
+  document.addEventListener('pointerdown',onNavigation);
   // The image may arrive after the Hello overlay on a slow mobile network.
   // Hold for 2s of actual photo visibility, without trapping a failed image.
   if(!image||image.complete)startHold();
@@ -103,6 +110,7 @@ export default function PortfolioExperience(){
    window.removeEventListener('wheel',onManual);
    window.removeEventListener('touchmove',onManual);
    window.removeEventListener('keydown',onKey);
+   document.removeEventListener('pointerdown',onNavigation);
    if(root.dataset.portfolioTourHold==='intro-photo')
     delete root.dataset.portfolioTourHold;
   };
