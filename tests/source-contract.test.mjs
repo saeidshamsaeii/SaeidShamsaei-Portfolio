@@ -291,7 +291,7 @@ test('Edition 23 has grounded project copy, a blurred photo seam, no legacy gold
  const director=read('components/GuidedTour.tsx');
  const css=read('app/edition20.css');
  const engineering=read('app/engineering.css');
- assert.match(stories,/34 public pages/);
+ assert.match(stories,/Next\\.js service website/);
  assert.match(stories,/Windows Worker/);
  assert.match(stories,/clinical nutrition workflows/);
  assert.match(stories,/Zustand/);
