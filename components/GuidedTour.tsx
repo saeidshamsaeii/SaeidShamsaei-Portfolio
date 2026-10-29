@@ -106,7 +106,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let scriptedScroll=-1, touchActive=false, disposed=false;
   const introMobile=window.matchMedia('(max-width:760px)').matches;
   const introCover=stops.find(stop=>stop.element.id==='intro')?.element;
-  let introHoldComplete=false,photoWaitStartedAt=0;
+  let introHoldComplete=false;
   const revealMobileCopy=()=>{
    if(!introMobile||!introCover||introCover.dataset.mobilePhotoPhase==='copy')return;
    introCover.dataset.mobilePhotoPhase='copy';
@@ -189,8 +189,8 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.start=from;
    state.end=target(index);
    // Desktop waits for the side-by-side copy to finish, then holds for 2s.
-   // Mobile holds on the photo BEFORE scrolling; arriving at text has no
-   // second fixed delay. Keep a bounded pace for the approach to the copy.
+   // Mobile's portrait pause has already finished before this effect mounts.
+   // Arriving at the text stage must not add another fixed photo delay.
    // Use actual travel distance to prevent one section racing while the
    // next crawls. Keep a bounded minimum for short reading beats.
    const distance=Math.abs(state.end-state.start);
@@ -279,31 +279,8 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const frame=(time:number)=>{
    if(disposed)return;
    if(playback==='playing'&&!document.hidden){
-    // Mobile: show the actual photo on the first screen for two full seconds,
-    // only then move towards text. Do not spend that time typing offscreen.
-    if(introCover&&state.index===0&&introMobile&&!introHoldComplete&&state.start<12){
-     state.last=time;
-     scriptedScroll=window.scrollY;
-     if(!photoWaitStartedAt)photoWaitStartedAt=time;
-     const photo=introCover?.querySelector<HTMLImageElement>('.sx-v19-photo-background img');
-     const photoVisible=Boolean(photo?.complete&&photo.naturalWidth>0);
-     // A failed image must never trap the visitor in a permanent hold.
-     if(photoVisible||time-photoWaitStartedAt>=4500){
-      if(state.holdStartedAt===null){
-       state.holdStartedAt=time;
-       root.dataset.portfolioTourHold='intro-photo';
-      }
-      if(time-state.holdStartedAt>=INTRO_PHOTO_HOLD_MS){
-       introHoldComplete=true;
-       state.holdStartedAt=null;
-       state.last=time;
-       delete root.dataset.portfolioTourHold;
-       if(introCover)introCover.dataset.mobilePhotoPhase='moving';
-      }
-     }
-     raf=requestAnimationFrame(frame);
-     return;
-    }
+    // The 2s mobile portrait pause is completed by PortfolioExperience
+    // immediately after Hello. Never pause twice or start scrolling early.
     // Desktop portrait and copy are visible in the same opening view.
     // Hold the camera completely still until EVERY word has actually typed,
     // then keep that complete composition visible for a full two seconds.
