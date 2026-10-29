@@ -203,6 +203,31 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 }
 
 
+/* Introduction actions are the final editorial beat: AFTER the complete
+ * name AND lead are typed, then the full first screen can be read for 2s.
+ * Visibility keeps the reserved link layout unchanged (no camera jump).
+ * WordReveal marks the lead complete only after the prior title is complete.
+ * Hide from first paint on both phone and desktop, with no animation delay. */
+.sx-v18-site #intro.sx-v19-cover .sx-v18-cover-links{
+ visibility:hidden!important;
+ opacity:0!important;
+ pointer-events:none!important;
+ transition:none!important;
+}
+.sx-v18-site #intro.sx-v19-cover
+ .sx-v18-cover-lead[data-reveal-complete="true"] + .sx-v18-cover-links{
+ visibility:visible!important;
+ opacity:1!important;
+ pointer-events:auto!important;
+}
+@media (prefers-reduced-motion:reduce){
+ .sx-v18-site #intro.sx-v19-cover .sx-v18-cover-links{
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+ }
+}
+
 /* The portfolio intro uses letter disclosure only, not a typing caret.
  * Legacy .is-typing and global word pseudo-elements must never draw an
  * isolated line ahead of the first recognizable SAEID character. */
