@@ -74,3 +74,23 @@ test('404 route offers direct recovery navigation in the correct theme',async({p
  await expect(page.getByRole('link',{name:/Back to portfolio/})).toHaveAttribute('href','/');
  await expect(page.getByRole('link',{name:/Engineering index/})).toHaveAttribute('href','/engineering/');
 });
+
+test('unwritten project links are not keyboard-focusable, and completed ones are',async({page})=>{
+ await page.goto('/');
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ await page.keyboard.press('Escape');
+ const selected=page.locator('#work-index');
+ const rows=selected.locator('.sx-v18-index-entry');
+ const first=rows.first();
+ await expect(first).toHaveAttribute('data-work-stage-state','pending');
+ for(const link of await first.locator('a').all()){
+  await expect(link).toHaveAttribute('tabindex','-1');
+  await expect(link).toHaveAttribute('aria-hidden','true');
+ }
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await expect(selected.locator('[data-work-stage-state="complete"]')).toHaveCount(5);
+ for(const link of await first.locator('a').all()){
+  await expect(link).toHaveAttribute('tabindex','0');
+  await expect(link).not.toHaveAttribute('aria-hidden','true');
+ }
+});
