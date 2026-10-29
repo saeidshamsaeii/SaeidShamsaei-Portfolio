@@ -151,6 +151,35 @@ test('first intro block tracks real header height and fills available responsive
  }
 });
 
+test('first block responds to mobile rotation and menu reflow without clipping',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const read=()=>page.locator('#intro').evaluate(section=>{
+  const header=document.querySelector<HTMLElement>('.sx-v18-header')!;
+  const photo=section.querySelector<HTMLElement>('.sx-v19-photo-background')!;
+  const copy=section.querySelector<HTMLElement>('.sx-v19-cover-content')!;
+  return {
+   available:innerHeight-header.getBoundingClientRect().height,
+   minHeight:Number.parseFloat(getComputedStyle(section).minHeight),
+   imageEnd:photo.getBoundingClientRect().bottom,
+   copyStart:copy.getBoundingClientRect().top,
+   contentEnd:copy.getBoundingClientRect().bottom,
+   sectionEnd:section.getBoundingClientRect().bottom,
+   overflow:section.scrollWidth-section.clientWidth
+  };
+ });
+ await expect.poll(async()=>Math.abs((await read()).available-(await read()).minHeight))
+  .toBeLessThanOrEqual(3);
+ await page.setViewportSize({width:568,height:320});
+ await expect.poll(async()=>Math.abs((await read()).available-(await read()).minHeight))
+  .toBeLessThanOrEqual(3);
+ const rotated=await read();
+ expect(rotated.imageEnd).toBeLessThanOrEqual(rotated.copyStart+3);
+ expect(rotated.contentEnd).toBeLessThanOrEqual(rotated.sectionEnd+3);
+ expect(rotated.overflow).toBeLessThanOrEqual(2);
+});
+
 test('short mobile viewports keep portrait above copy without horizontal overflow',async({browser})=>{
  for(const viewport of [{width:320,height:568},{width:390,height:844}]){
   const page=await browser.newPage({viewport,reducedMotion:'reduce'});
