@@ -80,18 +80,26 @@ test('opening never scrolls before both intro text blocks finish on mobile or de
  }
 });
 
-test('portrait opening finishes typing and holds completely still for two seconds',async({page})=>{
+test('fully typed desktop opening reveals both links, then holds still for two seconds',async({page})=>{
+ test.setTimeout(23000);
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  const html=page.locator('html');
- await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:12000});
- await expect(page.locator('#intro .sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(2);
+ const intro=page.locator('#intro');
+ const links=intro.locator('.sx-v18-cover-links');
+ await expect(links).toHaveCSS('visibility','hidden');
+ await expect(intro.locator('.sx-v18-cover-lead')).toHaveAttribute('data-reveal-complete','true',{timeout:9000});
+ await expect(links).toHaveCSS('visibility','visible');
+ await expect(links.getByRole('link',{name:/View work/})).toBeVisible();
+ await expect(links.getByRole('link',{name:/Engineering/})).toBeVisible();
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-copy',{timeout:2500});
  const y=await page.evaluate(()=>scrollY);
- await page.waitForTimeout(700);
+ await page.waitForTimeout(900);
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-copy');
  expect(Math.abs((await page.evaluate(()=>scrollY))-y)).toBeLessThanOrEqual(2);
- await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','intro-photo',{timeout:3000});
- await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:5000}).toBeGreaterThan(y+4);
+ await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','intro-copy',{timeout:2600});
+ await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:5500}).toBeGreaterThan(y+4);
 });
 
 test('mobile opens with portrait above copy in ONE section, waits 2s, types, then advances',async({page})=>{
@@ -148,6 +156,30 @@ test('mobile opens with portrait above copy in ONE section, waits 2s, types, the
  await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:7000}).toBeGreaterThan(55);
 });
 
+test('mobile links appear only after lead typing and the complete intro holds for two seconds',async({page})=>{
+ test.setTimeout(30000);
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
+ const intro=page.locator('#intro');
+ const links=intro.locator('.sx-v18-cover-links');
+ await expect(links).toHaveCSS('visibility','hidden');
+ await expect(intro).toHaveAttribute('data-mobile-photo-phase','copy',{timeout:9000});
+ await expect(links).toHaveCSS('visibility','hidden');
+ await expect(intro.locator('.sx-v18-cover-lead')).toHaveAttribute('data-reveal-complete','true',{timeout:9000});
+ await expect(links).toHaveCSS('visibility','visible');
+ await expect(links.getByRole('link',{name:/View work/})).toBeVisible();
+ await expect(links.getByRole('link',{name:/Engineering/})).toBeVisible();
+ const html=page.locator('html');
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-copy',{timeout:2000});
+ const y=await page.evaluate(()=>scrollY);
+ await page.waitForTimeout(900);
+ await expect(html).toHaveAttribute('data-portfolio-tour-hold','intro-copy');
+ expect(Math.abs((await page.evaluate(()=>scrollY))-y)).toBeLessThanOrEqual(2);
+ await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','intro-copy',{timeout:2600});
+ await expect.poll(()=>page.evaluate(()=>scrollY),{timeout:7000}).toBeGreaterThan(y+4);
+});
+
 test('mobile first paint hides the entire intro copy even without hydration',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  // Keep HTML/CSS, but block Next client scripts to inspect server HTML before
@@ -167,6 +199,7 @@ test('mobile no-script fallback keeps introductory copy readable',async({browser
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#intro .sx-v19-cover-content')).toHaveCSS('visibility','visible');
  await expect(page.locator('#intro h1')).toHaveCSS('visibility','visible');
+ await expect(page.locator('#intro .sx-v18-cover-links')).toHaveCSS('visibility','visible');
  await page.close();
 });
 
