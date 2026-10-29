@@ -48,8 +48,8 @@ const identity={
 export default function RootLayout({children}:{children:React.ReactNode}){
  return <html lang="en" dir="ltr">
   <head>
-   <link rel="preload" href="/assets/hires/logo.webp" as="image"/>
-   <link rel="preload" href="/assets/hires/portrait.webp" as="image" type="image/webp"/>
+   {/* Avoid preloading home-only images on the five non-home routes.
+       The hero portrait itself has fetchPriority="high" on the homepage. */}
    {siteApproved&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(identity).replace(/</g,'\\u003c')}}/>}
   </head>
   <body>{children}</body>
