@@ -511,7 +511,9 @@ test('mobile Hello exits before a separate two-second photo hold and any automat
  assert.match(home,/!loaded&&<EnglishGreeting onComplete=\{finishGreeting\}\/>/);
  assert.match(home,/if\(!loaded\)return/);
  assert.match(home,/root\.dataset\.portfolioTourHold='intro-photo'/);
- assert.match(home,/window\.setTimeout\(\(\)=>release\(window\.scrollY>12\),2000\)/);
+ assert.match(home,/window\.setTimeout\(\(\)=>release\(false\),2000\)/);
+ assert.match(home,/window\.scrollTo\(\{top:0,behavior:'instant'\}\)/);
+ assert.match(home,/historyReturn/);
  assert.match(home,/active=\{loaded&&introHoldFinished&&tour\}/);
  assert.match(home,/cover\.dataset\.mobilePhotoPhase='moving'/);
  assert.match(tour,/introCover\?\.dataset\.mobilePhotoPhase==='moving'/);
