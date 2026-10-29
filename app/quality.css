@@ -111,20 +111,16 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
   gap:12px!important;
  }
 }
-/* Keep all intro text and its focusable actions out of the frame until the
- * photo hold AND the approach to the text are finished. With no scripting or
- * reduced motion there is no hidden-content gate. */
+/* During the first two seconds, the portrait is the only editorial
+ * content; the text below is present in layout but still fully hidden.
+ * Reduced-motion and no-script readers see the complete copy instead. */
 @media (max-width:760px) and (prefers-reduced-motion:no-preference) and (scripting:enabled){
- .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content,
- .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="moving"] .sx-v19-cover-content{
+ .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content{
   visibility:hidden!important;
   pointer-events:none!important;
  }
- /* Earlier edition CSS explicitly forces h1 visibility:visible!important.
-    Visibility is inherited, but that child override could leak text through
-    a hidden parent. Hide descendants explicitly only during the photo stages. */
- .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content *,
- .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="moving"] .sx-v19-cover-content *{
+ /* Earlier CSS forces the h1 visible, so override descendants too. */
+ .sx-v18-site #intro.sx-v19-cover[data-mobile-photo-phase="photo"] .sx-v19-cover-content *{
   visibility:hidden!important;
  }
 }
