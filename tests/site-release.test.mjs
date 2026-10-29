@@ -2,12 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
+import ts from 'typescript';
 
 // The release module is pure, JavaScript-compatible TypeScript. Evaluate that
 // *same checked-in source* in isolated environments without Next.js, a DB,
 // network access or the user's actual environment variables.
 const source=readFileSync(new URL('../lib/siteRelease.ts',import.meta.url),'utf8');
-const script=source.replace(/\bexport (?=const |function )/g,'')+
+const script=ts.transpileModule(source,{fileName:'siteRelease.ts',compilerOptions:{
+ target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext
+}}).outputText.replace(/\bexport (?=const |function )/g,'')+
  '\n({siteOrigin,siteApproved,publicCanonical})';
 function inspect(env){
  return runInNewContext(script,{URL,process:{env}});
