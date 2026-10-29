@@ -9,6 +9,7 @@ import {WordReveal} from '@/components/WordReveal';
  */
 export function SignatureOpening({ready=false}:{ready?:boolean}){
  return <section id="intro" className="sx-v16-cover sx-v18-cover sx-v19-cover"
+  data-mobile-photo-phase="photo"
   data-tour-stop data-tour-label="Introducing Saeid" data-tour-duration="13" data-tour-pace=".77"
   aria-labelledby="sx-v16-name">
   <div className="sx-v19-photo-background">
