@@ -371,7 +371,8 @@ test('Edition 26 never previews the next block during its predecessor reading ho
  assert.match(chapter,/panel\.dataset\.frameState!==state/);
  assert.match(chapter,/panelIndex>position\?'upcoming'/);
  assert.match(chapter,/new Event\('sx-horizontal-progress'\)/);
- assert.equal((chapter.match(/data-frame-state="upcoming"/g)||[]).length,2);
+ assert.match(chapter,/data-frame-state=\{slideIndex===0\?'active':'upcoming'\}/);
+ assert.match(chapter,/story\.beats\.map\(\(beat,slideIndex\)=>/);
  assert.match(word,/horizontalChapter\.addEventListener\('sx-horizontal-progress',update\)/);
  assert.match(word,/horizontalChapter\?\.removeEventListener\('sx-horizontal-progress',update\)/);
  assert.match(word,/if\(host\.closest\('\[data-tour-awaiting="true"\]'\)\)progress=0/);
