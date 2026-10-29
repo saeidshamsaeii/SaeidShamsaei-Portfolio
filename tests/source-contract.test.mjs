@@ -174,10 +174,10 @@ test('engineering evidence mode is source-anchored, searchable and outside the c
 test('Edition 19 starts Hello... and displays a high clear portrait with sequential authored project beats',()=>{
  const home=read('components/PortfolioExperience.tsx');
  const opening=read('components/SignatureOpening.tsx');
- const greeting=read('components/MultilingualGreeting.tsx');
+ const greeting=read('components/EnglishGreeting.tsx');
  const directory=read('components/SelectedWorkIndex.tsx');
  const css=read('app/edition19.css');
- assert.match(home,/MultilingualGreeting onComplete=\{finishGreeting\}/);
+ assert.match(home,/EnglishGreeting onComplete=\{finishGreeting\}/);
  assert.match(home,/active=\{loaded&&tour\}/);
  assert.match(opening,/sx-v19-photo-background/);
  assert.match(css,/object-fit:cover/);
@@ -198,7 +198,7 @@ test('ordered opening animation never overlaps its next sentence beat',()=>{
  const word=read('components/WordReveal.tsx');
  const director=read('components/GuidedTour.tsx');
  const opening=read('components/SignatureOpening.tsx');
- const loader=read('components/MultilingualGreeting.tsx');
+ const loader=read('components/EnglishGreeting.tsx');
  const mono=read('app/edition19.css');
  assert.match(component,/const count=3/);
  assert.ok(component.includes(String.raw`A studio at the front. A platform\nunderneath.`));
@@ -482,7 +482,7 @@ test('Edition 30 types each Selected Work block before its own line and 2s readi
 test('English-only portfolio has no locale picker or translated routes',()=>{
  const layout=read('app/layout.tsx');
  const home=read('components/PortfolioExperience.tsx');
- const greeting=read('components/MultilingualGreeting.tsx');
+ const greeting=read('components/EnglishGreeting.tsx');
  const removed=[
   'components/LocaleProvider.tsx','components/LanguageSwitcher.tsx',
   'data/siteTranslations.ts','data/projectTranslations.ts',

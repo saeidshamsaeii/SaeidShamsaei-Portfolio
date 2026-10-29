@@ -2,7 +2,7 @@
 import {useCallback,useState} from 'react';
 import Link from 'next/link';
 import {SignatureOpening} from '@/components/SignatureOpening';
-import {MultilingualGreeting} from '@/components/MultilingualGreeting';
+import {EnglishGreeting} from '@/components/EnglishGreeting';
 import {ScrollHero} from '@/components/ScrollHero';
 import {SelectedWorkIndex} from '@/components/SelectedWorkIndex';
 import {HorizontalCaseChapter} from '@/components/HorizontalCaseChapter';
@@ -15,7 +15,7 @@ export default function PortfolioExperience(){
  const [tour,setTour]=useState(true);
  const finishGreeting=useCallback(()=>setLoaded(true),[]);
  return <div className="sx-site sx-v18-site">
-  {!loaded&&<MultilingualGreeting onComplete={finishGreeting}/>}
+  {!loaded&&<EnglishGreeting onComplete={finishGreeting}/>}
   <GuidedTour active={loaded&&tour} onExit={()=>setTour(false)}/>
   <a className="skip-link" href="#work-index">Skip to work</a>
   <header className="sx-header sx-v18-header">

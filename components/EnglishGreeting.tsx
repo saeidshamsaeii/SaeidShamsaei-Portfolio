@@ -2,7 +2,7 @@
 import {useEffect,useState} from 'react';
 
 /** English-only greeting. Preserve the cinematic Hello... and fade-out. */
-export function MultilingualGreeting({onComplete}:{onComplete:()=>void}){
+export function EnglishGreeting({onComplete}:{onComplete:()=>void}){
  const [leaving,setLeaving]=useState(false);
  useEffect(()=>{
   const original=document.documentElement.style.overflow;
