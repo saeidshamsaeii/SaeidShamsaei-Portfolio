@@ -161,10 +161,20 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
      const cover=host.closest<HTMLElement>('#intro')!;
      const rect=cover.getBoundingClientRect();
      const byScroll=clamp(-rect.top/Math.max(1,rect.height*.72));
-     const byEntry=clamp((performance.now()-started)/4700);
-     progress=grouped(container,Math.max(byEntry,byScroll));
-     // The on-entry score is finite and starts only when the greeting ends.
-     if(byEntry<1)request();
+     const mobile=window.matchMedia('(max-width:760px)').matches;
+     const phase=cover.dataset.mobilePhotoPhase;
+     if(mobile&&(phase==='photo'||phase==='moving')){
+      // The first two seconds belong to the portrait, never the words.
+      // During travel to the lower text stage, nothing types offscreen.
+      progress=0;
+     }else{
+      const mobileStarted=Number(cover.dataset.mobileCopyStartedAt||0);
+      const entryStart=mobile&&mobileStarted>0?mobileStarted:started;
+      const byEntry=clamp((performance.now()-entryStart)/4700);
+      progress=grouped(container,Math.max(byEntry,byScroll));
+      // The clock starts when mobile copy actually comes into view.
+      if(byEntry<1)request();
+     }
     }
    }else{
     const hero=host.closest<HTMLElement>('.sx-v8-hero-slide');
@@ -223,6 +233,8 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    horizontalChapter.addEventListener('sx-horizontal-progress',update);
   }
   if(workIndex)workIndex.addEventListener('sx-work-progress',update);
+  const introCover=onIntro?host.closest<HTMLElement>('#intro'):null;
+  introCover?.addEventListener('sx-mobile-intro-copy',invalidate);
   const sizing=new ResizeObserver(invalidate);
   sizing.observe(host);
   const onMotion=()=>reduced.matches?clear():request();
@@ -234,6 +246,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    observer.disconnect();sizing.disconnect();
    horizontalChapter?.removeEventListener('sx-horizontal-progress',update);
    workIndex?.removeEventListener('sx-work-progress',update);
+   introCover?.removeEventListener('sx-mobile-intro-copy',invalidate);
    window.removeEventListener('scroll',request);
    window.removeEventListener('resize',invalidate);
    reduced.removeEventListener('change',onMotion);
