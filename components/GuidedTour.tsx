@@ -102,7 +102,6 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let scriptedScroll=-1, touchActive=false, disposed=false;
   const introMobile=window.matchMedia('(max-width:760px)').matches;
   const introCover=stops.find(stop=>stop.element.id==='intro')?.element;
-  let introHoldComplete=false;
   const revealMobileCopy=()=>{
    if(!introMobile||!introCover||introCover.dataset.mobilePhotoPhase==='copy')return;
    introCover.dataset.mobilePhotoPhase='copy';
@@ -110,7 +109,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    introCover.dispatchEvent(new Event('sx-mobile-intro-copy'));
   };
   // A returning visitor at a saved scroll position must not have copy hidden.
-  if(introMobile&&window.scrollY>12){introHoldComplete=true;revealMobileCopy();}
+  if(introMobile&&window.scrollY>12)revealMobileCopy();
   // A pause is required for every marked horizontal panel, even between
   // black panels. A color transition also requires one pause. Both reasons
   // share ONE hold at a stop (never two consecutive two-second delays).
@@ -227,7 +226,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    if(playback==='paused'||playback==='finished')return;
    // User scrolling or touching during the mobile photo pause skips autoplay
    // but must never leave the text hidden behind the photo-only phase.
-   if(introMobile){introHoldComplete=true;revealMobileCopy();}
+   if(introMobile)revealMobileCopy();
    setPlayback('manual');
    // An in-flight playback frame must not advance from an old position.
    state.last=0;
@@ -261,7 +260,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    }
    if(event.key==='Escape'){
     clearIdle();
-    if(introMobile){introHoldComplete=true;revealMobileCopy();}
+    if(introMobile)revealMobileCopy();
     setPlayback('paused');
    }
   };
