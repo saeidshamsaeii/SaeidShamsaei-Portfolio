@@ -281,7 +281,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    if(playback==='playing'&&!document.hidden){
     // Mobile: show the actual photo on the first screen for two full seconds,
     // only then move towards text. Do not spend that time typing offscreen.
-    if(state.index===0&&introMobile&&!introHoldComplete&&state.start<12){
+    if(introCover&&state.index===0&&introMobile&&!introHoldComplete&&state.start<12){
      state.last=time;
      scriptedScroll=window.scrollY;
      if(!photoWaitStartedAt)photoWaitStartedAt=time;
@@ -353,7 +353,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      const selectedWorkHold=stops[state.index].element.id==='work-index';
      // Mobile copy waits for actual typing completion, not another two-
      // second photo hold; the photo pause already happened before travel.
-     const mobileIntroCopy=state.index===0&&introMobile;
+     const mobileIntroCopy=state.index===0&&introMobile&&Boolean(introCover);
      if(horizontalHold||backgroundHold||mobileIntroCopy||selectedWorkHold){
       if(!state.arrivedAt)state.arrivedAt=time;
       // Wait for genuine text completion on the mobile intro and
