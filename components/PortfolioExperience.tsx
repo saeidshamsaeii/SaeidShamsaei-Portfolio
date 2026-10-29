@@ -47,6 +47,10 @@ export default function PortfolioExperience(){
    if(released)return;
    released=true;
    window.clearTimeout(timer);
+   // Remove all pause-only input listeners as soon as the hold ends.
+   window.removeEventListener('wheel',onManual);
+   window.removeEventListener('touchmove',onManual);
+   window.removeEventListener('keydown',onKey);
    delete root.dataset.portfolioTourHold;
    if(manual){
     revealCopy();
@@ -61,18 +65,15 @@ export default function PortfolioExperience(){
    if(['ArrowDown','ArrowUp','PageDown','PageUp',' ','Home','End','Escape'].includes(event.key))
     onManual();
   };
-  const onScroll=()=>{if(window.scrollY>12)onManual();};
   window.addEventListener('wheel',onManual,{passive:true});
   window.addEventListener('touchmove',onManual,{passive:true});
   window.addEventListener('keydown',onKey);
-  window.addEventListener('scroll',onScroll,{passive:true});
-  timer=window.setTimeout(()=>release(false),2000);
+  timer=window.setTimeout(()=>release(window.scrollY>12),2000);
   return()=>{
    window.clearTimeout(timer);
    window.removeEventListener('wheel',onManual);
    window.removeEventListener('touchmove',onManual);
    window.removeEventListener('keydown',onKey);
-   window.removeEventListener('scroll',onScroll);
    if(root.dataset.portfolioTourHold==='intro-photo')
     delete root.dataset.portfolioTourHold;
   };
