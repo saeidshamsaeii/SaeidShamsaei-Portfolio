@@ -42,6 +42,23 @@ still lacks a lockfile. Independent visual owner signoff, WCAG testing, field
 performance and actual HTTPS publication remain separate acceptance gates.
 No Worker CI/preview or scheduled build has been enabled.
 
+## Case-study presentation parity — October 30, 2026
+
+The four detail routes (`/work/gartal/`, `/work/factory/`,
+`/work/digirezhim/`, `/work/petiwoo/`) now use the same three-beat
+editorial narrative as the homepage: specific problem, implemented approach,
+and evidence/status. Title and explanation use the existing `WordReveal`
+engine in sequence, with two seconds of reading time per guided scene.
+The previous six tall reading sections have been retained as six native
+expandable `<details>` chapters (three sourced paragraphs and technical
+points each), not removed from the page.
+
+Static source contracts were checked against these edits. Real browser QA
+for case-study layouts at 390/768/1440px and keyboard-openable details is
+defined in `tests/case-study-parity.spec.ts`, but has **NOT been executed**
+at this SHA. Screenshots and owner visual review remain mandatory before
+production acceptance. Keep the no-automatic-CI / no-auto-Preview policy.
+
 ## Required acceptance before a defensible 10/10
 
 | Gate | Evidence required | Current evidence |
