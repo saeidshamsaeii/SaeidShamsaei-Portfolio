@@ -34,6 +34,21 @@ const previous=JSON.parse(await fs.readFile(manifestPath,'utf8').catch(()=>'{}')
 const manifest=mode==='build'?{}:previous;
 let produced=0;
 for(const id of ids){
+ // Inspect files the shipped pages ACTUALLY reference, not old thumbnail
+ // placeholders. Never claim the available 1122px source is a 4K master.
+ const displayed=id==='logo'?'logo.webp':id+'.webp';
+ const displayedPath=path.join(destination,displayed);
+ const displayMeta=await inspect(displayedPath);
+ if(id==='portrait'||id.startsWith('project-')){
+  if(displayMeta.width<1000||displayMeta.height<1000)
+   throw Error('[media] low-resolution public artwork: '+id+' '+displayMeta.width+'x'+displayMeta.height);
+  if(id.startsWith('project-')){
+   const ratio=displayMeta.width/displayMeta.height;
+   if(ratio<.70||ratio>.90)
+    throw Error('[media] project art has wrong 4:5 aspect ratio: '+id+' '+ratio.toFixed(3));
+  }
+  console.log('[media] published '+id+': '+displayMeta.width+'x'+displayMeta.height+' original pixels; framed without distortion');
+ }
  const legacy=id==='portrait'?'portrait.webp':id==='logo'?'ss-gold.webp':'projects.webp';
  const legacyPath=path.join(root,'public','assets',legacy);
  const legacyMeta=await inspect(legacyPath);
