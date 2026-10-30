@@ -42,6 +42,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   // while its whole-word clipping animation advances from zero.
   const introTitle=onIntro&&Boolean(host.closest('h1'));
   const caseStoryScene=host.closest<HTMLElement>('.sx-v31-case-page [data-tour-hold="case-scene"]');
+  const biography=host.closest<HTMLElement>('#about.sx-v33-biography');
   const horizontalChapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
   const workIndex=host.closest<HTMLElement>('#work-index');
   const started=performance.now();
@@ -154,6 +155,14 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     const index=Number(panel.dataset.frameIndex||'0');
     // Finish copy before the horizontal rail departs this frame.
     progress=grouped(panel,clamp((scaled-index)/.64));
+   }else if(biography){
+    // A single reading frame: the director types every authored line in
+    // DOM order only after arrival, then holds the fully written section.
+    // Manual scrolling uses the same centerline geometry as other chapters.
+    const autoplay=document.documentElement.dataset.portfolioTour==='playing';
+    progress=autoplay?
+     grouped(biography,clamp(Number(biography.dataset.bioReadingProgress||'0'))):
+     viewportGroup(biography);
    }else if(caseStoryScene){
     // The case-study chapters use the same grouped, line-by-line reveal
     // engine as home. On autoplay, the director advances a 4.2s reading
@@ -270,6 +279,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   }
   if(workIndex)workIndex.addEventListener('sx-work-progress',update);
   caseStoryScene?.addEventListener('sx-case-reading-progress',update);
+  biography?.addEventListener('sx-biography-reading-progress',update);
   const introCover=onIntro?host.closest<HTMLElement>('#intro'):null;
   introCover?.addEventListener('sx-mobile-intro-copy',invalidate);
   const sizing=new ResizeObserver(invalidate);
@@ -284,6 +294,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    horizontalChapter?.removeEventListener('sx-horizontal-progress',update);
    workIndex?.removeEventListener('sx-work-progress',update);
    caseStoryScene?.removeEventListener('sx-case-reading-progress',update);
+   biography?.removeEventListener('sx-biography-reading-progress',update);
    introCover?.removeEventListener('sx-mobile-intro-copy',invalidate);
    window.removeEventListener('scroll',request);
    window.removeEventListener('resize',invalidate);
