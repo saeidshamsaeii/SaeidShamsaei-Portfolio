@@ -14,9 +14,14 @@ const run=(exe,args,timeoutMs=12*60*1000)=>{
  // Windows .cmd shims require cmd.exe; avoid shell:true argument interpolation
  // (and its Node DEP0190 warning). The command/args here are hard-coded by
  // this owner-invoked QA script, never taken from untrusted input.
- const windows=process.platform==='win32'&&exe==='npm';
- const command=windows?(process.env.ComSpec||'cmd.exe'):exe;
- const argv=windows?['/d','/s','/c','npm.cmd '+args.join(' ')]:args;
+ const npmCli=exe==='npm'?process.env.npm_execpath:null;
+ // npm run sets npm_execpath to npm-cli.js. Invoke it through Node itself
+ // for correct quoting on Windows and Linux without shell interpolation.
+ const windowsCmd=exe==='npm'&&!npmCli&&process.platform==='win32';
+ const command=npmCli?process.execPath:
+  windowsCmd?(process.env.ComSpec||'cmd.exe'):exe;
+ const argv=npmCli?[npmCli,...args]:
+  windowsCmd?['/d','/s','/c','npm.cmd '+args.join(' ')]:args;
  const result=spawnSync(command,argv,{cwd,encoding:'utf8',maxBuffer,
   timeout:timeoutMs,shell:false,windowsHide:true});
  return {exitCode:result.status,error:result.error?.message||null,
