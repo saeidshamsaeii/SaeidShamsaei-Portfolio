@@ -624,7 +624,8 @@ test('homepage introduction holds the native camera still through typing on phon
  assert.match(tour,/if\(stop\.element\.id==='intro'\)\{[\s\S]*?return top;[\s\S]*?\}/);
  assert.match(tour,/state\.index===0&&introCover&&state\.start<=12&&window\.scrollY<=12/);
  assert.match(tour,/const copyEnabled=!introMobile\|\|introCover\.dataset\.mobilePhotoPhase==='copy'/);
- assert.match(tour,/if\(copyEnabled&&textHasFinished\(stops\[0\]\)\)/);
+ assert.match(tour,/const fullCopyReady=copyEnabled&&textHasFinished\(stops\[0\]\)&&/);
+ assert.match(tour,/if\(fullCopyReady\)\{/);
  assert.match(tour,/if\(stops\.length>1\)goTo\(1,window\.scrollY\)/);
  assert.match(tour,/const first=introCover&&window\.scrollY<=12\?/);
  assert.doesNotMatch(tour,/Math\.min\(beyond,delta\*\.12\)/);
