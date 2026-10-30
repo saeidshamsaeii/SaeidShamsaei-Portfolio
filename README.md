@@ -57,6 +57,21 @@ npm run qa:css
 npm run qa:browser
 ```
 
+**Full final acceptance, only when the owner explicitly initiates it:**
+
+```bash
+npm run qa:final
+```
+
+This runs the existing checks sequentially (TypeScript, source tests, static
+export, CSS inventory, image audit and exported-site Playwright), then writes
+`reports/quality/acceptance-<SHA>.json` with individual exit codes and log
+tails. The report explicitly fails when `package-lock.json` is missing, the
+working tree is dirty, the Git SHA is not known or any gate fails. Browser QA
+is recorded as `NOT_TESTED` if the export did not succeed. The resulting
+report is local and ignored by Git; no CI, Preview or Worker automation is
+activated. Source tests alone never authorize a 10/10 rating or publication.
+
 `npm run build` exports a static site to `out/`. The Playwright suite
 exercises the exported site. The QA commands are not executed automatically
 by the Saeid AI Factory Worker, Sync or Dashboard. Do not label them as passed
