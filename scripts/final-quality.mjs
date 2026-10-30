@@ -11,8 +11,14 @@ const now=()=>new Date().toISOString();
 const started=now();
 const maxBuffer=16*1024*1024;
 const run=(exe,args,timeoutMs=12*60*1000)=>{
- const result=spawnSync(exe,args,{cwd,encoding:'utf8',maxBuffer,
-  timeout:timeoutMs,shell:process.platform==='win32',windowsHide:true});
+ // Windows .cmd shims require cmd.exe; avoid shell:true argument interpolation
+ // (and its Node DEP0190 warning). The command/args here are hard-coded by
+ // this owner-invoked QA script, never taken from untrusted input.
+ const windows=process.platform==='win32'&&exe==='npm';
+ const command=windows?(process.env.ComSpec||'cmd.exe'):exe;
+ const argv=windows?['/d','/s','/c','npm.cmd '+args.join(' ')]:args;
+ const result=spawnSync(command,argv,{cwd,encoding:'utf8',maxBuffer,
+  timeout:timeoutMs,shell:false,windowsHide:true});
  return {exitCode:result.status,error:result.error?.message||null,
   stdout:result.stdout||'',stderr:result.stderr||''};
 };
@@ -20,6 +26,12 @@ const git=run('git',['rev-parse','HEAD']);
 const sha=git.exitCode===0?git.stdout.trim():'UNVERIFIED';
 const checkout=run('git',['status','--porcelain']);
 const dirty=checkout.exitCode!==0||checkout.stdout.trim().length>0;
+const dirtyPaths=checkout.stdout.trim().split(/\r?\n/).filter(Boolean);
+if(dirty){
+ process.stdout.write('Git working tree changes detected before QA:\n');
+ for(const changed of dirtyPaths.slice(0,30))process.stdout.write('  '+changed+'\n');
+ if(dirtyPaths.length>30)process.stdout.write('  ... '+(dirtyPaths.length-30)+' more\n');
+}
 const lockTracked=run('git',['ls-files','--error-unmatch','package-lock.json']);
 const gates=[];
 const mark=(id,status,detail,extra={})=>{
@@ -83,11 +95,19 @@ for(const [id,args,timeoutMs] of tasks){
   exitCode:result.exitCode,stdoutTail:result.stdout.slice(-12000),
   stderrTail:result.stderr.slice(-12000)
  });
+ if(!pass){
+  process.stdout.write('--- '+id+' diagnostic stdout (last 6000 chars) ---\n'+
+   (result.stdout.slice(-6000)||'(empty)')+'\n');
+  process.stdout.write('--- '+id+' diagnostic stderr (last 6000 chars) ---\n'+
+   (result.stderr.slice(-6000)||'(empty)')+'\n');
+  if(id==='browser-e2e'&&/Executable doesn't exist|playwright install/i.test(result.stderr+'\n'+result.stdout))
+   process.stdout.write('Browser is missing. Run: npx playwright install chromium\n');
+ }
 }
 const passes=gates.filter(g=>g.status==='PASS').length;
 const report={
- schemaVersion:1,source:'owner-invoked-local-final-acceptance',
- startedAt:started,completedAt:now(),gitSha:sha,dirty,
+ schemaVersion:2,source:'owner-invoked-local-final-acceptance',
+ startedAt:started,completedAt:now(),gitSha:sha,dirty,dirtyPaths,
  node:process.version,platform:process.platform,environment:'manual',
  result:gates.every(g=>g.status==='PASS')?'ENGINEERING_GATES_PASS':'NOT_APPROVED',
  summary:{passed:passes,total:gates.length},gates,
