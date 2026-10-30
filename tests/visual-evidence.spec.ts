@@ -26,10 +26,10 @@ test('generate owner-review screenshots for every route on phone and desktop',as
    const response=await page.goto(url,{waitUntil:'domcontentloaded'});
    expect(response?.status()).toBe(200);
    await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
-   await page.evaluate(()=>document.fonts.ready);
+   await page.evaluate(async()=>{await document.fonts.ready;});
    await page.screenshot({
     path:join(folder,name+'-'+viewport.width+'x'+viewport.height+'.png'),
-    fullPage:true,animations:'disabled'
+    fullPage:url!=='/',animations:'disabled'
    });
   }
  }
