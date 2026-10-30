@@ -393,96 +393,53 @@ test('Edition 26 never previews the next block during its predecessor reading ho
  assert.match(director,/return top\+travel\*clamp\(\(index\+\.66\)\/count\)/);
 });
 
-test('Edition 27 fits the entire Selected Work directory and slows every reading beat',()=>{
+test('Selected Work uses a pinned full-viewport reading frame and an actual reversible scroll runway',()=>{
  const directory=read('components/SelectedWorkIndex.tsx');
  const director=read('components/GuidedTour.tsx');
  const word=read('components/WordReveal.tsx');
- const css=read('app/edition20.css');
- assert.match(css,/#work-index\.sx-v18-index\{/);
- assert.match(css,/height:100svh!important/);
- assert.match(css,/grid-template-rows:repeat\(4,minmax\(0,1fr\)\)!important/);
- assert.match(css,/@media\(max-width:760px\)/);
- assert.match(css,/@media\(max-height:430px\)/);
- assert.match(directory,/const BETWEEN_BLOCK_HOLD_MS=2000/);
+ const css=read('app/work-scroll-and-media.css');
  assert.match(directory,/data-work-reveal-progress="0"/);
- assert.match(directory,/host\.hasAttribute\('data-tour-awaiting'\)/);
+ assert.match(directory,/sx-v35-work-pin/);
+ assert.match(directory,/const position=Math.max\(0,Math.min\(1,-rect.top\/travel\)\)/);
+ assert.match(directory,/const progress=reduced.matches\?1:awaiting\?0:position/);
+ assert.match(directory,/host.dataset.workRevealProgress=String\(progress\)/);
+ assert.match(directory,/host.dispatchEvent\(new Event\('sx-work-progress'\)\)/);
+ assert.doesNotMatch(directory,/runningElapsed|let runningElapsed|finished=true/);
+ assert.match(css,/height:400svh!important/);
+ assert.match(css,/position:sticky/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(director,/top\+Math.max\(0,box.height-window.innerHeight\)/);
  assert.match(word,/grouped\(stage,local\)/);
- assert.match(word,/workIndex\.addEventListener\('sx-work-progress',update\)/);
- assert.match(word,/const byEntry=clamp\(\(performance\.now\(\)-entryStart\)\/4700\)/);
- assert.match(director,/READING_SPEED_PX_PER_SECOND=150/);
- assert.match(director,/MIN_SEGMENT_MS=2400/);
- assert.match(director,/const modestReadingMs=Math\.min\(6000,words\*120\)/);
- assert.match(director,/const INTRO_COPY_HOLD_MS=2000/);
- assert.match(director,/root\.dataset\.portfolioTourHold='intro-copy'/);
- assert.match(director,/time-state\.holdStartedAt>=INTRO_COPY_HOLD_MS/);
- assert.match(director,/mobileIntroCopy\?0:/);
- assert.match(director,/stops\[state\.index\]\.element\.id==='work-index'/);
+ assert.match(word,/workIndex.addEventListener\('sx-work-progress',update\)/);
 });
 
-test('Edition 28 holds all nine Selected Work word blocks fully framed for two seconds',()=>{
- const tour=read('components/GuidedTour.tsx');
- const directory=read('components/SelectedWorkIndex.tsx');
- const word=read('components/WordReveal.tsx');
- assert.match(tour,/const SELECTED_WORK_HOLD_MS=2000/);
- assert.match(tour,/if\(stop\.element\.id==='work-index'\)return top/);
- assert.match(tour,/hasBackgroundChange\[index\]&&stop\.element\.id!=='work-index'/);
- assert.match(tour,/const selectedWorkHold=stops\[state\.index\]\.element\.id==='work-index'/);
- assert.match(tour,/const workTypingFinished=!selectedWorkHold/);
- assert.match(tour,/dataset\.workRevealProgress\|\|'0'/);
- assert.match(tour,/workFullyFramed&&workTypingFinished/);
- assert.match(tour,/selectedWorkHold\?'selected-work'/);
- assert.match(tour,/selectedWorkHold\?SELECTED_WORK_HOLD_MS/);
- assert.match(directory,/const fullyFramed=rect\.height>innerHeight\+12/);
- assert.match(directory,/autoNarrating\?!fullyFramed/);
- assert.match(word,/!onIntro&&!workIndex&&!host\.closest/);
-});
-
-test('Edition 29 moves Selected Work copy up while it fades away on departure',()=>{
+test('Selected Work types each stage, draws each divider and reverse scroll hides links again',()=>{
  const directory=read('components/SelectedWorkIndex.tsx');
  const css=read('app/edition20.css');
  const director=read('components/GuidedTour.tsx');
- assert.match(directory,/const renderExit=\(\)=>/);
- assert.match(directory,/Math\.min\(1,-rect\.top\/distance\)/);
- assert.match(directory,/host\.style\.setProperty\('--sx-work-exit',String\(progress\)\)/);
- assert.match(directory,/window\.addEventListener\('scroll',requestExit/);
- assert.match(directory,/host\.style\.removeProperty\('--sx-work-exit'\)/);
- assert.match(css,/#work-index \.sx-v18-index-heading\{/);
- assert.match(css,/#work-index \.sx-v18-index-entry\{/);
- assert.match(css,/opacity:calc\(1 - var\(--sx-work-exit, 0\) \* \.97\)/);
- assert.match(css,/translate3d\(0,calc\(var\(--sx-work-exit, 0\) \* -62px\),0\)/);
- assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
- // The new exit cue does not replace the full-copy two-second reading hold.
- assert.match(director,/const SELECTED_WORK_HOLD_MS=2000/);
- assert.match(director,/workFullyFramed&&workTypingFinished/);
-});
-
-test('Edition 30 types each Selected Work block before its own line and 2s reading hold',()=>{
- const directory=read('components/SelectedWorkIndex.tsx');
- const reveal=read('components/WordReveal.tsx');
- const css=read('app/edition20.css');
- const tour=read('components/GuidedTour.tsx');
  assert.match(directory,/const TITLE_TYPE_MS=2300/);
  assert.match(directory,/const ROW_TYPE_MS=2600/);
  assert.match(directory,/const LINE_DRAW_MS=500/);
  assert.match(directory,/const BETWEEN_BLOCK_HOLD_MS=2000/);
- assert.match(directory,/index<stages\.length-1\?BETWEEN_BLOCK_HOLD_MS:0/);
- assert.match(directory,/data-work-stage="0"/);
- assert.match(directory,/data-work-stage=\{index\+1\}/);
- assert.match(directory,/stage\.dataset\.workStageState=index<current\?'complete'/);
- assert.match(directory,/stage\.style\.setProperty\('--sx-work-rule',String\(draw\)\)/);
- assert.match(directory,/host\.dataset\.workStageIndex=String\(current\)/);
- assert.match(directory,/host\.dataset\.workStageProgress=String\(typingProgress\)/);
- assert.match(reveal,/active<current\?1:active>current\?0/);
- assert.match(reveal,/grouped\(stage,local\)/);
- assert.match(css,/border-bottom-color:transparent!important/);
+ assert.match(directory,/stage.dataset.workStageState=state/);
+ assert.match(directory,/stage.style.setProperty\('--sx-work-rule',String\(draw\)\)/);
+ assert.match(directory,/exposeLinks\(index,state==='complete'\|\|state==='holding'\|\|state==='line'\)/);
+ assert.match(directory,/const progress=reduced.matches\?1:awaiting\?0:position/);
  assert.match(css,/transform:scaleX\(var\(--sx-work-rule,0\)\)/);
- assert.match(css,/\[data-work-stage-state="pending"\]/);
- assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.match(css,/@media\(scripting:none\)/);
- assert.match(tour,/const SELECTED_WORK_HOLD_MS=2000/);
- assert.match(tour,/workFullyFramed&&workTypingFinished/);
+ assert.match(director,/const SELECTED_WORK_HOLD_MS=2000/);
+ assert.match(director,/workFullyFramed&&workTypingFinished/);
 });
 
+test('Selected Work exit motion follows scroll beyond the last typed row',()=>{
+ const directory=read('components/SelectedWorkIndex.tsx');
+ const css=read('app/edition20.css');
+ assert.match(directory,/const renderExit=\(\)=>/);
+ assert.match(directory,/departureThreshold-rect.bottom/);
+ assert.match(directory,/host.style.setProperty\('--sx-work-exit',String\(progress\)\)/);
+ assert.match(directory,/window.addEventListener\('scroll',requestExit/);
+ assert.match(css,/opacity:calc\(1 - var\(--sx-work-exit, 0\) \* \.97\)/);
+});
 test('English-only portfolio has no locale picker or translated routes',()=>{
  const layout=read('app/layout.tsx');
  const home=read('components/PortfolioExperience.tsx');
