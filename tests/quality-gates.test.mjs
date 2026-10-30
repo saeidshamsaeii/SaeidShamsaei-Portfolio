@@ -116,3 +116,18 @@ test('Next-generated declarations stay untracked and manual QA uses local Chrome
  assert.match(read('scripts/probe-local-browser.cjs'),/\['chrome','msedge'\]/);
  assert.match(runner,/owner-invoked/);
 });
+
+test('browser acceptance matches current three-scene chapters and streams complete owner QA',()=>{
+ const cases=read('components/HorizontalCaseChapter.tsx');
+ const details=read('components/CaseStudy.tsx');
+ const tests=read('tests/portfolio.spec.ts');
+ const qa=read('scripts/final-quality.mjs');
+ assert.match(cases,/id=\{'project-'\+project\.id\+'-slide-'\+\(slideIndex\+1\)\}/);
+ assert.match(details,/sx-v31-deep-item/);
+ assert.match(tests,/project-gartal-slide-2/);
+ assert.match(tests,/details\.sx-v31-deep-item/);
+ assert.doesNotMatch(tests,/project-gartal-origin|sx-v18-case-details/);
+ assert.match(qa,/await runBrowser\(args,timeoutMs\)/);
+ assert.match(qa,/30\*60\*1000/);
+ assert.match(qa,/process\.stdout\.write\(chunk\)/);
+});
