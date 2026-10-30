@@ -99,6 +99,12 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
       data-tour-label={project.brand+' / '+beat.eyebrow}
       data-tour-duration={String(beat.duration)} data-tour-pace={String(beat.pace)}
       aria-label={project.brand+' / '+beat.eyebrow+' / slide '+(slideIndex+1)+' of 3'}>
+      {slideIndex===0&&<div className="sx-v35-project-art" aria-hidden="true">
+       <img
+        src={'/assets/projects/'+project.id+'.webp'}
+        width={832} height={468} loading="lazy" decoding="async"
+        alt="" />
+      </div>}
       <div className="sx-v30-case-meta">
        <span>{project.index} / {project.brand}</span>
        <span>{String(slideIndex+1).padStart(2,'0')} / 03</span>
