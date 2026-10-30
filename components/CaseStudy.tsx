@@ -1,5 +1,5 @@
 'use client';
-import {useState} from 'react';
+import {useState,useEffect,useRef} from 'react';
 import Link from 'next/link';
 import {projects,publicContact,type ProjectId} from '@/data/portfolio';
 import {caseNarratives} from '@/data/caseNarratives';
@@ -19,6 +19,10 @@ export default function CaseStudy({id}:{id:ProjectId}){
  const story=caseNarratives[id];
  const slides=homeStories[id].beats;
  const [tour,setTour]=useState(true);
+ const [detailsOpen,setDetailsOpen]=useState(false);
+ const detailRef=useRef<HTMLDialogElement>(null);
+ useEffect(()=>{const dialog=detailRef.current;if(!dialog)return;if(detailsOpen&&!dialog.open)dialog.showModal();else if(!detailsOpen&&dialog.open)dialog.close();},[detailsOpen]);
+ const liveUrl=id==='digirezhim'?'https://digirezhim.ir':id==='petiwoo'?'https://petiwoo.ir':null;
  return <main className={'case-study sx-v10-case-page sx-v31-case-page scene-'+id}>
   <GuidedTour active={tour} onExit={()=>setTour(false)}/>
   <a className="sx-v31-skip" href="#case-story">Skip to project story</a>
@@ -108,10 +112,21 @@ export default function CaseStudy({id}:{id:ProjectId}){
    <WordReveal as="h2" id="case-evidence-title" text="What is actually verified."/>
    <WordReveal className="sx-v31-evidence-outcome" text={p.outcome.en}/>
    <WordReveal text="These references document the code and architectural decisions. Production results and customer outcomes require separate verification."/>
-   <WordReveal className="sx-v10-source-line" text={"Source context: "+p.source}/>
-   <div className="sx-v10-reference-list">{story.references.map(reference=><a key={reference.href}
-    target="_blank" rel="noreferrer noopener" href={reference.href}>{reference.label} ↗</a>)}</div>
-   <Link className="sx-ei-case-link" href={'/engineering/#evidence-'+p.id}>INSPECT ARCHITECTURE DECISIONS ↗</Link>
+   <div className="sx-v32-project-actions">
+    <button type="button" className="sx-v32-summary-button" onClick={()=>{setTour(false);setDetailsOpen(true);}}>READ PROJECT SUMMARY ↗</button>
+    {liveUrl?<a href={liveUrl} target="_blank" rel="noopener noreferrer">VISIT LIVE WEBSITE ↗</a>:<span className="sx-v32-coming-soon">WEBSITE / COMING SOON</span>}
+   </div>
+   <dialog ref={detailRef} className="sx-v32-project-modal" aria-label={p.brand+' project summary'} onClose={()=>setDetailsOpen(false)} onClick={event=>{if(event.target===detailRef.current)setDetailsOpen(false);}}>
+    <div className="sx-v32-modal-inner">
+     <div className="sx-v32-modal-top"><span>PROJECT OVERVIEW / {p.index}</span><button type="button" onClick={()=>setDetailsOpen(false)} aria-label="Close project summary">CLOSE ×</button></div>
+     <h2>{p.brand}</h2><p className="sx-v32-modal-lead">{p.intro.en}</p>
+     <h3>THE CHALLENGE</h3><p>{p.problem.en}</p>
+     <h3>THE APPROACH</h3><p>{p.solution.en}</p>
+     <h3>WHAT IS VERIFIED</h3><p>{p.outcome.en}</p>
+     <h3>ENGINEERING HIGHLIGHTS</h3><ul>{p.architecture.map((a,i)=><li key={i}>{a.en}</li>)}</ul>
+     <div className="sx-v32-modal-cta">{liveUrl?<a href={liveUrl} target="_blank" rel="noopener noreferrer">VISIT {p.brand.toUpperCase()} WEBSITE ↗</a>:<span>PUBLIC WEBSITE / COMING SOON</span>}<Link href={'/engineering/#evidence-'+p.id} onClick={()=>setDetailsOpen(false)}>ENGINEERING DETAILS ↗</Link></div>
+    </div>
+   </dialog>
   </section>
   <section className="sx-v10-case-next sx-v31-case-next"
    data-tour-stop data-tour-label={'Continue to '+next.brand} data-tour-duration="8" data-tour-pace="1.2">
