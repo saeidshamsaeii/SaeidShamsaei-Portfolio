@@ -91,35 +91,22 @@ for(const [id,args,timeoutMs] of tasks){
   continue;
  }
  if(id==='browser-e2e'){
-  // This setup is done ONLY for an owner-invoked qa:final, never in Worker.
-  // Browser suites all fail when the matching Chromium binary is absent;
-  // probe the actual headless launch before spending minutes on E2E tests.
-  const launchScript="const {chromium}=require('@playwright/test'); chromium.launch({headless:true}).then(b=>b.close()).catch(e=>{console.error(String(e));process.exitCode=1})";
-  const probe=run(process.execPath,['-e',launchScript],30000);
-  if(probe.exitCode!==0||probe.error){
-   process.stdout.write('Chromium could not launch. Attempting owner-invoked Playwright browser setup...\n');
-   const install=run('npm',['exec','--','playwright','install','chromium'],8*60*1000);
-   if(install.exitCode!==0||install.error){
-    mark(id,'FAIL','Chromium setup failed; browser tests were not run',{
-     exitCode:install.exitCode,
-     stdoutTail:install.stdout.slice(-12000),
-     stderrTail:(probe.stderr+'\n'+install.stderr).slice(-12000)
-    });
-    process.stdout.write('Browser setup diagnostic:\n'+
-     (probe.stderr+'\n'+install.stdout+'\n'+install.stderr).slice(-6500)+'\n');
-    continue;
-   }
-   const retry=run(process.execPath,['-e',launchScript],30000);
-   if(retry.exitCode!==0||retry.error){
-    mark(id,'FAIL','Chromium installed but could not launch',{
-     exitCode:retry.exitCode,stdoutTail:retry.stdout.slice(-12000),
-     stderrTail:retry.stderr.slice(-12000)
-    });
-    process.stdout.write('Chromium launch diagnostic:\n'+retry.stderr.slice(-6500)+'\n');
-    continue;
-   }
-   process.stdout.write('Chromium headless launch verified; continuing E2E tests.\n');
+  // Prefer the browser already installed by the owner. A region-restricted
+  // CDN returned HTTP 403 for Playwright Chromium, so never auto-download.
+  const probe=run(process.execPath,['scripts/probe-local-browser.cjs'],65000);
+  const selected=probe.stdout.match(/PLAYWRIGHT_CHANNEL=(chrome|msedge)/)?.[1];
+  if(probe.exitCode!==0||probe.error||!selected){
+   mark(id,'FAIL','Installed Chrome/Edge unavailable; browser tests not run',{
+    exitCode:probe.exitCode,
+    stdoutTail:probe.stdout.slice(-12000),
+    stderrTail:probe.stderr.slice(-12000)
+   });
+   process.stdout.write('Local browser diagnostics:\n'+
+    (probe.stderr||probe.error||'No installed browser detected')+'\n');
+   continue;
   }
+  process.env.PLAYWRIGHT_BROWSER_CHANNEL=selected;
+  process.stdout.write('Using installed '+selected+' for browser E2E; no download required.\n');
  }
  process.stdout.write('Running '+id+' (manual final QA)...\n');
  const t0=Date.now();
