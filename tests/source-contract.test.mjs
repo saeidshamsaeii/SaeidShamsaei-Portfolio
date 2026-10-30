@@ -162,7 +162,8 @@ test('engineering evidence mode is source-anchored, searchable and outside the c
  assert.match(view,/setQuery/);
  assert.match(view,/setFilter/);
  assert.match(view,/setProject/);
- assert.match(view,/fileUrl\(entry\.files\[i\]\)/);
+ assert.match(view,/OPEN PROJECT SUMMARY/);
+ assert.doesNotMatch(view,/fileUrl\(entry\.files\[i\]\)/);
  assert.doesNotMatch(view,/GuidedTour|SourceProductPreview/);
  assert.match(route,/EngineeringIndex/);
  assert.match(css,/sx-ei-project/);
@@ -351,7 +352,7 @@ test('Edition 25 holds every horizontal panel 2 seconds after its text and befor
  assert.match(director,/stop\.element\.dataset\.tourHold==='horizontal-frame'/);
  assert.match(director,/const horizontalHold=isHorizontalFrame\[state\.index\]/);
  assert.match(director,/const backgroundHold=hasBackgroundChange\[state\.index\]/);
- assert.match(director,/if\(horizontalHold\|\|backgroundHold\|\|mobileIntroCopy\|\|selectedWorkHold\)/);
+ assert.match(director,/if\(horizontalHold\|\|backgroundHold\|\|mobileIntroCopy\|\|selectedWorkHold\|\|caseSceneHold\|\|biographyHold\)/);
  assert.match(director,/textHasFinished\(stops\[state\.index\]\)/);
  assert.match(director,/root\.dataset\.portfolioTourHold=mobileIntroCopy\?'intro-copy':/);
  assert.match(director,/horizontalHold\?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS/);
@@ -692,7 +693,8 @@ test('all four case-study routes share home three-beat editorial layout without 
  assert.match(cases,/beat\.notes\.map/);
  assert.match(cases,/story\.chapters\.map/);
  assert.match(cases,/<details[\s\S]*?className="sx-v10-case-section sx-v31-deep-item"/);
- assert.match(cases,/story\.references\.map/);
+ assert.match(cases,/READ PROJECT SUMMARY/);
+ assert.doesNotMatch(cases,/story\.references\.map/);
  assert.match(css,/\.sx-v31-case-page \.sx-v31-case-scene\{/);
  assert.match(css,/min-height:100svh!important/);
  assert.match(css,/\.sx-v31-case-page \.sx-v31-deep-item\.sx-v10-case-section\{/);
