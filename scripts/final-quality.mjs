@@ -1,7 +1,7 @@
 // Deliberately OWNER-INVOKED final acceptance. Never called by Worker/Sync.
 // Produces an evidence report tied to the exact Git SHA; does not claim
 // runtime/browser success from source code or a GitHub push.
-import {spawnSync} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 import {existsSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import process from 'node:process';
@@ -27,6 +27,46 @@ const run=(exe,args,timeoutMs=12*60*1000)=>{
  return {exitCode:result.status,error:result.error?.message||null,
   stdout:result.stdout||'',stderr:result.stderr||''};
 };
+// Browser tests can legitimately take longer than a short smoke suite.
+// Stream real progress to the terminal and keep bounded diagnostics while
+// retaining strict exit-code failure. Only called by the owner QA entrypoint.
+const runBrowser=(args,timeoutMs=30*60*1000)=>new Promise(resolve=>{
+ const npmCli=process.env.npm_execpath;
+ const windowsCmd=!npmCli&&process.platform==='win32';
+ const executable=npmCli?process.execPath:
+  windowsCmd?(process.env.ComSpec||'cmd.exe'):'npm';
+ const argv=npmCli?[npmCli,...args]:
+  windowsCmd?['/d','/s','/c','npm.cmd '+args.join(' ')]:args;
+ let stdout='',stderr='',finished=false,timedOut=false;
+ const child=spawn(executable,argv,{
+  cwd,env:process.env,shell:false,windowsHide:true,stdio:['ignore','pipe','pipe']
+ });
+ const collect=(current,chunk)=> (current+chunk.toString('utf8')).slice(-18000);
+ child.stdout?.on('data',chunk=>{
+  stdout=collect(stdout,chunk);
+  process.stdout.write(chunk);
+ });
+ child.stderr?.on('data',chunk=>{
+  stderr=collect(stderr,chunk);
+  process.stderr.write(chunk);
+ });
+ const timer=setTimeout(()=>{
+  timedOut=true;
+  process.stderr.write('Browser QA exceeded '+Math.round(timeoutMs/60000)+
+   ' minutes; preserving failure status and diagnostics.\\n');
+  child.kill();
+ },timeoutMs);
+ const finish=(code,error)=>{
+  if(finished)return;
+  finished=true;
+  clearTimeout(timer);
+  resolve({exitCode:timedOut?null:code,
+   error:timedOut?'Browser E2E timed out':error||null,stdout,stderr});
+ };
+ child.once('error',error=>finish(null,error.message));
+ child.once('close',code=>finish(code,null));
+});
+
 const git=run('git',['rev-parse','HEAD']);
 const sha=git.exitCode===0?git.stdout.trim():'UNVERIFIED';
 const checkout=run('git',['status','--porcelain']);
@@ -74,7 +114,7 @@ const tasks=[
  ['static-export',['run','build'],12*60*1000],
  ['css-inventory',['run','qa:css'],2*60*1000],
  ['image-audit',['run','images:audit'],3*60*1000],
- ['browser-e2e',['run','test:e2e'],14*60*1000]
+ ['browser-e2e',['run','test:e2e'],30*60*1000]
 ];
 for(const [id,args,timeoutMs] of tasks){
  if(id==='dependency-install'&&!verifiedLock){
@@ -110,7 +150,7 @@ for(const [id,args,timeoutMs] of tasks){
  }
  process.stdout.write('Running '+id+' (manual final QA)...\n');
  const t0=Date.now();
- const result=run('npm',args,timeoutMs);
+ const result=id==='browser-e2e'?await runBrowser(args,timeoutMs):run('npm',args,timeoutMs);
  const pass=result.exitCode===0&&!result.error;
  mark(id,pass?'PASS':'FAIL',pass?'Command completed with exit code 0':
   result.error||'Command failed, exit code '+String(result.exitCode),{
