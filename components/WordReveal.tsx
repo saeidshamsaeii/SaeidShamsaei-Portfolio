@@ -41,6 +41,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
   // The very first "SAEID" glyph must not show as a 1px slice ("tick")
   // while its whole-word clipping animation advances from zero.
   const introTitle=onIntro&&Boolean(host.closest('h1'));
+  const caseStoryScene=host.closest<HTMLElement>('.sx-v31-case-page [data-tour-hold="case-scene"]');
   const horizontalChapter=host.closest<HTMLElement>('[data-horizontal-chapter]');
   const workIndex=host.closest<HTMLElement>('#work-index');
   const started=performance.now();
@@ -153,6 +154,15 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     const index=Number(panel.dataset.frameIndex||'0');
     // Finish copy before the horizontal rail departs this frame.
     progress=grouped(panel,clamp((scaled-index)/.64));
+   }else if(caseStoryScene){
+    // The case-study chapters use the same grouped, line-by-line reveal
+    // engine as home. On autoplay, the director advances a 4.2s reading
+    // clock WITHOUT scrolling the viewport during typing. When readers
+    // take manual control, their actual viewport position owns the copy.
+    const playing=document.documentElement.dataset.portfolioTour==='playing';
+    progress=playing?
+     grouped(caseStoryScene,clamp(Number(caseStoryScene.dataset.caseSceneProgress||'0'))):
+     viewportGroup(caseStoryScene);
    }else if(workIndex){
     // Each row is a distinct beat: name and summary type in order,
     // then its underline draws, then 2s of reading before the NEXT row.
@@ -253,6 +263,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    horizontalChapter.addEventListener('sx-horizontal-progress',update);
   }
   if(workIndex)workIndex.addEventListener('sx-work-progress',update);
+  caseStoryScene?.addEventListener('sx-case-reading-progress',update);
   const introCover=onIntro?host.closest<HTMLElement>('#intro'):null;
   introCover?.addEventListener('sx-mobile-intro-copy',invalidate);
   const sizing=new ResizeObserver(invalidate);
@@ -266,6 +277,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
    observer.disconnect();sizing.disconnect();
    horizontalChapter?.removeEventListener('sx-horizontal-progress',update);
    workIndex?.removeEventListener('sx-work-progress',update);
+   caseStoryScene?.removeEventListener('sx-case-reading-progress',update);
    introCover?.removeEventListener('sx-mobile-intro-copy',invalidate);
    window.removeEventListener('scroll',request);
    window.removeEventListener('resize',invalidate);
