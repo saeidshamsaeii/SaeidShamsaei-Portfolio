@@ -35,7 +35,7 @@ test('the work directory explains verifiable product functions without abstract 
  await expect(index).toContainText('nutrition rules');
  await expect(index).toContainText('checkout');
  for(const id of ['gartal','factory','digirezhim','petiwoo']){
-  await expect(page.locator('#project-'+id+' .sx-v14-editorial-copy')).toHaveCount(1);
+  await expect(page.locator('#project-'+id+' .sx-v14-editorial-copy')).toHaveCount(3);
  }
  await expect(page.locator('#project-gartal .sx-v14-editorial-copy')).toContainText('Next.js');
  await expect(page.locator('#project-factory .sx-v14-editorial-copy')).toContainText('Worker');
