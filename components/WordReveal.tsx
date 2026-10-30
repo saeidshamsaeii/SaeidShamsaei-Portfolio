@@ -165,7 +165,7 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     // completely blank. Otherwise hydration shows partially completed
     // text for one frame and rewinds it when autoplay takes over.
     const initialAtTop=!tourMode&&window.scrollY<=12&&
-     !window.location.hash;
+     !window.location.hash&&!caseStoryScene.dataset.caseSceneProgress;
     progress=playing?
      grouped(caseStoryScene,clamp(Number(caseStoryScene.dataset.caseSceneProgress||'0'))):
      initialAtTop?0:viewportGroup(caseStoryScene);
