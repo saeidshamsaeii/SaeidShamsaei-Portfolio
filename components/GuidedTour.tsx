@@ -64,7 +64,7 @@ function scrollDestination(stop:Stop){
  // Selected Work is a single black, viewport-height editorial frame.
  // Stop at its actual TOP, not at the last row's centerline: otherwise the
  // headline and first project are pushed above the visible reading frame.
- if(stop.element.id==='work-index')return top;
+ if(stop.element.id==='work-index'||stop.element.id==='about')return top;
  // A case-study cover is the opening reading frame, even when its height
  // is a little shorter than the visual viewport below navigation.
  if(stop.element.classList.contains('sx-v31-case-cover'))return Math.max(0,top);
