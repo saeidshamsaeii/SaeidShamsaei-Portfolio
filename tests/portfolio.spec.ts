@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 const ids=['gartal','factory','digirezhim','petiwoo'] as const;
 
-test('full portfolio pins four image-free, three concise editorial horizontal scenes',async({page})=>{
+test('full portfolio presents four image-free chapters, each with three editorial scenes',async({page})=>{
  const errors:string[]=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.emulateMedia({reducedMotion:'reduce'});
@@ -21,12 +21,12 @@ test('full portfolio pins four image-free, three concise editorial horizontal sc
  for(const id of ids){
   const section=page.locator('#project-'+id);
   await expect(section.locator('.sx-v11-slide')).toHaveCount(3);
-  await expect(section.locator('.sx-v14-editorial-copy')).toHaveCount(1);
+  await expect(section.locator('.sx-v14-editorial-copy')).toHaveCount(3);
   await expect(section).toHaveAttribute('data-horizontal-chapter','');
-  await expect(section.locator('.sx-v14-editorial-copy>p')).toHaveCount(1);
+  await expect(section.locator('.sx-v14-editorial-copy>p.sx-word-reveal')).toHaveCount(3);
   await expect(section.locator('img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
-  await expect(section.locator('.sx-v14-ending')).toHaveCount(1);
+  await expect(section.locator('.sx-v14-ending-actions')).toHaveCount(1);
   await expect(section.getByRole('link',{name:/FULL CASE STUDY/i})).toHaveAttribute('href','/work/'+id+'/');
  }
  expect(errors).toEqual([]);
@@ -91,7 +91,7 @@ test('unwritten lines begin fully invisible and reveal in order as native scroll
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  await page.keyboard.press('Escape');
- const future=page.locator('#project-gartal-origin .sx-v14-editorial-copy h3 [data-reveal-word]').first();
+ const future=page.locator('#project-gartal-slide-2 .sx-v14-editorial-copy h3 [data-reveal-word]').first();
  expect(await future.evaluate(el=>getComputedStyle(el).opacity)).toBe('0');
  const chapter=page.locator('#project-gartal');
  const info=await chapter.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,travel:el.getBoundingClientRect().height-innerHeight}));
@@ -118,7 +118,7 @@ test('case pages remain text-only, with readable chapters and summary dialogs',a
 test('technical details stay available but closed until requested',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
- const details=page.locator('.sx-v18-case-details');
+ const details=page.locator('details.sx-v31-deep-item');
  await expect(details).toHaveCount(6);
  await expect(details.first()).not.toHaveAttribute('open');
  await details.first().locator('summary').click();
