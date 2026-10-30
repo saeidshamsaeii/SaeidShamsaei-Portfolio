@@ -36,7 +36,12 @@ test('all original works and engineering links remain navigable without a langua
   await expect(page.locator('#work-index a[href="/work/'+id+'/"]')).toHaveCount(1);
   await page.goto('/work/'+id+'/');
   await expect(page.locator('.sx-v10-case-section')).toHaveCount(6);
-  await expect(page.locator('.sx-v10-reference-list a').first()).toHaveAttribute('href',/^https:\/\//);
+  await expect(page.locator('.sx-v10-reference-list a')).toHaveCount(0);
+  await expect(page.getByRole('button',{name:/READ PROJECT SUMMARY/})).toHaveCount(1);
+  await page.getByRole('button',{name:/READ PROJECT SUMMARY/}).click();
+  await expect(page.locator('.sx-v32-project-modal')).toBeVisible();
+  await page.locator('.sx-v32-project-modal button[aria-label="Close project summary"]').click();
+  await expect(page.locator('.sx-v32-project-modal')).not.toBeVisible();
   await page.goto('/');
  }
 });
