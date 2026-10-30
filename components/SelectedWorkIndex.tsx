@@ -13,26 +13,22 @@ const keywords:Record<ProjectId,string>={
 export function SelectedWorkIndex(){
  const [active,setActive]=useState<ProjectId>('gartal');
  const section=useRef<HTMLElement>(null);
- // Edition 30: five strictly ordered beats. The heading and then each
- // project title/description type, its own underline draws, and a two-second
- // hold completes BEFORE the next project is allowed to start.
- // The last project's hold is owned by GuidedTour to avoid a double pause.
+ // Scroll is the single source of truth: no independent clock and no
+ // irreversible "finished" flag. Reverse scrolling unwrites every word,
+ // link and underline in strict reverse order.
  useEffect(()=>{
   const host=section.current;
   if(!host)return;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   const stages=Array.from(host.querySelectorAll<HTMLElement>('[data-work-stage]'));
-  const stageLinks=stages.map(stage=>Array.from(stage.querySelectorAll<HTMLAnchorElement>('a')));
-  // Invisible future links must not remain in the keyboard tab order or the
-  // screen-reader link list before their words and divider are revealed.
+  const links=stages.map(stage=>Array.from(stage.querySelectorAll<HTMLAnchorElement>('a')));
   const exposeLinks=(index:number,expose:boolean)=>{
-   for(const link of stageLinks[index]){
+   for(const link of links[index]){
     link.tabIndex=expose?0:-1;
     if(expose)link.removeAttribute('aria-hidden');
     else link.setAttribute('aria-hidden','true');
    }
   };
-  stages.forEach((_,index)=>exposeLinks(index,false));
   const TITLE_TYPE_MS=2300;
   const ROW_TYPE_MS=2600;
   const LINE_DRAW_MS=500;
@@ -42,39 +38,20 @@ export function SelectedWorkIndex(){
    (index<stages.length-1?BETWEEN_BLOCK_HOLD_MS:0)
   );
   const TOTAL_MS=stages.reduce((sum,_,index)=>sum+stageDuration(index),0);
-  let runningElapsed=0,lastTime=0,started=false,finished=false,raf=0;
-  const update=(time:number)=>{
+  let raf=0,priorProgress=Number.NaN;
+  const update=()=>{
    raf=0;
-   if(reduced.matches){
-    stages.forEach(stage=>{
-     stage.dataset.workStageState='complete';
-     exposeLinks(stages.indexOf(stage),true);
-     stage.style.setProperty('--sx-work-rule','1');
-    });
-    host.dataset.workStageIndex=String(stages.length);
-    host.dataset.workStageProgress='1';
-    host.dataset.workRevealProgress='1';
-    host.dispatchEvent(new Event('sx-work-progress'));
-    finished=true;
-    return;
-   }
-   if(!started){
-    const rect=host.getBoundingClientRect();
-    const visible=Math.max(0,Math.min(rect.bottom,innerHeight)-Math.max(0,rect.top));
-    // Automatic narration starts only once the entire black panel is framed;
-    // manual readers can begin as soon as most of it is in view.
-    const autoNarrating=document.documentElement.dataset.portfolioTour==='playing';
-    const fullyFramed=rect.height>innerHeight+12||
-     (rect.top>=-12&&rect.bottom<=innerHeight+12);
-    if(host.hasAttribute('data-tour-awaiting')||
-       (autoNarrating?!fullyFramed:
-        visible<Math.min(innerHeight,rect.height)*.72))return;
-    started=true;
-   }
-   const delta=lastTime?Math.min(80,Math.max(0,time-lastTime)):0;
-   lastTime=time;
-   runningElapsed=Math.min(TOTAL_MS,runningElapsed+delta);
-   let local=runningElapsed;
+   const rect=host.getBoundingClientRect();
+   // The sticky inner frame stays legible while the outer scroll runway
+   // advances. Both manual and guided scrolling produce the same fraction.
+   const travel=Math.max(1,rect.height-innerHeight);
+   const position=Math.max(0,Math.min(1,-rect.top/travel));
+   // Awaiting blocks may be written only by manual scroll or by the active
+   // GuidedTour stop, never while a different autoplay stop is reading.
+   const awaiting=host.hasAttribute('data-tour-awaiting')&&
+    document.documentElement.dataset.portfolioTour==='playing';
+   const progress=reduced.matches?1:awaiting?0:position;
+   let local=progress*TOTAL_MS;
    let current=stages.length;
    for(let index=0;index<stages.length;index++){
     const duration=stageDuration(index);
@@ -82,36 +59,33 @@ export function SelectedWorkIndex(){
     local-=duration;
    }
    const typeDuration=current===0?TITLE_TYPE_MS:ROW_TYPE_MS;
-   const typingProgress=current===stages.length?1:
+   const typed=current===stages.length?1:
     Math.min(1,local/typeDuration);
    host.dataset.workStageIndex=String(current);
-   host.dataset.workStageProgress=String(typingProgress);
+   host.dataset.workStageProgress=String(typed);
    for(let index=0;index<stages.length;index++){
     const stage=stages[index];
-    const prior=stage.dataset.workStageState;
     const typing=index===current&&local<typeDuration;
-    const line=index===current&&local>=typeDuration&&
-     local<typeDuration+LINE_DRAW_MS;
+    const line=index===current&&local>=typeDuration&&local<typeDuration+LINE_DRAW_MS;
     const holding=index===current&&local>=typeDuration+LINE_DRAW_MS;
-    stage.dataset.workStageState=index<current?'complete':
-     index>current?'pending':typing?'typing':line?'line':'holding';
-    if(prior!==stage.dataset.workStageState)
-     exposeLinks(index,!['pending','typing'].includes(stage.dataset.workStageState||''));
-    const draw=index<current?1:index>current?0:
-     Math.min(1,Math.max(0,(local-typeDuration)/LINE_DRAW_MS));
+    const state=reduced.matches||index<current?'complete':
+     index>current?'pending':typing?'typing':line?'line':holding?'holding':'complete';
+    if(stage.dataset.workStageState!==state){
+     stage.dataset.workStageState=state;
+    }
+    const draw=reduced.matches||index<current?1:index>current?0:
+     Math.max(0,Math.min(1,(local-typeDuration)/LINE_DRAW_MS));
     stage.style.setProperty('--sx-work-rule',String(draw));
+    // Links become accessible only after their text is readable.
+    exposeLinks(index,state==='complete'||state==='holding'||state==='line');
    }
-   host.dataset.workRevealProgress=String(runningElapsed/TOTAL_MS);
-   // Completion is time-driven, so a reader who has not scrolled does not
-   // need to trigger another scroll event for the exit calculation.
-   if(runningElapsed>=TOTAL_MS)window.dispatchEvent(new Event('sx-work-reading-complete'));
-   // WordReveal receives the current stage only. No upcoming row can type
-   // while the previous rule is drawing or the reader is on its 2s hold.
+   host.dataset.workRevealProgress=String(progress);
    host.dispatchEvent(new Event('sx-work-progress'));
-   if(runningElapsed<TOTAL_MS)raf=requestAnimationFrame(update);
-   else finished=true;
+   if(progress>=.999&&priorProgress<.999)
+    window.dispatchEvent(new Event('sx-work-reading-complete'));
+   priorProgress=progress;
   };
-  const request=()=>{if(!raf&&!finished)raf=requestAnimationFrame(update);};
+  const request=()=>{if(!raf)raf=requestAnimationFrame(update);};
   const observer=new MutationObserver(request);
   observer.observe(host,{attributes:true,attributeFilter:['data-tour-awaiting']});
   window.addEventListener('scroll',request,{passive:true});
@@ -198,6 +172,7 @@ export function SelectedWorkIndex(){
   data-work-reveal-progress="0"
   aria-labelledby="sx-v16-work-title" data-active-project={active}
   data-tour-stop data-tour-label="Selected work" data-tour-duration="10" data-tour-pace=".92">
+  <div className="sx-v35-work-pin">
   <div className="sx-v18-index-heading" data-work-stage="0" data-work-stage-state="pending">
    <WordReveal as="h2" id="sx-v16-work-title" text="Selected work."/>
    <span>04 projects</span>
@@ -219,6 +194,7 @@ export function SelectedWorkIndex(){
      <Link href={'/engineering/#evidence-'+project.id}>Source ↗</Link>
     </div>
    </div>)}
+  </div>
   </div>
  </section>;
 }
