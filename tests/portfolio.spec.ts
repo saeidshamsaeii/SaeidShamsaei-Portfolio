@@ -26,7 +26,7 @@ test('full portfolio presents four art-directed chapters, each with three editor
   await expect(section.locator('.sx-v14-editorial-copy>p.sx-word-reveal')).toHaveCount(3);
   const art=section.locator('[data-frame-index="0"] .sx-v35-project-art img');
   await expect(art).toHaveCount(1);
-  await expect(art).toHaveAttribute('src','/assets/projects/'+id+'.webp');
+  await expect(art).toHaveAttribute('src','/assets/hires/project-'+id+'.webp');
   await expect(art).toHaveAttribute('loading','lazy');
   await expect(section.locator('[data-frame-index="1"] img,[data-frame-index="2"] img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
