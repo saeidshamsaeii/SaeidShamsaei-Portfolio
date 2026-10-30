@@ -8,3 +8,8 @@ out/
 
 # Keep full-resolution private originals outside the public repository.
 media-originals/
+
+# Owner-invoked acceptance logs and Playwright diagnostics (never publish).
+reports/quality/
+playwright-report/
+test-results/
