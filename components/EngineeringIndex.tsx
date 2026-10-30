@@ -1,7 +1,7 @@
 'use client';
-import {useMemo,useState} from 'react';
+import {useMemo,useState,useEffect,useRef} from 'react';
 import Link from 'next/link';
-import {engineeringEvidence,fileUrl,sourceSnapshots,type Discipline,type EngineeringRecord,type EngineeringDecision} from '@/data/engineeringEvidence';
+import {engineeringEvidence,type Discipline,type EngineeringRecord,type EngineeringDecision} from '@/data/engineeringEvidence';
 import {projects} from '@/data/portfolio';
 
 type Filter='all'|Discipline;
@@ -29,6 +29,10 @@ function matchingDecisions(entry:EngineeringRecord,filter:Filter,query:string):E
 
 function EvidenceProject({entry,decisions}:{entry:EngineeringRecord;decisions:EngineeringDecision[]}){
  const project=projects.find(item=>item.id===entry.id)!;
+ const [open,setOpen]=useState(false);
+ const dialog=useRef<HTMLDialogElement>(null);
+ const liveUrl=entry.id==='digirezhim'?'https://digirezhim.ir':entry.id==='petiwoo'?'https://petiwoo.ir':null;
+ useEffect(()=>{if(!dialog.current)return;if(open&&!dialog.current.open)dialog.current.showModal();else if(!open&&dialog.current.open)dialog.current.close();},[open]);
 
  return <section id={'evidence-'+entry.id} className={'sx-ei-project sx-ei-project--'+entry.id}
   aria-labelledby={'ei-title-'+entry.id}>
@@ -39,7 +43,7 @@ function EvidenceProject({entry,decisions}:{entry:EngineeringRecord;decisions:En
    <p className="sx-ei-boundary">{entry.differentiator}</p>
    <div className="sx-ei-project-links">
     <Link href={'/work/'+entry.id+'/'}>Read full case study ↗</Link>
-    <a href={'#source-'+entry.id}>Source register ↓</a>
+    <button type="button" onClick={()=>setOpen(true)}>Project overview ↗</button>
    </div>
   </div>
   <div className="sx-ei-decisions">
@@ -56,28 +60,22 @@ function EvidenceProject({entry,decisions}:{entry:EngineeringRecord;decisions:En
     <div className="sx-ei-evidence">
      <span className="sx-ei-label">Why this is in the portfolio</span>
      <p>{decision.evidence}</p>
-     <div className="sx-ei-file-links">{decision.files.map(i=><a
-      href={fileUrl(entry.files[i])} key={entry.files[i].repo+'/'+entry.files[i].path}
-      target="_blank" rel="noopener noreferrer" title={entry.files[i].why}>
-      {entry.files[i].repo} / {entry.files[i].path} ↗
-     </a>)}</div>
+     <button type="button" className="sx-ei-summary-action" onClick={()=>setOpen(true)}>READ EXPLAINED PROJECT SUMMARY ↗</button>
     </div>
    </article>)}
   </div>
-  <section id={'source-'+entry.id} className="sx-ei-register" aria-label={project.brand+' source register'}>
-   <div className="sx-ei-register-head"><h3>Source register</h3><p>References are pinned to checked Git commit SHAs; GitHub access may be required.</p></div>
-   <div className="sx-ei-source-list">{entry.files.map((file,i)=><a
-    href={fileUrl(file)} key={file.repo+'/'+file.path} target="_blank" rel="noopener noreferrer">
-    <span>{String(i+1).padStart(2,'0')} / {file.label}</span>
-    <small>{file.why}</small>
-    <em>{file.repo} @ {(sourceSnapshots[file.repo]||"main").slice(0,10)} / {file.path} ↗</em>
-   </a>)}</div>
-   <div className="sx-ei-unknown">
-    <span className="sx-ei-label">Not independently verified</span>
-    <p>{entry.boundary}</p>
-    <ul>{entry.unverified.map(item=><li key={item}>{item}</li>)}</ul>
+  <div className="sx-ei-register" id={'source-'+entry.id}>
+   <h3>Project overview</h3><p>Read a concise explanation of the documented architecture without opening repository files.</p>
+   <button type="button" className="sx-ei-summary-action" onClick={()=>setOpen(true)}>OPEN PROJECT SUMMARY ↗</button>
+  </div>
+  <dialog ref={dialog} className="sx-v32-project-modal" aria-label={project.brand+' project overview'} onClose={()=>setOpen(false)} onClick={event=>{if(event.target===dialog.current)setOpen(false);}}>
+   <div className="sx-v32-modal-inner"><div className="sx-v32-modal-top"><span>ENGINEERING OVERVIEW</span><button type="button" onClick={()=>setOpen(false)}>CLOSE ×</button></div>
+    <h2>{project.brand}</h2><p className="sx-v32-modal-lead">{project.intro.en}</p>
+    <h3>THE PROBLEM</h3><p>{project.problem.en}</p><h3>THE IMPLEMENTATION</h3><p>{project.solution.en}</p>
+    <h3>VERIFIED SCOPE</h3><p>{project.outcome.en}</p><h3>KEY DECISIONS</h3><ul>{entry.decisions.map(decision=><li key={decision.id}>{decision.design}</li>)}</ul>
+    <div className="sx-v32-modal-cta">{liveUrl?<a href={liveUrl} target="_blank" rel="noopener noreferrer">VISIT LIVE WEBSITE ↗</a>:<span>WEBSITE / COMING SOON</span>}</div>
    </div>
-  </section>
+  </dialog>
  </section>;
 }
 
