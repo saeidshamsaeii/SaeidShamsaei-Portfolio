@@ -111,7 +111,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
    <span className="sx-v31-kicker">SOURCE / EVIDENCE & DELIVERY</span>
    <WordReveal as="h2" id="case-evidence-title" text="What is actually verified."/>
    <WordReveal className="sx-v31-evidence-outcome" text={p.outcome.en}/>
-   <WordReveal text="These references document the code and architectural decisions. Production results and customer outcomes require separate verification."/>
+   <WordReveal text="The overview explains documented implementation decisions. Production results and customer outcomes require separate verification."/>
    <div className="sx-v32-project-actions">
     <button type="button" className="sx-v32-summary-button" onClick={()=>{setTour(false);setDetailsOpen(true);}}>READ PROJECT SUMMARY ↗</button>
     {liveUrl?<a href={liveUrl} target="_blank" rel="noopener noreferrer">VISIT LIVE WEBSITE ↗</a>:<span className="sx-v32-coming-soon">WEBSITE / COMING SOON</span>}
