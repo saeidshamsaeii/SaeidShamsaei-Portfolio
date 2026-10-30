@@ -66,7 +66,9 @@ npm run qa:final
 This runs the existing checks sequentially (TypeScript, source tests, static
 export, CSS inventory, image audit and exported-site Playwright), then writes
 `reports/quality/acceptance-<SHA>.json` with individual exit codes and log
-tails. The report explicitly fails when `package-lock.json` is missing, the
+tails. Playwright also captures twelve real-page review images under
+`reports/quality/screenshots/<SHA>/`; these are evidence for human visual
+inspection, **not** a substitute for explicit visual approval. The report explicitly fails when `package-lock.json` is missing, the
 working tree is dirty, the Git SHA is not known or any gate fails. Browser QA
 is recorded as `NOT_TESTED` if the export did not succeed. The resulting
 report is local and ignored by Git; no CI, Preview or Worker automation is
