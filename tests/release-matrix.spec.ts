@@ -53,7 +53,9 @@ test('three-line hero composition preserves line breaks on small and large scree
   await expect(final.locator('h2 br')).toHaveCount(2);
   const blocks=final.locator('h2 .sx-word-reveal');
   await expect(blocks).toHaveCount(3);
-  const lines=await blocks.allTextContents();
+  // WordReveal includes an accessible duplicate plus visual glyph spans;
+  // compare the canonical screen-reader copy, not concatenated textContent.
+  const lines=await blocks.locator('.sx-word-a11y').allTextContents();
   expect(lines.map(line=>line.trim())).toEqual([
    'ARCHITECTURE.','PRODUCT.','PEOPLE.'
   ]);
