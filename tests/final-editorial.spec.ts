@@ -52,3 +52,26 @@ test('single biography frame is responsive and never clips its last line',async(
   expect(metrics.overflow,'horizontal overflow at '+viewport.width).toBeLessThanOrEqual(2);
  }
 });
+
+test('project artwork loads its high-resolution source without stretching or cropping',async({page})=>{
+ test.setTimeout(65000);
+ for(const viewport of [{width:390,height:844},{width:1440,height:900}]){
+  await page.setViewportSize(viewport);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  for(const id of ['gartal','factory','digirezhim','petiwoo']){
+   const art=page.locator('#project-'+id+' .sx-v35-project-art img');
+   await expect(art).toHaveCount(1);
+   await expect(art).toHaveAttribute('src','/assets/hires/project-'+id+'.webp');
+   await expect(art).toHaveCSS('object-fit','contain');
+   const image=await art.evaluate(node=>{
+    const img=node as HTMLImageElement;
+    return {naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,
+      complete:img.complete};
+   });
+   expect(image.complete,'source loaded '+id).toBe(true);
+   expect(image.naturalWidth,'high resolution source '+id).toBeGreaterThanOrEqual(1000);
+   expect(image.naturalHeight,'high resolution height '+id).toBeGreaterThanOrEqual(1000);
+  }
+ }
+});
