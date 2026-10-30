@@ -25,6 +25,7 @@ import './edition18.css';
 import './edition19.css';
 import './edition20.css';
 import './quality.css';
+import './case-editorial.css';
 
 const title='Saeid Shamsaei — Software Architecture & Product Engineering';
 const description='Independent software architecture, product engineering and source-informed case studies for GARTAL, DigiRezhim, AI Factory and Petiwoo.';
