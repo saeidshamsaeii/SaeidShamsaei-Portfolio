@@ -392,3 +392,396 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
  .sx-v18-site .sx-v30-case-notes li{font-size:11px!important;line-height:1.35!important;}
  .sx-v18-site .sx-v30-case-footer .sx-v14-ending-actions a{font-size:9px!important;}
 }
+
+
+/* Edition 31 / case-study editorial parity with the homepage.
+ * Scope entirely to the four detailed case routes; the home scroll design
+ * stays untouched. Each case has three clear full-screen reading beats,
+ * then six OPTIONAL technical chapters without legacy empty 110svh panels. */
+.sx-v31-case-page{
+ --sx-v31-edge:clamp(19px,5vw,110px);
+ --sx-v31-content:1110px;
+ --sx-v31-ink:#fff;
+ --sx-v31-muted:#cecece;
+ color:var(--sx-v31-ink)!important;
+ background:#000!important;
+ overflow-x:clip;
+}
+.sx-v31-case-page :is(.sx-v31-case-cover,.sx-v31-case-scene,.sx-v31-deep-dive,.sx-v31-evidence,.sx-v31-case-next){
+ box-sizing:border-box;
+ background:#000!important;
+ color:#fff!important;
+ filter:none!important;
+}
+.sx-v31-case-page .case-nav{
+ position:relative;
+ z-index:3;
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:12px 22px;
+ min-height:clamp(66px,9svh,96px);
+ height:auto!important;
+ padding:16px var(--sx-v31-edge)!important;
+ border-bottom:1px solid #ffffff40;
+ background:#000!important;
+ color:#fff;
+ font:500 clamp(10px,.8vw,12px)/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.09em;
+}
+.sx-v31-case-page .case-nav a{
+ color:#fff!important;text-decoration:none;
+ padding:9px 0;
+}
+.sx-v31-case-page .case-nav a:hover,
+.sx-v31-case-page .case-footer a:hover{color:#fff;text-decoration:underline;text-underline-offset:6px;}
+.sx-v31-case-page .sx-v31-skip{
+ position:absolute;top:-100px;left:var(--sx-v31-edge);z-index:12;
+ background:#fff;color:#000;padding:11px 17px;
+}
+.sx-v31-case-page .sx-v31-skip:focus{top:10px;}
+
+/* One readable project cover, no decorative fixed-height gap. */
+.sx-v31-case-page .sx-v31-case-cover{
+ width:100%;
+ min-height:max(0px,calc(100svh - 85px))!important;
+ height:auto!important;
+ display:flex!important;align-items:flex-start!important;
+ justify-content:center!important;flex-direction:column!important;
+ padding:clamp(45px,9svh,100px) var(--sx-v31-edge) clamp(24px,5svh,46px)!important;
+ gap:clamp(13px,2.4svh,26px)!important;
+ border-bottom:1px solid #ffffff30;
+}
+.sx-v31-case-page .sx-v31-case-cover>.sx-word-reveal,
+.sx-v31-case-page .sx-v31-case-cover>.sx-v31-kicker,
+.sx-v31-case-page .sx-v31-cover-footer{width:min(100%,var(--sx-v31-content));margin-inline:auto!important;}
+.sx-v31-case-page .sx-v31-kicker,
+.sx-v31-case-page .sx-v31-scene-meta,
+.sx-v31-case-page .sx-v31-scene-bottom,
+.sx-v31-case-page .sx-v31-cover-footer{
+ font:500 clamp(10px,.88vw,12px)/1.5 ui-monospace,Consolas,monospace!important;
+ color:#c6c6c6!important;letter-spacing:.075em!important;
+}
+.sx-v31-case-page .sx-v31-case-cover h1{
+ color:#fff!important;
+ font:650 clamp(51px,10vw,148px)/.97 Inter,Arial,sans-serif!important;
+ letter-spacing:-.075em!important;
+ max-width:1110px!important;overflow-wrap:anywhere;
+ text-wrap:balance;margin:0!important;
+}
+.sx-v31-case-page .sx-v31-case-cover h2{
+ color:#f6f6f6!important;
+ font:540 clamp(26px,4.1vw,54px)/1.1 Inter,Arial,sans-serif!important;
+ letter-spacing:-.045em!important;
+ max-width:980px!important;text-wrap:balance;
+}
+.sx-v31-case-page .sx-v31-case-cover .sx-v31-thesis{
+ color:#d4d4d4!important;
+ font:400 clamp(16px,1.55vw,22px)/1.6 Inter,Arial,sans-serif!important;
+ max-width:740px!important;letter-spacing:-.01em!important;
+}
+.sx-v31-case-page .sx-v31-cover-footer{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:12px 28px;
+ border-top:1px solid #ffffff40;
+ padding-top:clamp(14px,2.5svh,25px);
+ margin-top:clamp(8px,3svh,30px)!important;
+}
+.sx-v31-case-page .sx-v31-cover-footer a,
+.sx-v31-case-page .sx-v31-scene-bottom a{
+ color:#fff!important;text-decoration:none;
+ border-bottom:1px solid #ffffffa0;
+ padding:8px 0;
+}
+
+/* Three vertically stacked chapters: identical reading hierarchy and
+ * animation structure to the home project's three editorial beats. */
+.sx-v31-case-page .sx-v31-story{background:#000;}
+.sx-v31-case-page .sx-v31-case-scene{
+ min-height:100svh!important;
+ height:auto!important;
+ width:100%;max-width:none!important;
+ display:flex!important;flex-direction:column!important;
+ justify-content:space-between!important;align-items:stretch!important;
+ gap:clamp(18px,3svh,40px)!important;
+ border-top:1px solid #ffffff30;
+ padding:clamp(42px,7svh,80px) var(--sx-v31-edge) clamp(28px,5svh,60px)!important;
+}
+.sx-v31-case-page .sx-v31-scene-meta,
+.sx-v31-case-page .sx-v31-scene-bottom{
+ width:min(100%,var(--sx-v31-content));margin-inline:auto;
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px 25px;flex-wrap:wrap;
+}
+.sx-v31-case-page .sx-v31-scene-copy{
+ width:min(100%,var(--sx-v31-content));
+ margin:auto!important;
+ display:flex;align-items:flex-start;flex-direction:column;
+ gap:clamp(14px,2.6svh,28px);
+}
+.sx-v31-case-page .sx-v31-scene-copy h2{
+ width:100%;max-width:1060px!important;margin:0!important;
+ font:610 clamp(35px,5.3vw,79px)/1.09 Inter,Arial,sans-serif!important;
+ letter-spacing:-.06em!important;
+ color:#fff!important;text-wrap:balance;
+}
+.sx-v31-case-page .sx-v31-scene-copy .sx-v31-scene-lead{
+ width:100%;max-width:860px!important;margin:0!important;
+ font:410 clamp(16px,1.65vw,23px)/1.6 Inter,Arial,sans-serif!important;
+ letter-spacing:-.01em!important;color:#dedede!important;
+}
+.sx-v31-case-page .sx-v31-scene-notes{
+ width:100%;max-width:860px;
+ list-style:none;margin:clamp(4px,1svh,12px) 0 0;
+ padding:clamp(16px,2svh,24px) 0 0;
+ border-top:1px solid #ffffff45;
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:15px 30px;
+}
+.sx-v31-case-page .sx-v31-scene-notes li{
+ display:flex;align-items:baseline;gap:14px;
+ font:400 clamp(13px,1.12vw,16px)/1.55 Inter,Arial,sans-serif;
+ color:#cfcfcf;overflow-wrap:anywhere;
+}
+.sx-v31-case-page .sx-v31-scene-notes li>span:first-child{
+ color:#929292;font:500 10px/1.5 ui-monospace,Consolas,monospace;
+ flex-shrink:0;
+}
+.sx-v31-case-page .sx-v31-scene-bottom{
+ border-top:1px solid #ffffff45;
+ padding-top:clamp(14px,2.3svh,25px);
+}
+
+/* The six actual engineering chapters remain in the document for indexing,
+ * keyboard navigation and optional reading, but are NOT six 110svh tall
+ * narrative frames. Native <details> works without JavaScript. */
+.sx-v31-case-page .sx-v31-deep-dive{
+ width:100%;padding:clamp(70px,10svh,128px) var(--sx-v31-edge);
+ border-top:1px solid #ffffff40;
+}
+.sx-v31-case-page .sx-v31-deep-intro,
+.sx-v31-case-page .sx-v31-deep-list{
+ width:min(100%,var(--sx-v31-content));margin-inline:auto;
+}
+.sx-v31-case-page .sx-v31-deep-intro{
+ display:flex;flex-direction:column;gap:clamp(18px,3svh,30px);
+ padding-bottom:clamp(30px,5svh,60px);
+}
+.sx-v31-case-page .sx-v31-deep-intro h2{
+ margin:0!important;max-width:1000px!important;
+ font:610 clamp(40px,6vw,83px)/1.07 Inter,Arial,sans-serif!important;
+ letter-spacing:-.065em!important;color:#fff!important;
+}
+.sx-v31-case-page .sx-v31-deep-intro>p{
+ max-width:740px;margin:0;
+ font:400 clamp(15px,1.55vw,21px)/1.6 Inter,Arial,sans-serif;
+ color:#cfcfcf;
+}
+.sx-v31-case-page .sx-v31-deep-item.sx-v10-case-section{
+ width:100%;max-width:none!important;min-height:0!important;height:auto!important;
+ display:block!important;position:relative;
+ padding:0!important;margin:0!important;
+ border:0!important;border-top:1px solid #ffffff35!important;
+ background:#000!important;filter:none!important;scroll-margin-top:40px!important;
+}
+.sx-v31-case-page .sx-v31-deep-item:last-child{border-bottom:1px solid #ffffff35!important;}
+.sx-v31-case-page .sx-v31-deep-item::before{content:none!important;}
+.sx-v31-case-page .sx-v31-deep-summary{
+ display:grid;grid-template-columns:clamp(28px,5vw,76px) minmax(0,1fr) 30px;
+ align-items:center;gap:clamp(13px,2vw,25px);
+ padding:clamp(19px,3.2svh,33px) 0;
+ list-style:none;cursor:pointer;color:#fff;
+}
+.sx-v31-case-page .sx-v31-deep-summary::-webkit-details-marker{display:none;}
+.sx-v31-case-page .sx-v31-deep-summary::marker{content:'';}
+.sx-v31-case-page .sx-v31-deep-number{
+ font:500 clamp(11px,1vw,14px)/1.5 ui-monospace,Consolas,monospace;
+ color:#aaa;
+}
+.sx-v31-case-page .sx-v31-deep-label{
+ display:flex;flex-direction:column;gap:7px;
+}
+.sx-v31-case-page .sx-v31-deep-label small{
+ font:500 clamp(9px,.78vw,11px)/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.10em;color:#a0a0a0;
+}
+.sx-v31-case-page .sx-v31-deep-label strong{
+ font:560 clamp(21px,2.5vw,36px)/1.16 Inter,Arial,sans-serif;
+ letter-spacing:-.04em;color:#fff;overflow-wrap:anywhere;
+}
+.sx-v31-case-page .sx-v31-deep-toggle{
+ justify-self:end;font:300 26px/1 Inter,Arial,sans-serif;
+ transition:transform .2s ease;
+}
+.sx-v31-case-page .sx-v31-deep-item[open] .sx-v31-deep-toggle{transform:rotate(45deg);}
+.sx-v31-case-page .sx-v31-deep-content{
+ padding:0 0 clamp(30px,6svh,65px) clamp(41px,7vw,101px);
+ max-width:950px;
+ display:flex;flex-direction:column;gap:clamp(18px,2.5svh,27px);
+}
+.sx-v31-case-page .sx-v31-deep-content>p{
+ margin:0!important;
+ max-width:820px;
+ font:400 clamp(15px,1.3vw,19px)/1.72 Inter,Arial,sans-serif!important;
+ color:#d4d4d4!important;
+}
+.sx-v31-case-page .sx-v31-deep-details{
+ border-top:1px solid #ffffff35;
+ padding-top:19px;margin-top:10px;
+ color:#c9c9c9;
+}
+.sx-v31-case-page .sx-v31-deep-details>span{
+ font:550 10px/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.10em;
+}
+.sx-v31-case-page .sx-v31-deep-details ul{
+ margin:14px 0 0;padding-left:21px;
+ font:400 clamp(13px,1.2vw,16px)/1.65 Inter,Arial,sans-serif;
+}
+.sx-v31-case-page .sx-v31-deep-details li+li{margin-top:7px;}
+
+/* Final evidence is legible, actionable and visually consistent.
+ * Preserve all original reference links and six full technical chapters. */
+.sx-v31-case-page .sx-v31-evidence{
+ min-height:80svh!important;height:auto!important;
+ padding:clamp(70px,12svh,150px) var(--sx-v31-edge)!important;
+ display:flex!important;flex-direction:column!important;
+ justify-content:center!important;align-items:flex-start!important;
+ gap:clamp(16px,3svh,30px)!important;
+ border-top:1px solid #ffffff45!important;
+}
+.sx-v31-case-page .sx-v31-evidence>*{
+ max-width:min(100%,var(--sx-v31-content));margin-inline:auto!important;
+ width:100%;
+}
+.sx-v31-case-page .sx-v31-evidence h2{
+ font:610 clamp(39px,5.6vw,84px)/1.09 Inter,Arial,sans-serif!important;
+ letter-spacing:-.06em!important;color:#fff!important;
+ max-width:min(100%,var(--sx-v31-content))!important;
+}
+.sx-v31-case-page .sx-v31-evidence :is(.sx-v31-evidence-outcome,p:not(.sx-v10-source-line)){
+ font:400 clamp(15px,1.5vw,21px)/1.65 Inter,Arial,sans-serif!important;
+ color:#d6d6d6!important;
+ max-width:min(100%,850px)!important;
+}
+.sx-v31-case-page .sx-v31-evidence .sx-v10-source-line{
+ font:400 clamp(11px,1vw,14px)/1.65 ui-monospace,Consolas,monospace!important;
+ color:#b2b2b2!important;
+ white-space:normal;overflow-wrap:anywhere;
+}
+.sx-v31-case-page .sx-v31-evidence .sx-v10-reference-list{
+ display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:8px!important;
+}
+.sx-v31-case-page .sx-v31-evidence .sx-v10-reference-list a,
+.sx-v31-case-page .sx-v31-evidence .sx-ei-case-link{
+ display:inline-flex;width:auto!important;
+ padding:9px 0;border-bottom:1px solid #ffffff77!important;
+ font:550 clamp(11px,1vw,14px)/1.5 ui-monospace,Consolas,monospace!important;
+ color:#fff!important;text-decoration:none;overflow-wrap:anywhere;
+ margin:0!important;
+}
+.sx-v31-case-page .sx-v31-evidence .sx-v10-reference-list a:hover,
+.sx-v31-case-page .sx-v31-evidence .sx-ei-case-link:hover{
+ border-bottom-color:#fff!important;
+}
+.sx-v31-case-page .sx-v31-case-next{
+ min-height:57svh!important;
+ padding:clamp(60px,9svh,115px) var(--sx-v31-edge)!important;
+ gap:clamp(17px,3svh,32px)!important;
+ align-items:flex-start!important;
+ border-top:1px solid #ffffff35;
+}
+.sx-v31-case-page .sx-v31-case-next>*{width:min(100%,var(--sx-v31-content));margin-inline:auto!important;}
+.sx-v31-case-page .sx-v31-case-next h2{
+ font:630 clamp(49px,9vw,120px)/1.0 Inter,Arial,sans-serif!important;
+ letter-spacing:-.07em!important;color:#fff!important;
+}
+.sx-v31-case-page .sx-v31-case-next>a{color:#fff!important;font-size:13px!important;}
+.sx-v31-case-page .case-footer{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:15px 35px;padding:clamp(23px,4svh,40px) var(--sx-v31-edge)!important;
+ background:#000!important;border-top:1px solid #ffffff35;
+ color:#fff;
+}
+.sx-v31-case-page .case-footer a{color:#fff!important;}
+
+/* Make the WordReveal root inherit the actual editorial font size.
+ * Avoid old span/label styles turning words into tiny individual chips. */
+.sx-v31-case-page :is(.sx-v31-case-cover,.sx-v31-case-scene,.sx-v31-deep-dive,.sx-v31-evidence,.sx-v31-case-next)
+ .sx-word-reveal>.sx-word-pieces,
+.sx-v31-case-page :is(.sx-v31-case-cover,.sx-v31-case-scene,.sx-v31-deep-dive,.sx-v31-evidence,.sx-v31-case-next)
+ .sx-word-piece{
+ font:inherit!important;letter-spacing:inherit!important;
+ color:inherit!important;
+}
+.sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-scene-notes,
+.sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-scene-meta,
+.sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-scene-bottom{
+ visibility:hidden!important;
+}
+@media(max-width:760px){
+ .sx-v31-case-page{--sx-v31-edge:clamp(16px,5vw,26px);}
+ .sx-v31-case-page .case-nav{gap:9px 14px;font-size:10px!important;}
+ .sx-v31-case-page .case-nav span{display:none;}
+ .sx-v31-case-page .sx-v31-case-cover{
+  min-height:calc(100svh - 70px)!important;
+  padding-block:clamp(38px,7svh,64px) 25px!important;
+  gap:clamp(12px,2svh,20px)!important;
+ }
+ .sx-v31-case-page .sx-v31-case-cover h1{
+  font-size:clamp(48px,11vw,75px)!important;
+ }
+ .sx-v31-case-page .sx-v31-case-cover h2{
+  font-size:clamp(26px,6.9vw,41px)!important;
+ }
+ .sx-v31-case-page .sx-v31-case-cover .sx-v31-thesis{
+  font-size:clamp(15px,3.7vw,18px)!important;line-height:1.5!important;
+ }
+ .sx-v31-case-page .sx-v31-cover-footer{align-items:flex-start;flex-direction:column;}
+ .sx-v31-case-page .sx-v31-case-scene{
+  min-height:100svh!important;
+  padding-block:clamp(25px,4svh,42px) clamp(20px,3svh,28px)!important;
+  gap:clamp(11px,2svh,20px)!important;
+ }
+ .sx-v31-case-page .sx-v31-scene-copy{gap:clamp(11px,1.8svh,20px);}
+ .sx-v31-case-page .sx-v31-scene-copy h2{
+  font-size:clamp(31px,8vw,51px)!important;line-height:1.08!important;
+ }
+ .sx-v31-case-page .sx-v31-scene-copy .sx-v31-scene-lead{
+  font-size:clamp(14px,3.6vw,18px)!important;line-height:1.5!important;
+ }
+ .sx-v31-case-page .sx-v31-scene-notes{
+  grid-template-columns:1fr;gap:7px;padding-top:11px;
+ }
+ .sx-v31-case-page .sx-v31-scene-notes li{font-size:clamp(11px,2.9vw,14px);gap:9px;}
+ .sx-v31-case-page .sx-v31-deep-dive{
+  padding-block:clamp(50px,7svh,75px);
+ }
+ .sx-v31-case-page .sx-v31-deep-summary{
+  grid-template-columns:24px minmax(0,1fr) 24px;gap:12px;
+ }
+ .sx-v31-case-page .sx-v31-deep-label strong{
+  font-size:clamp(20px,5vw,29px);line-height:1.2;
+ }
+ .sx-v31-case-page .sx-v31-deep-content{padding-left:36px;}
+ .sx-v31-case-page .sx-v31-evidence{padding-block:65px!important;}
+ .sx-v31-case-page .sx-v31-evidence h2{
+  font-size:clamp(37px,9vw,57px)!important;
+ }
+ .sx-v31-case-page .sx-v31-case-next h2{
+  font-size:clamp(44px,10vw,72px)!important;
+ }
+}
+@media(max-width:760px) and (max-height:620px){
+ .sx-v31-case-page .sx-v31-case-scene{
+  padding-block:20px!important;gap:10px!important;
+ }
+ .sx-v31-case-page .sx-v31-scene-copy h2{font-size:clamp(27px,7vw,40px)!important;}
+ .sx-v31-case-page .sx-v31-scene-copy .sx-v31-scene-lead{
+  font-size:clamp(12px,3.4vw,15px)!important;line-height:1.42!important;
+ }
+ .sx-v31-case-page .sx-v31-scene-notes li{font-size:11px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-v31-case-page .sx-v31-deep-toggle{transition:none!important;}
+ .sx-v31-case-page [data-tour-awaiting="true"] :is(
+  .sx-v31-scene-meta,.sx-v31-scene-bottom,.sx-v31-scene-notes){visibility:visible!important;}
+}
