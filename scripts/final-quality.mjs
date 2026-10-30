@@ -2,7 +2,7 @@
 // Produces an evidence report tied to the exact Git SHA; does not claim
 // runtime/browser success from source code or a GitHub push.
 import {spawnSync} from 'node:child_process';
-import {existsSync,mkdirSync,writeFileSync} from 'node:fs';
+import {existsSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 import process from 'node:process';
 
@@ -20,18 +20,38 @@ const git=run('git',['rev-parse','HEAD']);
 const sha=git.exitCode===0?git.stdout.trim():'UNVERIFIED';
 const checkout=run('git',['status','--porcelain']);
 const dirty=checkout.exitCode!==0||checkout.stdout.trim().length>0;
+const lockTracked=run('git',['ls-files','--error-unmatch','package-lock.json']);
 const gates=[];
 const mark=(id,status,detail,extra={})=>{
  const entry={id,status,detail,...extra};gates.push(entry);
  process.stdout.write('['+status+'] '+id+': '+detail+'\n');
 };
 const lockfile=existsSync(join(cwd,'package-lock.json'));
-mark('reproducible-install',lockfile?'PASS':'FAIL',
- lockfile?'npm package-lock.json exists':'Missing npm lockfile: reproducible npm ci is not possible');
+const rootPackage=JSON.parse(readFileSync(join(cwd,'package.json'),'utf8'));
+let consistentLock=false;
+if(lockfile){
+ try{
+  const lock=JSON.parse(readFileSync(join(cwd,'package-lock.json'),'utf8'));
+  const root=lock.packages?.[''];
+  consistentLock=Number(lock.lockfileVersion)>=3&&
+   root?.name===rootPackage.name&&
+   ['dependencies','devDependencies'].every(group=>
+    JSON.stringify(Object.entries(rootPackage[group]||{}).sort())===
+    JSON.stringify(Object.entries(root[group]||{}).sort()));
+ }catch{/* malformed lockfile is a blocking failure */}
+}
+const verifiedLock=lockfile&&consistentLock&&lockTracked.exitCode===0;
+mark('reproducible-install',verifiedLock?'PASS':'FAIL',
+ !lockfile?'Missing package-lock.json':
+ !consistentLock?'Lockfile is invalid or does not match package.json':
+ lockTracked.exitCode!==0?'Lockfile is not committed to Git':
+ 'Committed npm lockfile matches package manifest');
 if(sha==='UNVERIFIED')mark('git-provenance','FAIL','Cannot resolve HEAD SHA');
 else mark('git-provenance',dirty?'FAIL':'PASS',
  dirty?'Working tree is not clean; evidence cannot be attributed to source alone':'Source revision '+sha.slice(0,12));
 const tasks=[
+ // Installed only during an explicit owner-invoked final QA, never by Worker.
+ ['dependency-install',['ci','--no-audit','--no-fund'],10*60*1000],
  ['typescript',['run','typecheck'],6*60*1000],
  ['source-contracts',['test'],6*60*1000],
  ['static-export',['run','build'],12*60*1000],
@@ -40,6 +60,15 @@ const tasks=[
  ['browser-e2e',['run','test:e2e'],14*60*1000]
 ];
 for(const [id,args,timeoutMs] of tasks){
+ if(id==='dependency-install'&&!verifiedLock){
+  mark(id,'NOT_TESTED','Cannot run npm ci without committed package-lock.json');
+  continue;
+ }
+ if(id!=='dependency-install'&&
+    gates.find(x=>x.id==='dependency-install')?.status!=='PASS'){
+  mark(id,'NOT_TESTED','Dependency installation was not verified; no tests were executed');
+  continue;
+ }
  if(id==='browser-e2e'&&gates.find(x=>x.id==='static-export')?.status!=='PASS'){
   mark(id,'NOT_TESTED','Static export failed; browser suite would not test the current revision');
   continue;
