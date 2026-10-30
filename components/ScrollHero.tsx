@@ -16,7 +16,7 @@ const slides=[
   title:<>COMPLEX IDEAS.<br/><em>CLEAR EXPERIENCES.</em></>,
   description:'A clear problem, a considered interface and the systems underneath it. Every decision serves a purpose.'},
  {index:'03',eyebrow:'HOW I THINK / THE BIG PICTURE',
-  title:<>ARCHITECTURE.<br/><em>PRODUCT. PEOPLE.</em></>,
+  title:<>ARCHITECTURE.<br/><em>PRODUCT.</em><br/><em>PEOPLE.</em></>,
   description:'From the first line of code to the full product experience, I build for people and for what comes next.'}
 ] as const;
 
@@ -70,7 +70,7 @@ export function ScrollHero(){
 
        {index===0?<h2 id="sx-work-title"><WordReveal as="span" text="I BUILD DIGITAL"/><br/><em><WordReveal as="span" text="THINGS THAT MATTER."/></em></h2>:
         <h2>{index===1?<><WordReveal as="span" text="COMPLEX IDEAS."/><br/><em><WordReveal as="span" text="CLEAR EXPERIENCES."/></em></>:
-         <><WordReveal as="span" text="ARCHITECTURE."/><br/><em><WordReveal as="span" text="PRODUCT. PEOPLE."/></em></>}</h2>}
+         <><WordReveal as="span" text="ARCHITECTURE."/><br/><em><WordReveal as="span" text="PRODUCT."/></em><br/><em><WordReveal as="span" text="PEOPLE."/></em></>}</h2>}
        <WordReveal className="sx-v8-hero-desc" text={slide.description}/>
       </div>)}
     </div>
