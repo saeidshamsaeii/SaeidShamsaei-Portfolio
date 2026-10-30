@@ -46,18 +46,18 @@ test('first-screen words appear after greeting, without any required scroll',asy
  expect(await page.evaluate(()=>scrollY)).toBeLessThan(innerHeight);
 });
 
-test('GARTAL and individual case paragraphs preserve ordered logical and real visual lines',async({page})=>{
+test('GARTAL home scenes and case chapters retain ordered real-word typography',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const chapter=page.locator('#project-gartal .sx-v14-opening');
- await expect(chapter.locator('h2 [data-reveal-line]')).toContainText('GARTAL');
- await expect(chapter.locator('p [data-reveal-line]')).toHaveCount(2);
- await expect(chapter.locator('p [data-reveal-line]').first()).toContainText('A studio at the front. A platform');
- await expect(chapter.locator('p [data-reveal-line]').last()).toContainText('underneath.');
+ const chapter=page.locator('#project-gartal');
+ await expect(chapter.locator('.sx-v30-case-slide')).toHaveCount(3);
+ await expect(chapter.locator('.sx-v30-case-copy h3 .sx-word-reveal')).toHaveCount(3);
  await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
- const paragraph=page.locator('.sx-v13-paragraph p.sx-v20-ordered').first();
+ const first=page.locator('.sx-v31-deep-item').first();
+ await first.locator('summary').click();
+ const paragraph=first.locator('.sx-v31-deep-content>p.sx-v20-ordered').first();
  expect(await paragraph.locator('[data-reveal-word]').count()).toBeGreaterThan(12);
- expect(await paragraph.locator('.sx-word-a11y').count()).toBe(1);
+ await expect(paragraph.locator('.sx-word-a11y')).toHaveCount(1);
 });
 
 test('dark and white section backgrounds remain exact',async({page})=>{
