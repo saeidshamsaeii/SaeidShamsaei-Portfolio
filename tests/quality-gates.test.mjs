@@ -99,7 +99,7 @@ test('dead mock imagery and GSAP dependencies are not part of the active website
  assert.doesNotMatch(live,/SourceProductPreview|ResponsiveMedia|SceneVisual/);
 });
 
-test('Next-generated declarations stay untracked and owner QA can provision Chromium',()=>{
+test('Next-generated declarations stay untracked and manual QA uses local Chrome or Edge',()=>{
  const ignore=read('.gitignore');
  const pkg=JSON.parse(read('package.json'));
  const tsconfig=JSON.parse(read('tsconfig.json'));
@@ -109,7 +109,10 @@ test('Next-generated declarations stay untracked and owner QA can provision Chro
  assert.ok(pkg.scripts.typecheck.includes('next typegen'));
  assert.ok(tsconfig.include.includes('next-env.d.ts'));
  assert.ok(tsconfig.include.includes('.next/dev/types/**/*.ts'));
- assert.match(runner,/Chromium could not launch/);
- assert.match(runner,/playwright','install','chromium'/);
+ assert.match(runner,/probe-local-browser\.cjs/);
+ assert.match(runner,/PLAYWRIGHT_BROWSER_CHANNEL/);
+ assert.doesNotMatch(runner,/playwright','install','chromium'/);
+ assert.match(read('playwright.config.ts'),/channel:localChannel/);
+ assert.match(read('scripts/probe-local-browser.cjs'),/\['chrome','msedge'\]/);
  assert.match(runner,/owner-invoked/);
 });
