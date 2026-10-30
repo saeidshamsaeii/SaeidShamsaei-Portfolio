@@ -675,3 +675,37 @@ test('third Linux hero scene reveals ARCHITECTURE, PRODUCT and PEOPLE on three o
  assert.match(reveal,/progress=grouped\(hero,clamp\(\(scaled-index\)\/\.72\)\)/);
  assert.match(reveal,/const before=sizes\.slice\(0,self\)/);
 });
+
+
+test('all four case-study routes share home three-beat editorial layout without tall empty narrative panels',()=>{
+ const cases=read('components/CaseStudy.tsx');
+ const data=read('data/homeStories.ts');
+ const css=read('app/quality.css');
+ const director=read('components/GuidedTour.tsx');
+ const word=read('components/WordReveal.tsx');
+ assert.match(cases,/const slides=homeStories\[id\]\.beats/);
+ assert.match(cases,/slides\.map\(\(beat,index\)=>/);
+ assert.match(cases,/sx-v31-case-scene/);
+ assert.match(cases,/data-tour-hold="case-scene"/);
+ assert.match(cases,/WordReveal as="h2" id=\{'case-scene-title-'\+\(index\+1\)\} text=\{beat\.headline\}/);
+ assert.match(cases,/WordReveal className="sx-v31-scene-lead" text=\{beat\.copy\}/);
+ assert.match(cases,/beat\.notes\.map/);
+ assert.match(cases,/story\.chapters\.map/);
+ assert.match(cases,/<details[\s\S]*?className="sx-v10-case-section sx-v31-deep-item"/);
+ assert.match(cases,/story\.references\.map/);
+ assert.match(css,/\.sx-v31-case-page \.sx-v31-case-scene\{/);
+ assert.match(css,/min-height:100svh!important/);
+ assert.match(css,/\.sx-v31-case-page \.sx-v31-deep-item\.sx-v10-case-section\{/);
+ assert.match(css,/min-height:0!important/);
+ assert.match(css,/display:block!important/);
+ assert.match(word,/caseStoryScene=host\.closest/);
+ assert.match(word,/grouped\(caseStoryScene,clamp\(Number\(caseStoryScene\.dataset\.caseSceneProgress/);
+ assert.match(word,/caseStoryScene\?\.addEventListener\('sx-case-reading-progress',update\)/);
+ assert.match(director,/const CASE_SCENE_COPY_MS=4200/);
+ assert.match(director,/const CASE_SCENE_HOLD_MS=2000/);
+ assert.match(director,/const caseSceneHold=isCaseScene\[state\.index\]/);
+ assert.match(director,/const strictCopy=horizontalHold\|\|mobileIntroCopy\|\|selectedWorkHold\|\|caseSceneHold/);
+ assert.match(director,/root\.dataset\.portfolioTourHold=mobileIntroCopy/);
+ assert.match(director,/caseSceneHold\?'case-scene'/);
+ assert.equal((data.match(/eyebrow:'0[123] \/ /g)||[]).length,12);
+});
