@@ -172,7 +172,7 @@ export default function PortfolioExperience(){
      <span className="sx-v33-about-eyebrow">THE PERSON BEHIND THE WORK / 2001 — PRESENT</span>
      <div className="sx-v33-bio-grid">
       <div className="sx-v33-bio-primary">
-       <WordReveal as="h2" id="sx-profile-title" text={"ARCHITECTURE.\\nPRODUCT.\\nPEOPLE."}/>
+       <WordReveal as="h2" id="sx-profile-title" text={"ARCHITECTURE.\nPRODUCT.\nPEOPLE."}/>
        <WordReveal className="sx-v18-about-summary" text="I'm Saeid Shamsaei, a software solutions architect and technical product lead. I turn complex ideas into software systems — connecting business needs, architecture and delivery."/>
       </div>
       <div className="sx-v33-bio-secondary">
