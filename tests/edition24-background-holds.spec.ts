@@ -11,7 +11,7 @@ test('only actual black/white block transitions are reading breaks',async({page}
    about:background('#about'),
    directory:background('#work-index'),
    workIntro:background('#selected-projects'),
-   projectFirst:background('#project-gartal .sx-v14-opening'),
+   projectFirst:background('#project-gartal .sx-v14-scene--statement'),
    projectSecond:background('#project-gartal .sx-v14-scene--statement'),
    contact:background('#contact')
   };
