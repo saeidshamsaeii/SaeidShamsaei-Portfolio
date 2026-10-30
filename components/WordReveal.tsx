@@ -159,10 +159,16 @@ export function WordReveal({text,as='p',className='',id,mode='lines',stagger=0,r
     // engine as home. On autoplay, the director advances a 4.2s reading
     // clock WITHOUT scrolling the viewport during typing. When readers
     // take manual control, their actual viewport position owns the copy.
-    const playing=document.documentElement.dataset.portfolioTour==='playing';
+    const tourMode=document.documentElement.dataset.portfolioTour;
+    const playing=tourMode==='playing';
+    // Before GuidedTour mounts, a case cover at scrollY=0 must start
+    // completely blank. Otherwise hydration shows partially completed
+    // text for one frame and rewinds it when autoplay takes over.
+    const initialAtTop=!tourMode&&window.scrollY<=12&&
+     !window.location.hash;
     progress=playing?
      grouped(caseStoryScene,clamp(Number(caseStoryScene.dataset.caseSceneProgress||'0'))):
-     viewportGroup(caseStoryScene);
+     initialAtTop?0:viewportGroup(caseStoryScene);
    }else if(workIndex){
     // Each row is a distinct beat: name and summary type in order,
     // then its underline draws, then 2s of reading before the NEXT row.
