@@ -165,19 +165,27 @@ export default function PortfolioExperience(){
   </header>
   <main>
    <SignatureOpening ready={loaded}/>
-   <ScrollHero/>
-   <section className="sx-profile sx-editorial-frame sx-v8-about sx-v18-about"
-    id="about" data-tour-stop data-tour-label="About" data-tour-duration="12"
-    data-tour-pace=".72" aria-labelledby="sx-profile-title">
+   <section className="sx-profile sx-editorial-frame sx-v8-about sx-v18-about sx-v33-biography"
+    id="about" data-tour-stop data-tour-label="About Saeid" data-tour-duration="14"
+    data-tour-pace=".72" data-tour-hold="biography" aria-labelledby="sx-profile-title">
     <div className="sx-v18-about-inner">
-     <WordReveal as="h2" id="sx-profile-title" text="Clarity in design. Precision in code."/>
-     <WordReveal className="sx-v18-about-summary"
-      text="I build thoughtful digital products — from architecture to the experience people use."/>
+     <span className="sx-v33-about-eyebrow">THE PERSON BEHIND THE WORK / 2001 — PRESENT</span>
+     <WordReveal as="h2" id="sx-profile-title" text={"ARCHITECTURE.\nPRODUCT.\nPEOPLE."}/>
+     <WordReveal className="sx-v18-about-summary" text="I'm Saeid Shamsaei, a software solutions architect and technical product lead. I turn complex ideas into clear software systems — connecting business needs, product decisions, architecture and delivery."/>
+     <WordReveal className="sx-v33-bio-copy" text="Over five years of independent product work, I've helped shape SaaS platforms, commerce systems, specialized digital workflows and corporate web experiences. I believe great engineering starts with understanding people, defining the right boundaries and building something useful enough to last."/>
+     <div className="sx-v33-about-facts" aria-label="Professional profile">
+      <div><span>BORN</span><strong>18 AUG 2001</strong></div>
+      <div><span>EXPERIENCE</span><strong>5 YEARS</strong></div>
+      <div><span>EDUCATION</span><strong>B.E. COMPUTER ENGINEERING</strong><small>Babol Noshirvani University of Technology</small></div>
+      <div><span>ENGLISH</span><strong>IELTS 7</strong></div>
+     </div>
+     <WordReveal className="sx-v33-bio-copy" text="Alongside independent software architecture and product leadership, I serve as Executive Manager at Qab Novin Cultural & Arts Institute. My work brings technical strategy and practical execution together."/>
      <div className="sx-v18-keywords" aria-label="Specialties">
-      <WordReveal as="span" text="Architecture"/><WordReveal as="span" text="Engineering"/><WordReveal as="span" text="Experience"/>
+      <WordReveal as="span" text="SaaS Architecture"/><WordReveal as="span" text="Product Leadership"/><WordReveal as="span" text="AI-assisted Delivery"/>
      </div>
     </div>
    </section>
+   <ScrollHero/>
    <SelectedWorkIndex/>
    <div className="sx-work-intro sx-v18-work-intro" id="selected-projects"
     data-tour-stop data-tour-label="Selected projects" data-tour-duration="5"
