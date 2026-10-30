@@ -47,7 +47,7 @@
 /* Accessible, image-free project summaries. Only verified public launches link out. */
 .sx-v31-case-page .sx-v32-project-actions{display:flex;align-items:center;flex-wrap:wrap;gap:16px 28px;margin-top:35px}
 .sx-v31-case-page .sx-v32-summary-button,
-.sx-v31-case-page .sx-v32-project-actions>a{appearance:none;background:transparent;border:1px solid #fff;color:#fff;padding:15px 20px;cursor:pointer;font:600 12px/1.35 inherit;letter-spacing:.065em;text-decoration:none}
+.sx-v31-case-page .sx-v32-project-actions>a{appearance:none;background:transparent;border:1px solid #fff;color:#fff;padding:15px 20px;cursor:pointer;font-size:12px;font-weight:600;line-height:1.35;font-family:inherit;letter-spacing:.065em;text-decoration:none}
 .sx-v31-case-page .sx-v32-project-actions>a:hover,
 .sx-v31-case-page .sx-v32-summary-button:hover{background:#fff;color:#000}
 .sx-v31-case-page .sx-v32-coming-soon{font-size:12px;letter-spacing:.08em;color:#aaa}
@@ -72,3 +72,7 @@ html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"
 html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-kicker,
 html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-cover-footer{visibility:hidden!important}
 @media(max-width:760px){.sx-v32-project-modal{max-height:90dvh}.sx-v32-modal-cta{flex-direction:column}.sx-v31-case-page .sx-v32-project-actions{align-items:stretch;flex-direction:column}}
+
+.sx-ei .sx-ei-project-links button,.sx-ei .sx-ei-summary-action{font:inherit;background:transparent;color:inherit;border:1px solid currentColor;padding:12px 16px;cursor:pointer;text-align:left}
+.sx-ei .sx-ei-project-links button:hover,.sx-ei .sx-ei-summary-action:hover{background:#fff;color:#000}
+.sx-ei .sx-ei-project-links button:focus-visible,.sx-ei .sx-ei-summary-action:focus-visible{outline:2px solid currentColor;outline-offset:4px}
