@@ -334,6 +334,16 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
     // physical scroll pace, not from restarting a CSS easing on each panel.
     scriptedScroll=state.start+(state.end-state.start)*fraction;
     window.scrollTo({top:scriptedScroll,behavior:'instant'});
+    // Small screens may need a taller biography. Read its opening lines
+    // while the camera travels through it, never hide those lines until
+    // after the camera has passed them.
+    if(isBiography[state.index]&&fraction<1){
+     const stop=stops[state.index].element;
+     if(stop.getBoundingClientRect().height>window.innerHeight+12){
+      stop.dataset.bioReadingProgress=String(clamp(fraction*.72));
+      stop.dispatchEvent(new Event('sx-biography-reading-progress'));
+     }
+    }
     if(fraction>=1){
      if(state.index===stops.length-1){
       setPlayback('finished');onExitRef.current();return;
@@ -352,7 +362,9 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
       if(!state.arrivedAt)state.arrivedAt=time;
       if(biographyHold){
        const stop=stops[state.index].element;
-       const amount=clamp((time-state.arrivedAt)/BIOGRAPHY_COPY_MS);
+       const tall=stop.getBoundingClientRect().height>window.innerHeight+12;
+       const initial=tall?.72:0;
+       const amount=clamp(initial+(1-initial)*(time-state.arrivedAt)/BIOGRAPHY_COPY_MS);
        stop.dataset.bioReadingProgress=String(amount);
        stop.dispatchEvent(new Event('sx-biography-reading-progress'));
       }
