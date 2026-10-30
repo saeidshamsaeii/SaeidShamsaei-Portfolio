@@ -166,22 +166,24 @@ export default function PortfolioExperience(){
   <main>
    <SignatureOpening ready={loaded}/>
    <section className="sx-profile sx-editorial-frame sx-v8-about sx-v18-about sx-v33-biography"
-    id="about" data-tour-stop data-tour-label="About Saeid" data-tour-duration="14"
+    id="about" data-tour-stop data-tour-label="About Saeid" data-tour-duration="12"
     data-tour-pace=".72" data-tour-hold="biography" aria-labelledby="sx-profile-title">
     <div className="sx-v18-about-inner">
      <span className="sx-v33-about-eyebrow">THE PERSON BEHIND THE WORK / 2001 — PRESENT</span>
-     <WordReveal as="h2" id="sx-profile-title" text={"ARCHITECTURE.\nPRODUCT.\nPEOPLE."}/>
-     <WordReveal className="sx-v18-about-summary" text="I'm Saeid Shamsaei, a software solutions architect and technical product lead. I turn complex ideas into clear software systems — connecting business needs, product decisions, architecture and delivery."/>
-     <WordReveal className="sx-v33-bio-copy" text="Over five years of independent product work, I've helped shape SaaS platforms, commerce systems, specialized digital workflows and corporate web experiences. I believe great engineering starts with understanding people, defining the right boundaries and building something useful enough to last."/>
-     <div className="sx-v33-about-facts" aria-label="Professional profile">
-      <div><span>BORN</span><strong>18 AUG 2001</strong></div>
-      <div><span>EXPERIENCE</span><strong>5 YEARS</strong></div>
-      <div><span>EDUCATION</span><strong>B.E. COMPUTER ENGINEERING</strong><small>Babol Noshirvani University of Technology</small></div>
-      <div><span>ENGLISH</span><strong>IELTS 7</strong></div>
-     </div>
-     <WordReveal className="sx-v33-bio-copy" text="Alongside independent software architecture and product leadership, I serve as Executive Manager at Qab Novin Cultural & Arts Institute. My work brings technical strategy and practical execution together."/>
-     <div className="sx-v18-keywords" aria-label="Specialties">
-      <WordReveal as="span" text="SaaS Architecture"/><WordReveal as="span" text="Product Leadership"/><WordReveal as="span" text="AI-assisted Delivery"/>
+     <div className="sx-v33-bio-grid">
+      <div className="sx-v33-bio-primary">
+       <WordReveal as="h2" id="sx-profile-title" text={"ARCHITECTURE.\\nPRODUCT.\\nPEOPLE."}/>
+       <WordReveal className="sx-v18-about-summary" text="I'm Saeid Shamsaei, a software solutions architect and technical product lead. I turn complex ideas into software systems — connecting business needs, architecture and delivery."/>
+      </div>
+      <div className="sx-v33-bio-secondary">
+       <WordReveal className="sx-v33-bio-copy" text="Five years of independent work across SaaS, e-commerce and specialist platforms. I focus on useful products, clear technical decisions and thoughtful execution."/>
+       <div className="sx-v33-about-facts" aria-label="Professional profile">
+        <div><span>BORN</span><strong>18 AUG 2001</strong></div>
+        <div><span>EXPERIENCE</span><strong>5 YEARS</strong></div>
+        <div><span>EDUCATION</span><strong>B.E. COMPUTER ENGINEERING</strong><small>Babol Noshirvani University of Technology</small></div>
+       </div>
+       <div className="sx-v33-specialties">SaaS Architecture <span>·</span> Product Leadership <span>·</span> AI-assisted Delivery</div>
+      </div>
      </div>
     </div>
    </section>
