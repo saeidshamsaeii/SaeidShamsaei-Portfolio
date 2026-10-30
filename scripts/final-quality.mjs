@@ -90,6 +90,37 @@ for(const [id,args,timeoutMs] of tasks){
   mark(id,'NOT_TESTED','Static export failed; browser suite would not test the current revision');
   continue;
  }
+ if(id==='browser-e2e'){
+  // This setup is done ONLY for an owner-invoked qa:final, never in Worker.
+  // Browser suites all fail when the matching Chromium binary is absent;
+  // probe the actual headless launch before spending minutes on E2E tests.
+  const launchScript="const {chromium}=require('@playwright/test'); chromium.launch({headless:true}).then(b=>b.close()).catch(e=>{console.error(String(e));process.exitCode=1})";
+  const probe=run(process.execPath,['-e',launchScript],30000);
+  if(probe.exitCode!==0||probe.error){
+   process.stdout.write('Chromium could not launch. Attempting owner-invoked Playwright browser setup...\\n');
+   const install=run('npm',['exec','--','playwright','install','chromium'],8*60*1000);
+   if(install.exitCode!==0||install.error){
+    mark(id,'FAIL','Chromium setup failed; browser tests were not run',{
+     exitCode:install.exitCode,
+     stdoutTail:install.stdout.slice(-12000),
+     stderrTail:(probe.stderr+'\\n'+install.stderr).slice(-12000)
+    });
+    process.stdout.write('Browser setup diagnostic:\\n'+
+     (probe.stderr+'\\n'+install.stdout+'\\n'+install.stderr).slice(-6500)+'\\n');
+    continue;
+   }
+   const retry=run(process.execPath,['-e',launchScript],30000);
+   if(retry.exitCode!==0||retry.error){
+    mark(id,'FAIL','Chromium installed but could not launch',{
+     exitCode:retry.exitCode,stdoutTail:retry.stdout.slice(-12000),
+     stderrTail:retry.stderr.slice(-12000)
+    });
+    process.stdout.write('Chromium launch diagnostic:\\n'+retry.stderr.slice(-6500)+'\\n');
+    continue;
+   }
+   process.stdout.write('Chromium headless launch verified; continuing E2E tests.\\n');
+  }
+ }
  process.stdout.write('Running '+id+' (manual final QA)...\n');
  const t0=Date.now();
  const result=run('npm',args,timeoutMs);
