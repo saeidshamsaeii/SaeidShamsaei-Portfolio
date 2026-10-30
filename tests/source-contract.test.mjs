@@ -663,3 +663,14 @@ test('intro actions appear only after the full typed lead, then both viewports h
  assert.doesNotMatch(director,/if\(introMobile\)\{[\s\S]{0,140}Advance only after BOTH/);
  assert.match(layout,/\.sx-v18-site #intro\.sx-v19-cover \.sx-v18-cover-links\{/);
 });
+
+test('third Linux hero scene reveals ARCHITECTURE, PRODUCT and PEOPLE on three ordered lines',()=>{
+ const hero=read('components/ScrollHero.tsx');
+ const reveal=read('components/WordReveal.tsx');
+ assert.match(hero,/text="ARCHITECTURE\."\/>\s*<br\/>\s*<em>/);
+ assert.match(hero,/text="PRODUCT\."\/>\s*<\/em><br\/>\s*<em>/);
+ assert.match(hero,/text="PEOPLE\."\/>\s*<\/em>/);
+ assert.doesNotMatch(hero,/text="PRODUCT\. PEOPLE\."/);
+ assert.match(reveal,/progress=grouped\(hero,clamp\(\(scaled-index\)\/\.72\)\)/);
+ assert.match(reveal,/const before=sizes\.slice\(0,self\)/);
+});
