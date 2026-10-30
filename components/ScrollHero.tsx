@@ -10,13 +10,10 @@ import {WordReveal} from '@/components/WordReveal';
  */
 const slides=[
  {index:'01',eyebrow:'SAEID SHAMSAEI / SOFTWARE ARCHITECT & PRODUCT ENGINEER',
-  title:<>I BUILD DIGITAL<br/><em>THINGS THAT MATTER.</em></>,
   description:'I design useful digital products — thoughtful experiences built on dependable engineering.'},
  {index:'02',eyebrow:'MY PURPOSE / CLARITY BEFORE COMPLEXITY',
-  title:<>COMPLEX IDEAS.<br/><em>CLEAR EXPERIENCES.</em></>,
   description:'A clear problem, a considered interface and the systems underneath it. Every decision serves a purpose.'},
  {index:'03',eyebrow:'HOW I THINK / THE BIG PICTURE',
-  title:<>ARCHITECTURE.<br/><em>PRODUCT.</em><br/><em>PEOPLE.</em></>,
   description:'From the first line of code to the full product experience, I build for people and for what comes next.'}
 ] as const;
 
