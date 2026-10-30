@@ -101,8 +101,9 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
       aria-label={project.brand+' / '+beat.eyebrow+' / slide '+(slideIndex+1)+' of 3'}>
       {slideIndex===0&&<div className="sx-v35-project-art" aria-hidden="true">
        <img
-        src={'/assets/projects/'+project.id+'.webp'}
-        width={832} height={468} loading="lazy" decoding="async"
+        src={'/assets/hires/project-'+project.id+'.webp'}
+        width={1122} height={1402} loading="lazy" decoding="async"
+        sizes="(max-width: 760px) 100vw, (max-width: 1440px) 58vw, 850px"
         alt="" />
       </div>}
       <div className="sx-v30-case-meta">
