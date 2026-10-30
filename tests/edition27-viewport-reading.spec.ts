@@ -145,7 +145,7 @@ test('mobile opens with portrait above copy in ONE section, waits 2s, types, the
  // a large empty black strip.
  expect(imageLayout.firstLineTop-imageLayout.portraitEnd).toBeGreaterThanOrEqual(-2);
  expect(imageLayout.firstLineTop-imageLayout.portraitEnd).toBeLessThanOrEqual(18);
- expect(imageLayout.imageTransform).not.toBe('none');
+ expect(imageLayout.imageTransform).toBe('none');
  expect(imageLayout.introHeight).toBeLessThan(844);
  const initialY=await page.evaluate(()=>scrollY);
  expect(initialY).toBeLessThanOrEqual(2);
