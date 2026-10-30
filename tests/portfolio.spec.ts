@@ -100,16 +100,17 @@ test('unwritten lines begin fully invisible and reveal in order as native scroll
  await expect.poll(()=>future.evaluate(el=>Number(getComputedStyle(el).opacity)),{timeout:5000}).toBeGreaterThan(.5);
 });
 
-test('case pages are text-only with source links and auto-tour',async({page})=>{
+test('case pages remain text-only, with readable chapters and summary dialogs',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  for(const id of ids){
   await page.goto('/work/'+id+'/',{waitUntil:'domcontentloaded'});
   const body=page.locator('.sx-v10-case-page');
-  await expect(body.locator('.sx-v10-case-section')).toHaveCount(6);
-  await expect(body.locator('.sx-v10-case-section .sx-v13-paragraph>p')).toHaveCount(18);
+  await expect(body.locator('details.sx-v10-case-section')).toHaveCount(6);
+  await expect(body.locator('details.sx-v10-case-section .sx-v31-deep-content>p')).toHaveCount(18);
   await expect(body.locator('img,canvas,video')).toHaveCount(0);
   await expect(body.locator('.sx-source-app')).toHaveCount(0);
-  await expect(body.locator('.sx-v10-reference-list>a').first()).toHaveAttribute('href',/github.com/);
+  await expect(body.locator('.sx-v10-reference-list>a')).toHaveCount(0);
+  await expect(body.getByRole('button',{name:/READ PROJECT SUMMARY/})).toHaveCount(1);
   await expect(body.locator('.sx-v10-case-next')).toHaveCount(1);
  }
 });
