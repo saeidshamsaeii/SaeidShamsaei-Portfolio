@@ -13,7 +13,8 @@
     "test": "node --test tests/source-contract.test.mjs tests/quality-gates.test.mjs tests/site-release.test.mjs tests/static-server.test.mjs",
     "check": "npm run typecheck && npm test && npm run build",
     "qa:css": "node scripts/css-audit.mjs",
-    "qa:browser": "playwright test tests/quality-acceptance.spec.ts"
+    "qa:browser": "playwright test tests/quality-acceptance.spec.ts",
+    "qa:final": "node scripts/final-quality.mjs"
   },
   "dependencies": {
     "next": "^16.0.0",
