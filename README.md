@@ -63,8 +63,9 @@ npm run qa:browser
 npm run qa:final
 ```
 
-This runs the existing checks sequentially (TypeScript, source tests, static
-export, CSS inventory, image audit and exported-site Playwright), then writes
+This first checks that a **committed npm lockfile matches package.json**, then
+runs `npm ci` and the existing checks sequentially (TypeScript, source tests,
+static export, CSS inventory, image audit and exported-site Playwright), then writes
 `reports/quality/acceptance-<SHA>.json` with individual exit codes and log
 tails. Playwright also captures twelve real-page review images under
 `reports/quality/screenshots/<SHA>/`; these are evidence for human visual
