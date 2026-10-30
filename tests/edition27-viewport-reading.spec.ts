@@ -334,6 +334,7 @@ test('black Selected Work freezes only AFTER all nine word blocks finish and fit
 });
 
 test('Selected Work copy rises and fades only while the black section departs',async({page})=>{
+ test.setTimeout(65000);
  await page.setViewportSize({width:1440,height:900});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
@@ -356,7 +357,13 @@ test('Selected Work copy rises and fades only while the black section departs',a
  expect(still.headingOpacity).toBe(1);
  expect(still.rowOpacity).toBe(1);
 
+ // An unfinished Selected Work must remain fully readable even on scroll.
  await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+130);
+ await expect.poll(async()=>(await read()).progress).toBe(0);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top);
+ await expect(section).toHaveAttribute('data-work-reveal-progress','1',{timeout:36000});
+ // Only well into departure does the old upward reveal fade begin.
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+450);
  await expect.poll(async()=>(await read()).progress).toBeGreaterThan(.3);
  const departing=await read();
  expect(departing.headingOpacity).toBeLessThan(still.headingOpacity);
