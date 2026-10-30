@@ -98,3 +98,19 @@ test('dead mock imagery and GSAP dependencies are not part of the active website
  const live=read('components/PortfolioExperience.tsx');
  assert.doesNotMatch(live,/SourceProductPreview|ResponsiveMedia|SceneVisual/);
 });
+
+test('Next-generated declarations stay untracked and owner QA can provision Chromium',()=>{
+ const ignore=read('.gitignore');
+ const pkg=JSON.parse(read('package.json'));
+ const tsconfig=JSON.parse(read('tsconfig.json'));
+ const runner=read('scripts/final-quality.mjs');
+ assert.match(ignore,/^next-env\.d\.ts$/m);
+ assert.equal(fs.existsSync(path.join(root,'next-env.d.ts')),false,
+  'generated Next.js declaration should not be checked into the repository');
+ assert.ok(pkg.scripts.typecheck.includes('next typegen'));
+ assert.ok(tsconfig.include.includes('next-env.d.ts'));
+ assert.ok(tsconfig.include.includes('.next/dev/types/**/*.ts'));
+ assert.match(runner,/Chromium could not launch/);
+ assert.match(runner,/playwright','install','chromium'/);
+ assert.match(runner,/owner-invoked/);
+});
