@@ -12,6 +12,8 @@ const BACKGROUND_PAUSE_MS=2000;
 const INTRO_COPY_HOLD_MS=2000;
 const HORIZONTAL_FRAME_PAUSE_MS=2000;
 const SELECTED_WORK_HOLD_MS=2000;
+const CASE_SCENE_COPY_MS=4200;
+const CASE_SCENE_HOLD_MS=2000;
 const COPY_SETTLE_MAX_MS=2600;
 
 function findStops():Stop[]{
@@ -119,6 +121,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   const isHorizontalFrame=stops.map(stop=>
    stop.element.dataset.tourHold==='horizontal-frame'
   );
+  const isCaseScene=stops.map(stop=>stop.element.dataset.tourHold==='case-scene');
   // While the automatic director reads the current block, the NEXT block
   // is a blank canvas: its copy cannot peek into the viewport below.
   // This is removed immediately for manual scrolling and reduced motion.
@@ -181,6 +184,11 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.arrivedAt=0;
    state.holdStartedAt=null;
    delete root.dataset.portfolioTourHold;
+   if(isCaseScene[index]){
+    // Never start typing the NEXT case study scene before its camera arrives.
+    stops[index].element.dataset.caseSceneProgress='0';
+    stops[index].element.dispatchEvent(new Event('sx-case-reading-progress'));
+   }
    state.start=from;
    state.end=target(index);
    // Desktop waits for the side-by-side copy to finish, then holds for 2s.
@@ -315,6 +323,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
       setPlayback('finished');onExitRef.current();return;
      }
      const horizontalHold=isHorizontalFrame[state.index];
+     const caseSceneHold=isCaseScene[state.index];
      const backgroundHold=hasBackgroundChange[state.index];
      // This black one-screen directory always gets its OWN reading hold,
      // even if a future theme change removes the white following section.
@@ -322,11 +331,19 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      // Mobile copy waits for actual typing completion, not another two-
      // second photo hold; the photo pause already happened before travel.
      const mobileIntroCopy=state.index===0&&introMobile&&Boolean(introCover);
-     if(horizontalHold||backgroundHold||mobileIntroCopy||selectedWorkHold){
+     if(horizontalHold||backgroundHold||mobileIntroCopy||selectedWorkHold||caseSceneHold){
       if(!state.arrivedAt)state.arrivedAt=time;
+      if(caseSceneHold){
+       // Same ordered WordReveal typing as the homepage, but in a fixed
+       // reading frame: title finishes before description, then hold 2s.
+       const amount=clamp((time-state.arrivedAt)/CASE_SCENE_COPY_MS);
+       const stop=stops[state.index].element;
+       stop.dataset.caseSceneProgress=String(amount);
+       stop.dispatchEvent(new Event('sx-case-reading-progress'));
+      }
       // Wait for genuine text completion on the mobile intro and
       // all strict reading stages; no arbitrary timeout for the copy.
-      const strictCopy=horizontalHold||mobileIntroCopy||selectedWorkHold;
+      const strictCopy=horizontalHold||mobileIntroCopy||selectedWorkHold||caseSceneHold;
       const workFullyFramed=!selectedWorkHold||(()=>{
        const rect=stops[state.index].element.getBoundingClientRect();
        // Short landscape windows cannot fit the whole section: never
@@ -346,10 +363,12 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
         state.holdStartedAt=time;
         root.dataset.portfolioTourHold=mobileIntroCopy?'intro-copy':
          selectedWorkHold?'selected-work':
+         caseSceneHold?'case-scene':
          horizontalHold?'horizontal-frame':'background-change';
        }
        const duration=mobileIntroCopy?0:
         selectedWorkHold?SELECTED_WORK_HOLD_MS:
+        caseSceneHold?CASE_SCENE_HOLD_MS:
         horizontalHold?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS;
        if(time-state.holdStartedAt>=duration){
         delete root.dataset.portfolioTourHold;
