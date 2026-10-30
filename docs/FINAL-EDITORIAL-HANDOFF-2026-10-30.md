@@ -54,3 +54,10 @@ git status --short
 ```
 
 - Updated manual QA prints the failed stdout/stderr and dirty Git paths directly to console and stores them in the JSON evidence file. The Windows Node shell deprecation warning is addressed without relaxing any release gates.
+
+## Owner QA browser resolution — 30 October 2026
+- On the owner's Windows host, manual QA at revision f69c933 passed all eight non-browser gates. The sole failed gate was `browser-e2e`: download of Playwright's bundled Chromium was refused with HTTP 403 (`service is not available in your location`). These browser tests were **not run**; the site was not shown to fail 100+ independent interactions.
+- The browser strategy now probes **already installed Google Chrome** then **Microsoft Edge**. Official Playwright browser channels (`chrome`, `msedge`) are used by `playwright.config.ts`, with the detected channel passed to the owner-invoked test process. No download or mutation of installed browsers occurs.
+- If neither installed browser launches, QA fails with a specific local-browser diagnostic. Obtain or repair Chrome or Edge through your usual trusted installation channel rather than retrying the blocked Playwright CDN. Never bypass the missing-browser failure by marking tests PASS.
+- Once the owner pulls this commit, use `npm run qa:final`. Do not restore the old generated-file stash unless explicitly needed, because it predates the clean Next.js generated-type policy. Review `reports/quality/acceptance-<sha>.json` for exact SHA-pinned results.
+- A passed browser suite still requires a visual review and owner-approved HTTPS production domain before `NEXT_PUBLIC_SITE_READY=true`.
