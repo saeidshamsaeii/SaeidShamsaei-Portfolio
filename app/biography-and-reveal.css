@@ -1,15 +1,49 @@
-/* Biography directly after photographic hero: editorial, no image cards. */
-.sx-v18-site .sx-v33-biography{background:#fff!important;color:#000!important}
-.sx-v18-site .sx-v33-biography .sx-v18-about-inner{max-width:1200px}
-.sx-v18-site .sx-v33-about-eyebrow{display:block;font-size:11px;letter-spacing:.13em;margin-bottom:clamp(20px,4vh,48px);color:#4d4d4d}
-.sx-v18-site .sx-v33-biography #sx-profile-title{white-space:pre-line;letter-spacing:-.075em!important;line-height:1.04!important}
-.sx-v18-site .sx-v33-bio-copy{max-width:850px;font-size:clamp(17px,2.1vw,27px);line-height:1.5;margin-top:clamp(20px,3vh,38px)}
-.sx-v18-site .sx-v33-about-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 34px;margin-block:clamp(25px,6vh,70px);padding-block:25px;border-block:1px solid #bbb;width:100%}
-.sx-v18-site .sx-v33-about-facts>div{display:flex;flex-direction:column;gap:6px}
-.sx-v18-site .sx-v33-about-facts span{font:600 10px/1.4 Arial,sans-serif;letter-spacing:.12em;color:#666}
-.sx-v18-site .sx-v33-about-facts strong{font-size:clamp(16px,2vw,25px);font-weight:600;letter-spacing:-.03em}
-.sx-v18-site .sx-v33-about-facts small{font-size:12px;line-height:1.5;color:#555}
-@media(max-width:760px){.sx-v18-site .sx-v33-about-facts{grid-template-columns:1fr 1fr;gap:26px 15px}.sx-v18-site .sx-v33-about-facts strong{font-size:15px}}
+/* Single framed biography: one viewport on normal screens, naturally expandable on short/mobile viewports. */
+.sx-v18-site #about.sx-v33-biography{
+ box-sizing:border-box!important;
+ min-height:calc(100svh - var(--sx-intro-header-height,72px))!important;
+ height:calc(100svh - var(--sx-intro-header-height,72px))!important;
+ max-height:none!important;
+ padding:clamp(18px,3svh,36px) clamp(18px,5vw,88px)!important;
+ display:flex!important;align-items:center!important;overflow:hidden!important;
+ background:#fff!important;color:#000!important;
+}
+.sx-v18-site #about.sx-v33-biography .sx-v18-about-inner{
+ box-sizing:border-box;width:100%;max-width:1320px!important;
+ height:auto!important;min-height:0!important;margin:auto!important;
+ padding:0!important;display:flex!important;flex-direction:column!important;
+ gap:clamp(15px,2svh,25px)!important;
+}
+.sx-v18-site .sx-v33-about-eyebrow{display:block;margin:0!important;font-size:clamp(9px,.8vw,11px);letter-spacing:.13em;color:#555}
+.sx-v18-site .sx-v33-bio-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:clamp(25px,5vw,95px);width:100%;align-items:center}
+.sx-v18-site .sx-v33-bio-primary,.sx-v18-site .sx-v33-bio-secondary{min-width:0;display:flex;flex-direction:column;gap:clamp(14px,2svh,28px)}
+.sx-v18-site #about #sx-profile-title{white-space:pre-line;margin:0!important;font-size:clamp(39px,5.5vw,102px)!important;line-height:.99!important;letter-spacing:-.075em!important}
+.sx-v18-site #about .sx-v18-about-summary{margin:0!important;font-size:clamp(17px,1.65vw,27px)!important;line-height:1.4!important}
+.sx-v18-site #about .sx-v33-bio-copy{margin:0!important;max-width:62ch;font-size:clamp(14px,1.18vw,19px)!important;line-height:1.55!important}
+.sx-v18-site #about .sx-v33-about-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,2svh,22px);border-block:1px solid #aaa;margin:0!important;padding:clamp(14px,2svh,24px) 0!important}
+.sx-v18-site #about .sx-v33-about-facts>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sx-v18-site #about .sx-v33-about-facts span{font:600 10px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555}
+.sx-v18-site #about .sx-v33-about-facts strong{font-size:clamp(14px,1.35vw,20px);line-height:1.3;letter-spacing:-.03em}
+.sx-v18-site #about .sx-v33-about-facts small{font-size:11px;line-height:1.35}
+.sx-v18-site #about .sx-v33-specialties{font-size:clamp(11px,1vw,14px);line-height:1.5;letter-spacing:.02em}
+.sx-v18-site #about .sx-v33-specialties span{padding:0 7px;color:#888}
+@media(max-width:900px){
+ .sx-v18-site #about.sx-v33-biography{height:auto!important;min-height:calc(100svh - var(--sx-intro-header-height,72px))!important;overflow:visible!important;padding-block:clamp(35px,6svh,75px)!important}
+ .sx-v18-site .sx-v33-bio-grid{grid-template-columns:1fr;gap:clamp(25px,4svh,46px)}
+ .sx-v18-site #about #sx-profile-title{font-size:clamp(46px,9vw,78px)!important}
+ .sx-v18-site #about .sx-v33-about-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:560px){
+ .sx-v18-site #about.sx-v33-biography{padding:32px 20px!important}
+ .sx-v18-site #about #sx-profile-title{font-size:clamp(39px,11vw,62px)!important}
+ .sx-v18-site #about .sx-v18-about-summary{font-size:clamp(17px,4.3vw,21px)!important}
+ .sx-v18-site #about .sx-v33-about-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-height:690px) and (min-width:901px){
+ .sx-v18-site #about.sx-v33-biography{height:auto!important;min-height:calc(100svh - var(--sx-intro-header-height,72px))!important;overflow:visible!important}
+ .sx-v18-site #about #sx-profile-title{font-size:clamp(38px,4.4vw,75px)!important}
+}
+
 /* No notes / separators / next-step copy until this slide's real WordReveal is finished.
    This fixes early bottom text shown before the actual heading at localhost:3200. */
 @media(scripting:enabled) and (prefers-reduced-motion:no-preference){
