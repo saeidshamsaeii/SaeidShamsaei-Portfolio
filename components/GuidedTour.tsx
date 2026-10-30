@@ -65,6 +65,9 @@ function scrollDestination(stop:Stop){
  // Stop at its actual TOP, not at the last row's centerline: otherwise the
  // headline and first project are pushed above the visible reading frame.
  if(stop.element.id==='work-index')return top;
+ // A case-study cover is the opening reading frame, even when its height
+ // is a little shorter than the visual viewport below navigation.
+ if(stop.element.classList.contains('sx-v31-case-cover'))return Math.max(0,top);
  // The owner name, surname and concise role are an ordered introduction,
  // not three unrelated reveals rushed past by the automatic director.
  if(stop.element.id==='intro'){
@@ -104,6 +107,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   let scriptedScroll=-1, touchActive=false, disposed=false;
   const introMobile=window.matchMedia('(max-width:760px)').matches;
   const introCover=stops.find(stop=>stop.element.id==='intro')?.element;
+  const caseCover=stops.find(stop=>stop.element.classList.contains('sx-v31-case-cover'))?.element;
   const revealMobileCopy=()=>{
    if(!introMobile||!introCover||introCover.dataset.mobilePhotoPhase==='copy')return;
    introCover.dataset.mobilePhotoPhase='copy';
@@ -387,7 +391,10 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
   // At the top of the homepage the intro is a reading stop even though its
   // new (stationary) scroll destination equals current scrollY.
   const first=introCover&&window.scrollY<=12?
-   stops.findIndex(stop=>stop.element===introCover):findNextFromScroll();
+   stops.findIndex(stop=>stop.element===introCover):
+   caseCover&&window.scrollY<=12?
+   stops.findIndex(stop=>stop.element===caseCover):
+   findNextFromScroll();
   if(first>=0){goTo(first);scriptedScroll=window.scrollY;}
   else {setPlayback('finished');onExitRef.current();return;}
   window.addEventListener('wheel',manualInput,{passive:true});
