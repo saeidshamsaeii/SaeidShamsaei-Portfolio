@@ -58,7 +58,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
      <ul className="sx-v31-scene-notes" aria-label="Specific project facts">
       {beat.notes.map((note,i)=><li key={note}>
        <span aria-hidden="true">{String(i+1).padStart(2,'0')}</span>
-       <span>{note}</span>
+       <WordReveal as="span" className="sx-v32-note-text" text={note}/>
       </li>)}
      </ul>
     </div>
@@ -76,7 +76,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
    <div className="sx-v31-deep-intro">
     <span className="sx-v31-kicker">ENGINEERING NOTES / 06 CHAPTERS</span>
     <WordReveal as="h2" id="case-deep-title" text="Behind the decisions."/>
-    <p>Explore the implementation context, technical trade-offs and evidence behind the three-part story. Open any chapter to read the full explanation.</p>
+    <WordReveal text="Explore the implementation context, technical trade-offs and evidence behind the three-part story. Open any chapter to read the full explanation."/>
    </div>
    <div className="sx-v31-deep-list">
     {story.chapters.map((chapter,i)=><details
@@ -91,7 +91,7 @@ export default function CaseStudy({id}:{id:ProjectId}){
       <span className="sx-v31-deep-toggle" aria-hidden="true">+</span>
      </summary>
      <div className="sx-v31-deep-content">
-      {chapter.paragraphs.map((paragraph,j)=><p key={j}>{paragraph}</p>)}
+      {chapter.paragraphs.map((paragraph,j)=><WordReveal key={j} text={paragraph}/>)}
       <div className="sx-v31-deep-details">
        <span>ENGINEERING POINTS</span>
        <ul>{chapter.details.map(detail=><li key={detail}>{detail}</li>)}</ul>
@@ -107,8 +107,8 @@ export default function CaseStudy({id}:{id:ProjectId}){
    <span className="sx-v31-kicker">SOURCE / EVIDENCE & DELIVERY</span>
    <WordReveal as="h2" id="case-evidence-title" text="What is actually verified."/>
    <WordReveal className="sx-v31-evidence-outcome" text={p.outcome.en}/>
-   <p>These references document the code and architectural decisions. Production results and customer outcomes require separate verification.</p>
-   <p className="sx-v10-source-line">Source context: {p.source}</p>
+   <WordReveal text="These references document the code and architectural decisions. Production results and customer outcomes require separate verification."/>
+   <WordReveal className="sx-v10-source-line" text={"Source context: "+p.source}/>
    <div className="sx-v10-reference-list">{story.references.map(reference=><a key={reference.href}
     target="_blank" rel="noreferrer noopener" href={reference.href}>{reference.label} ↗</a>)}</div>
    <Link className="sx-ei-case-link" href={'/engineering/#evidence-'+p.id}>INSPECT ARCHITECTURE DECISIONS ↗</Link>
