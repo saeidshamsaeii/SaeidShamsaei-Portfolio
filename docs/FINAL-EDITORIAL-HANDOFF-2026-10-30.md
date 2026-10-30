@@ -68,3 +68,12 @@ git status --short
 - The captured output confirms two obsolete Playwright selectors: `#project-gartal-origin` (the current scene is `#project-gartal-slide-2`) and `.sx-v18-case-details` (now `details.sx-v31-deep-item`). Other outdated single-scene counts were found in legacy tests and updated without deleting coverage.
 - `qa:final` now streams E2E progress, maintains non-zero failure semantics and permits up to 30 minutes for the 97-test suite on the owner's low-resource Windows machine. Chrome/Edge fallback remains intact.
 - Re-run only via the manual owner command `npm run qa:final` after pulling main. If functional tests fail, preserve the actual per-test error messages, screenshots and traces in `test-results/` instead of assuming they are only selector issues.
+
+## Final media framing and Selected Work scroll fix
+- The first scene of every GARTAL / AI Factory / DigiRezhim / Petiwoo chapter now uses the existing `public/assets/hires/project-*.webp` image instead of a smaller `public/assets/projects/*.webp` thumbnail. The displayed artwork is kept separate from text-only detail modals.
+- Native width/height of the replacement 4:5 artwork are declared on the image. The project visual is fitted with `object-fit:contain` and a black monochrome gradient matte so the subject is not distorted or arbitrarily cropped on mobile.
+- The owner's original portrait is not replaced. Removing legacy scale transforms avoids enlarging soft pixels and crops; genuine higher-resolution portrait detail still requires a better source original.
+- Image audit now verifies published rather than legacy thumbnail sizes and requires a 4:5-ish project source. No invented pixels or AI reconstruction is claimed.
+- Selected Work is a full-screen pinned reading composition with a 400svh native scroll runway. Each heading/row reveals from scrollY and reverses in strict order on upward scrolling. Divider progress and link accessibility reverse with the text. Autoplay now travels the runway before its 2-second completed reading hold.
+- Browser regression has been updated for real scroll forward/backward and high-resolution art. This change has been **source-checked only** and is **not** equivalent to an owner-local green `qa:final` run.
+- Do not start CI, automated previews or builds in the Factory Worker. The owner runs `npm run qa:final` manually, records results and decides production approval.
