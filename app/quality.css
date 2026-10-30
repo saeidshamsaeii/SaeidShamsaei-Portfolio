@@ -1,9 +1,17 @@
 /* Portfolio quality layer — intentionally narrow in scope.
    Respect the approved cinematic typography, monochrome palette and choreography. */
-:root{color-scheme:dark light;}
+:root{
+ color-scheme:dark light;
+ /* Shared monochrome design tokens; these preserve existing computed colors. */
+ --sx-color-black:#000;
+ --sx-color-white:#fff;
+ --sx-color-secondary:#d5d5d5;
+ --sx-focus-ring-width:2px;
+ --sx-reading-line-height:1.7;
+}
 html{scroll-padding-top:clamp(78px,9svh,118px);}
 :where(.sx-v18-site,.sx-v10-case-page,.sx-ei) :is(a,button,input,summary):focus-visible{
- outline:2px solid currentColor;
+ outline:var(--sx-focus-ring-width) solid currentColor;
  outline-offset:4px;
 }
 :where(.sx-v18-site,.sx-v10-case-page,.sx-ei) :is(h1,h2,h3,p,li,a,span){
@@ -56,7 +64,7 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
 /* The static-export 404 is branded and navigable instead of a framework default. */
 .sx-not-found{
  min-height:100svh;display:grid;place-items:center;
- background:#000;color:#fff;
+ background:var(--sx-color-black);color:var(--sx-color-white);
  padding:clamp(32px,8vw,110px);
  font-family:Inter,system-ui,Arial,sans-serif;
 }
@@ -71,7 +79,7 @@ html{scroll-padding-top:clamp(78px,9svh,118px);}
  font-weight:620;letter-spacing:-.065em;
 }
 .sx-not-found p:not(.sx-not-found-code){
- max-width:650px;color:#d5d5d5;line-height:1.7;font-size:clamp(16px,1.5vw,21px);
+ max-width:650px;color:var(--sx-color-secondary);line-height:var(--sx-reading-line-height);font-size:clamp(16px,1.5vw,21px);
 }
 .sx-not-found nav{display:flex;flex-wrap:wrap;gap:24px;margin-top:clamp(38px,6vw,80px);}
 .sx-not-found nav a{
