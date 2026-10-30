@@ -1,0 +1,104 @@
+/* v36 / scroll-driven Selected Work and photographic framing.
+   A single sticky visual page has a scroll runway: progress is reversible. */
+.sx-v18-site #work-index.sx-v18-index{
+ box-sizing:border-box!important;
+ position:relative!important;
+ display:block!important;
+ height:400svh!important;min-height:400svh!important;
+ padding:0!important;margin:0!important;
+ overflow:visible!important;
+ background:#000!important;color:#fff!important;
+}
+.sx-v18-site #work-index .sx-v35-work-pin{
+ box-sizing:border-box;
+ display:grid!important;
+ position:sticky;top:0;left:0;z-index:1;
+ width:100%;height:100svh;min-height:100svh;
+ grid-template-rows:auto minmax(0,1fr);
+ align-content:stretch;
+ padding:clamp(19px,3.6svh,44px) clamp(18px,5vw,94px) clamp(17px,3.2svh,38px);
+ background:#000;
+ isolation:isolate;
+}
+.sx-v18-site #work-index .sx-v18-index-rows{
+ min-width:0;min-height:0;
+ display:grid!important;
+ grid-template-rows:repeat(4,minmax(0,1fr))!important;
+}
+.sx-v18-site #work-index[data-work-oversize="true"]{
+ height:calc(400svh + var(--sx-work-overflow,0px))!important;
+ min-height:calc(400svh + var(--sx-work-overflow,0px))!important;
+}
+.sx-v18-site #work-index[data-work-oversize="true"] .sx-v35-work-pin{
+ height:auto!important;
+ min-height:100svh!important;
+ grid-template-rows:auto auto!important;
+}
+.sx-v18-site #work-index[data-work-oversize="true"] .sx-v18-index-rows{
+ grid-template-rows:repeat(4,minmax(95px,auto))!important;
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-v18-site #work-index.sx-v18-index,
+ .sx-v18-site #work-index[data-work-oversize="true"]{
+  height:auto!important;min-height:100svh!important;
+ }
+ .sx-v18-site #work-index .sx-v35-work-pin{
+  position:relative!important;height:auto!important;
+  min-height:100svh!important;
+ }
+}
+@media(scripting:none){
+ .sx-v18-site #work-index.sx-v18-index{height:auto!important;min-height:100svh!important}
+ .sx-v18-site #work-index .sx-v35-work-pin{position:relative!important;height:auto!important}
+}
+/* Native-source photography: no pixel expansion by CSS zoom and no crop
+   of the 4:5 editorial assets. Gradient mask blends the framed photograph
+   into the black text surface rather than cutting off people or products. */
+.sx-v18-site .sx-v35-project-art{
+ width:min(58%,80svh)!important;
+ height:100%!important;
+ inset:0 0 0 auto!important;
+ overflow:hidden!important;
+ background:#000!important;
+ opacity:.87!important;
+ -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 26%,#000 100%)!important;
+ mask-image:linear-gradient(90deg,transparent 0%,#000 26%,#000 100%)!important;
+}
+.sx-v18-site .sx-v35-project-art img,
+.sx-v18-site #project-gartal .sx-v35-project-art img,
+.sx-v18-site #project-factory .sx-v35-project-art img,
+.sx-v18-site #project-digirezhim .sx-v35-project-art img,
+.sx-v18-site #project-petiwoo .sx-v35-project-art img{
+ width:100%!important;height:100%!important;
+ object-fit:contain!important;object-position:center center!important;
+ filter:grayscale(1) contrast(1.07) brightness(.92)!important;
+ transform:none!important;image-rendering:auto;
+}
+@media(max-width:760px){
+ .sx-v18-site .sx-v35-project-art{
+  width:100%!important;height:58%!important;
+  inset:0 0 auto 0!important;opacity:.53!important;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 42%,transparent 100%)!important;
+  mask-image:linear-gradient(180deg,#000 0%,#000 42%,transparent 100%)!important;
+ }
+ .sx-v18-site .sx-v35-project-art img{
+  object-position:center top!important;
+  filter:grayscale(1) contrast(1.08) brightness(.87)!important;
+ }
+}
+/* Owner portrait: preserve all native detail. The legacy 1.075 mobile zoom
+   cropped edges and blurred pixels; the unzoomed cover fits the matte. */
+.sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background img{
+ transform:none!important;
+ object-fit:cover!important;
+ object-position:50% 0%!important;
+ image-rendering:auto;
+ filter:grayscale(1) contrast(1.07) brightness(1.02)!important;
+}
+@media(max-width:760px){
+ .sx-v18-site #intro.sx-v19-cover .sx-v19-photo-background img{
+  transform:none!important;
+  object-fit:contain!important;
+  object-position:50% 0%!important;
+ }
+}
