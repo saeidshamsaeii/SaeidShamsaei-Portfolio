@@ -42,3 +42,33 @@
  .sx-v31-case-page .sx-v31-cover-footer,
  .sx-v31-case-page .sx-v31-scene-bottom{opacity:1!important;transform:none!important;transition:none!important}
 }
+
+
+/* Accessible, image-free project summaries. Only verified public launches link out. */
+.sx-v31-case-page .sx-v32-project-actions{display:flex;align-items:center;flex-wrap:wrap;gap:16px 28px;margin-top:35px}
+.sx-v31-case-page .sx-v32-summary-button,
+.sx-v31-case-page .sx-v32-project-actions>a{appearance:none;background:transparent;border:1px solid #fff;color:#fff;padding:15px 20px;cursor:pointer;font:600 12px/1.35 inherit;letter-spacing:.065em;text-decoration:none}
+.sx-v31-case-page .sx-v32-project-actions>a:hover,
+.sx-v31-case-page .sx-v32-summary-button:hover{background:#fff;color:#000}
+.sx-v31-case-page .sx-v32-coming-soon{font-size:12px;letter-spacing:.08em;color:#aaa}
+.sx-v32-project-modal{position:fixed;inset:0;margin:auto;width:min(740px,calc(100vw - 32px));max-height:min(85dvh,850px);overflow:auto;background:#0a0a0a;color:#fff;border:1px solid #777;padding:0;box-shadow:0 24px 95px #000a}
+.sx-v32-project-modal::backdrop{background:rgba(0,0,0,.88);backdrop-filter:blur(8px)}
+.sx-v32-modal-inner{padding:clamp(24px,5vw,58px)}
+.sx-v32-modal-top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #555;padding-bottom:18px;font-size:10px;letter-spacing:.1em}
+.sx-v32-modal-top button{background:transparent;border:0;color:#fff;cursor:pointer;font:inherit;padding:8px}
+.sx-v32-project-modal h2{font-size:clamp(42px,8vw,80px);letter-spacing:-.075em;line-height:1.02;margin:38px 0 26px}
+.sx-v32-project-modal h3{font-size:11px;letter-spacing:.11em;margin:30px 0 10px;color:#bbb}
+.sx-v32-project-modal p,.sx-v32-project-modal li{font-size:clamp(15px,1.6vw,18px);line-height:1.75;color:#e6e6e6}
+.sx-v32-project-modal .sx-v32-modal-lead{font-size:clamp(20px,2.8vw,28px);line-height:1.45;color:#fff}
+.sx-v32-project-modal ul{margin:0;padding-left:22px}
+.sx-v32-modal-cta{display:flex;gap:18px;flex-wrap:wrap;border-top:1px solid #555;margin-top:35px;padding-top:25px;font-size:12px;letter-spacing:.04em}
+.sx-v32-modal-cta a{color:#fff;text-underline-offset:5px}
+.sx-v32-modal-cta span{color:#aaa}
+.sx-v32-project-modal :focus-visible,.sx-v32-summary-button:focus-visible{outline:2px solid #fff;outline-offset:5px}
+/* During autoplay a later scene must never leak visible copy before arrival. */
+html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-scene-meta,
+html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-scene-notes,
+html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-scene-bottom,
+html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-kicker,
+html[data-portfolio-tour="playing"] .sx-v31-case-page [data-tour-awaiting="true"] .sx-v31-cover-footer{visibility:hidden!important}
+@media(max-width:760px){.sx-v32-project-modal{max-height:90dvh}.sx-v32-modal-cta{flex-direction:column}.sx-v31-case-page .sx-v32-project-actions{align-items:stretch;flex-direction:column}}
