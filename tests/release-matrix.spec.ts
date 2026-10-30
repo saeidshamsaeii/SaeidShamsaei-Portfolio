@@ -100,3 +100,31 @@ test('reduced-motion readers can reach home calls to action immediately',async({
  await expect(links.last()).toBeVisible();
  await expect(page.locator('html')).not.toHaveAttribute('data-portfolio-tour','playing');
 });
+
+test('every route provides named links and a distinct primary heading',async({page})=>{
+ test.setTimeout(75000);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ for(const url of routes){
+  await page.goto(url,{waitUntil:'domcontentloaded'});
+  await expect(page.locator('h1'),url+' needs exactly one primary heading')
+   .toHaveCount(1);
+  const empty=await page.locator('a[href],button').evaluateAll(nodes=>
+   nodes.filter(node=>{
+    const label=(node.getAttribute('aria-label')||node.textContent||'').trim();
+    const iconLabel=node.querySelector('img[alt]')?.getAttribute('alt')?.trim();
+    return !label&&!iconLabel;
+   }).map(node=>node.outerHTML.slice(0,180)));
+  expect(empty,'unnamed actionable elements on '+url).toEqual([]);
+ }
+});
+
+test('home skip navigation is keyboard accessible, including reduced motion',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const skip=page.getByRole('link',{name:'Skip to work'});
+ await page.keyboard.press('Tab');
+ await expect(skip).toBeFocused();
+ await page.keyboard.press('Enter');
+ await expect(page).toHaveURL(/#work-index$/);
+ await expect(page.locator('#work-index')).toHaveCount(1);
+});
