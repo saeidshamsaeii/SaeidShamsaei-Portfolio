@@ -1,0 +1,44 @@
+/* Case-study editorial continuity: identical black/white rhythm and sequential text. */
+.sx-v31-case-page{background:#000!important;color:#fff!important}
+.sx-v31-case-page .sx-v31-case-cover h1,
+.sx-v31-case-page .sx-v31-case-scene h2,
+.sx-v31-case-page .sx-v31-deep-intro h2,
+.sx-v31-case-page .sx-v31-evidence h2,
+.sx-v31-case-page .sx-v31-case-next h2{
+ letter-spacing:-.065em!important;line-height:1.04!important;text-wrap:balance;
+}
+.sx-v31-case-page .sx-v31-case-cover .sx-v31-thesis,
+.sx-v31-case-page .sx-v31-case-scene .sx-v31-scene-lead,
+.sx-v31-case-page .sx-v31-evidence-outcome{
+ line-height:1.28!important;letter-spacing:-.03em!important;text-wrap:pretty;
+}
+.sx-v31-case-page .sx-v31-scene-notes .sx-v32-note-text{
+ display:block;min-width:0;margin:0;line-height:1.5;
+}
+.sx-v31-case-page .sx-v31-scene-notes .sx-v32-note-text .sx-word-pieces,
+.sx-v31-case-page .sx-v31-deep-content .sx-word-pieces{display:block}
+.sx-v31-case-page .sx-v31-deep-content>.sx-word-reveal{
+ margin-block:0 1.25em;max-width:78ch;line-height:1.7;
+}
+.sx-v31-case-page .sx-v31-deep-intro>.sx-word-reveal{
+ max-width:72ch;line-height:1.65;margin-top:24px;
+}
+.sx-v31-case-page .sx-v31-case-cover .sx-v31-cover-footer,
+.sx-v31-case-page .sx-v31-case-scene .sx-v31-scene-bottom{
+ transition:opacity .35s ease,transform .35s ease;
+}
+@media (scripting:enabled) and (prefers-reduced-motion:no-preference){
+ .sx-v31-case-page .sx-v31-case-cover:has(.sx-v31-thesis[data-reveal-complete="false"]) .sx-v31-cover-footer,
+ .sx-v31-case-page .sx-v31-case-scene:has(.sx-v32-note-text[data-reveal-complete="false"]) .sx-v31-scene-bottom{
+  opacity:0;transform:translateY(10px);pointer-events:none;
+ }
+}
+@media(max-width:760px){
+ .sx-v31-case-page .sx-v31-case-cover h1{overflow-wrap:anywhere}
+ .sx-v31-case-page .sx-v31-case-scene h2{font-size:clamp(38px,10vw,68px)!important}
+ .sx-v31-case-page .sx-v31-scene-notes li{align-items:start}
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-v31-case-page .sx-v31-cover-footer,
+ .sx-v31-case-page .sx-v31-scene-bottom{opacity:1!important;transform:none!important;transition:none!important}
+}
