@@ -13,6 +13,8 @@ const INTRO_COPY_HOLD_MS=2000;
 const HORIZONTAL_FRAME_PAUSE_MS=2000;
 const SELECTED_WORK_HOLD_MS=2000;
 const CASE_SCENE_COPY_MS=4200;
+const BIOGRAPHY_COPY_MS=5400;
+const BIOGRAPHY_HOLD_MS=2000;
 const CASE_SCENE_HOLD_MS=2000;
 const COPY_SETTLE_MAX_MS=2600;
 
@@ -64,7 +66,12 @@ function scrollDestination(stop:Stop){
  // Selected Work is a single black, viewport-height editorial frame.
  // Stop at its actual TOP, not at the last row's centerline: otherwise the
  // headline and first project are pushed above the visible reading frame.
- if(stop.element.id==='work-index'||stop.element.id==='about')return top;
+ if(stop.element.id==='work-index')return top;
+ if(stop.element.id==='about'){
+  // A short one-screen biography stops at its TOP. On small/zoomed screens
+  // that require extra height, visit the BOTTOM instead of halting halfway.
+  return top+Math.max(0,box.height-window.innerHeight);
+ }
  // A case-study cover is the opening reading frame, even when its height
  // is a little shorter than the visual viewport below navigation.
  if(stop.element.classList.contains('sx-v31-case-cover'))return Math.max(0,top);
@@ -126,6 +133,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    stop.element.dataset.tourHold==='horizontal-frame'
   );
   const isCaseScene=stops.map(stop=>stop.element.dataset.tourHold==='case-scene');
+  const isBiography=stops.map(stop=>stop.element.dataset.tourHold==='biography');
   // While the automatic director reads the current block, the NEXT block
   // is a blank canvas: its copy cannot peek into the viewport below.
   // This is removed immediately for manual scrolling and reduced motion.
@@ -188,6 +196,10 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
    state.arrivedAt=0;
    state.holdStartedAt=null;
    delete root.dataset.portfolioTourHold;
+   if(isBiography[index]){
+    stops[index].element.dataset.bioReadingProgress='0';
+    stops[index].element.dispatchEvent(new Event('sx-biography-reading-progress'));
+   }
    if(isCaseScene[index]){
     // Never start typing the NEXT case study scene before its camera arrives.
     stops[index].element.dataset.caseSceneProgress='0';
@@ -328,6 +340,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      }
      const horizontalHold=isHorizontalFrame[state.index];
      const caseSceneHold=isCaseScene[state.index];
+     const biographyHold=isBiography[state.index];
      const backgroundHold=hasBackgroundChange[state.index];
      // This black one-screen directory always gets its OWN reading hold,
      // even if a future theme change removes the white following section.
@@ -335,8 +348,14 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
      // Mobile copy waits for actual typing completion, not another two-
      // second photo hold; the photo pause already happened before travel.
      const mobileIntroCopy=state.index===0&&introMobile&&Boolean(introCover);
-     if(horizontalHold||backgroundHold||mobileIntroCopy||selectedWorkHold||caseSceneHold){
+     if(horizontalHold||backgroundHold||mobileIntroCopy||selectedWorkHold||caseSceneHold||biographyHold){
       if(!state.arrivedAt)state.arrivedAt=time;
+      if(biographyHold){
+       const stop=stops[state.index].element;
+       const amount=clamp((time-state.arrivedAt)/BIOGRAPHY_COPY_MS);
+       stop.dataset.bioReadingProgress=String(amount);
+       stop.dispatchEvent(new Event('sx-biography-reading-progress'));
+      }
       if(caseSceneHold){
        // Same ordered WordReveal typing as the homepage, but in a fixed
        // reading frame: title finishes before description, then hold 2s.
@@ -347,7 +366,7 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
       }
       // Wait for genuine text completion on the mobile intro and
       // all strict reading stages; no arbitrary timeout for the copy.
-      const strictCopy=horizontalHold||mobileIntroCopy||selectedWorkHold||caseSceneHold;
+      const strictCopy=horizontalHold||mobileIntroCopy||selectedWorkHold||caseSceneHold||biographyHold;
       const workFullyFramed=!selectedWorkHold||(()=>{
        const rect=stops[state.index].element.getBoundingClientRect();
        // Short landscape windows cannot fit the whole section: never
@@ -368,11 +387,13 @@ export function GuidedTour({active,onExit}:{active:boolean;onExit:()=>void}){
         root.dataset.portfolioTourHold=mobileIntroCopy?'intro-copy':
          selectedWorkHold?'selected-work':
          caseSceneHold?'case-scene':
+         biographyHold?'biography':
          horizontalHold?'horizontal-frame':'background-change';
        }
        const duration=mobileIntroCopy?0:
         selectedWorkHold?SELECTED_WORK_HOLD_MS:
         caseSceneHold?CASE_SCENE_HOLD_MS:
+        biographyHold?BIOGRAPHY_HOLD_MS:
         horizontalHold?HORIZONTAL_FRAME_PAUSE_MS:BACKGROUND_PAUSE_MS;
        if(time-state.holdStartedAt>=duration){
         delete root.dataset.portfolioTourHold;
