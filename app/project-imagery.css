@@ -1,0 +1,47 @@
+/* Selected Work project artwork — four user-selected monochrome photographs.
+   Art direction is restrained and DOES NOT replace the text-only case modals.
+   The first horizontal story scene uses a masked photographic plane; later
+   scenes stay typographic so technical information remains readable. */
+.sx-v18-site .sx-v30-case-slide{isolation:isolate}
+.sx-v18-site .sx-v35-project-art{
+ position:absolute;inset:0 0 0 auto;
+ z-index:0;pointer-events:none;
+ display:block;width:min(59%,920px);height:100%;
+ overflow:hidden;opacity:.69;
+ -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 33%,#000 100%);
+ mask-image:linear-gradient(90deg,transparent 0%,#000 33%,#000 100%);
+}
+.sx-v18-site .sx-v35-project-art img{
+ display:block;width:100%;height:100%;max-width:none;
+ object-fit:cover;object-position:center center;
+ filter:grayscale(1) contrast(1.08) brightness(.78);
+}
+.sx-v18-site .sx-v30-case-slide>.sx-v30-case-meta,
+.sx-v18-site .sx-v30-case-slide>.sx-v30-case-copy,
+.sx-v18-site .sx-v30-case-slide>.sx-v30-case-footer{
+ position:relative;z-index:1;
+}
+.sx-v18-site #project-gartal .sx-v35-project-art img{object-position:53% 52%}
+.sx-v18-site #project-factory .sx-v35-project-art img{object-position:49% 50%}
+.sx-v18-site #project-digirezhim .sx-v35-project-art img{object-position:50% 49%}
+.sx-v18-site #project-petiwoo .sx-v35-project-art img{object-position:50% 48%}
+@media(max-width:760px){
+ .sx-v18-site .sx-v35-project-art{
+  inset:0 0 auto 0;width:100%;height:57%;
+  opacity:.4;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 28%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 28%,transparent 100%);
+ }
+ .sx-v18-site .sx-v35-project-art img{filter:grayscale(1) contrast(1.12) brightness(.56)}
+}
+/* Only after the entire Selected Work narrative finishes can a depart
+   motion affect opacity. Unfinished rows never fade during manual scrolling. */
+.sx-v18-site #work-index:not([data-work-reveal-progress="1"]) .sx-v18-index-heading,
+.sx-v18-site #work-index:not([data-work-reveal-progress="1"]) .sx-v18-index-entry{
+ opacity:1;
+}
+@media(prefers-reduced-motion:reduce){
+ .sx-v18-site .sx-v35-project-art{opacity:.55}
+ .sx-v18-site #work-index .sx-v18-index-heading,
+ .sx-v18-site #work-index .sx-v18-index-entry{opacity:1!important;transform:none!important}
+}
