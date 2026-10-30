@@ -23,27 +23,39 @@ test('Selected Work presents four complete linked rows in one viewport at standa
    };
   });
   expect(result.rows).toBe(4);
-  expect(Math.abs(result.height-result.screen)).toBeLessThanOrEqual(2);
+  expect(result.height).toBeGreaterThanOrEqual(result.screen-2);
   expect(result.childrenWithin,'clipped content at '+viewport.width).toBe(true);
   expect(result.overflow,'horizontal overflow at '+viewport.width).toBeLessThanOrEqual(2);
   await page.close();
  }
 });
 
-test('Selected Work types title and projects in one slower ordered sequence',async({page})=>{
- test.setTimeout(60000);
+test('Selected Work words follow native downward scroll and unwrite in reverse',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  await page.keyboard.press('Escape');
- await page.locator('#work-index').evaluate(node=>node.scrollIntoView({block:'start',behavior:'instant'}));
  const section=page.locator('#work-index');
- await expect.poll(()=>section.getAttribute('data-work-reveal-progress'),{timeout:4000})
-  .not.toBe('0');
- await page.waitForTimeout(850);
- await expect(section.locator('.sx-v18-index-entry').last().locator('.sx-word-reveal').last())
-  .toHaveAttribute('data-reveal-complete','false');
- await expect.poll(()=>section.locator('.sx-word-reveal[data-reveal-complete="true"]').count(),
-  {timeout:36000}).toBe(9);
+ const step=async(progress:number)=>section.evaluate((el,p)=>{
+  const bounds=el.getBoundingClientRect(),top=bounds.top+scrollY;
+  const travel=bounds.height-innerHeight;
+  window.scrollTo({top:top+travel*p,behavior:'instant'});
+ },progress);
+ await step(0);
+ await expect.poll(async()=>Number(await section.getAttribute('data-work-reveal-progress'))).toBeLessThan(.01);
+ await expect(section.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(0);
+ await step(.52);
+ await expect.poll(async()=>Number(await section.getAttribute('data-work-reveal-progress'))).toBeGreaterThan(.5);
+ const halfway=await section.locator('.sx-word-reveal[data-reveal-complete="true"]').count();
+ expect(halfway).toBeGreaterThan(0);
+ expect(halfway).toBeLessThan(9);
+ await step(1);
+ await expect(section.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(9);
+ await step(.18);
+ await expect.poll(async()=>Number(await section.getAttribute('data-work-reveal-progress'))).toBeLessThan(.2);
+ const remaining=await section.locator('.sx-word-reveal[data-reveal-complete="true"]').count();
+ expect(remaining).toBeLessThan(halfway);
+ await step(0);
+ await expect(section.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(0);
 });
 
 test('opening never scrolls before both intro text blocks finish on mobile or desktop',async({browser})=>{
@@ -321,7 +333,7 @@ test('black Selected Work freezes only AFTER all nine word blocks finish and fit
  await expect(section.locator('.sx-word-reveal[data-reveal-complete="true"]')).toHaveCount(9);
  const progress=Number(await section.getAttribute('data-work-reveal-progress'));
  expect(progress).toBeGreaterThanOrEqual(.999);
- const rect=await section.evaluate(node=>{
+ const rect=await section.locator('.sx-v35-work-pin').evaluate(node=>{
   const box=node.getBoundingClientRect();
   return {top:box.top,bottom:box.bottom,viewport:innerHeight};
  });
@@ -333,45 +345,24 @@ test('black Selected Work freezes only AFTER all nine word blocks finish and fit
  await expect(html).not.toHaveAttribute('data-portfolio-tour-hold','selected-work',{timeout:2700});
 });
 
-test('Selected Work copy rises and fades only while the black section departs',async({page})=>{
- test.setTimeout(65000);
- await page.setViewportSize({width:1440,height:900});
+test('Selected Work fades out only beyond the final pinned reading frame',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  await page.keyboard.press('Escape');
  const section=page.locator('#work-index');
- const top=await section.evaluate(node=>node.getBoundingClientRect().top+scrollY);
- const read=()=>section.evaluate(node=>{
-  const heading=node.querySelector<HTMLElement>('.sx-v18-index-heading')!;
-  const first=node.querySelector<HTMLElement>('.sx-v18-index-entry')!;
-  return {
-   progress:Number(node.style.getPropertyValue('--sx-work-exit')||0),
-   headingOpacity:Number(getComputedStyle(heading).opacity),
-   rowOpacity:Number(getComputedStyle(first).opacity),
-   headingTransform:getComputedStyle(heading).transform
-  };
- });
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top);
- await expect.poll(async()=>(await read()).progress).toBe(0);
- const still=await read();
- expect(still.headingOpacity).toBe(1);
- expect(still.rowOpacity).toBe(1);
-
- // An unfinished Selected Work must remain fully readable even on scroll.
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+130);
- await expect.poll(async()=>(await read()).progress).toBe(0);
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top);
- await expect(section).toHaveAttribute('data-work-reveal-progress','1',{timeout:36000});
- // Only well into departure does the old upward reveal fade begin.
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+450);
- await expect.poll(async()=>(await read()).progress).toBeGreaterThan(.3);
- const departing=await read();
- expect(departing.headingOpacity).toBeLessThan(still.headingOpacity);
- expect(departing.rowOpacity).toBeLessThan(still.rowOpacity);
- expect(departing.headingTransform).not.toBe('none');
- await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top);
- await expect.poll(async()=>(await read()).progress).toBe(0);
- expect((await read()).headingOpacity).toBe(1);
+ const top=await section.evaluate(el=>el.getBoundingClientRect().top+scrollY);
+ const travel=await section.evaluate(el=>el.getBoundingClientRect().height-innerHeight);
+ const read=()=>section.evaluate(el=>Number(el.style.getPropertyValue('--sx-work-exit')||'0'));
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+travel*.55);
+ await expect.poll(read).toBe(0);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+travel);
+ await expect.poll(async()=>Number(await section.getAttribute('data-work-reveal-progress'))).toBeGreaterThan(.99);
+ await expect.poll(read).toBe(0);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+travel+240);
+ await expect.poll(read).toBeGreaterThan(.1);
+ await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),top+travel*.35);
+ await expect.poll(read).toBe(0);
+ await expect.poll(async()=>Number(await section.getAttribute('data-work-reveal-progress'))).toBeLessThan(.4);
 });
 
 test('Selected Work exit movement is disabled for reduced-motion readers',async({page})=>{
@@ -388,54 +379,29 @@ test('Selected Work exit movement is disabled for reduced-motion readers',async(
  expect(copy.transform).toBe('none');
 });
 
-test('work rules draw one at a time and next block waits until predecessor hold finishes',async({page})=>{
- test.setTimeout(65000);
+test('Selected Work divider and focus order follow scroll in both directions',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:9000});
  await page.keyboard.press('Escape');
- await page.locator('#work-index').evaluate(node=>
-  node.scrollIntoView({block:'start',behavior:'instant'})
- );
  const section=page.locator('#work-index');
  const blocks=section.locator('[data-work-stage]');
  await expect(blocks).toHaveCount(5);
- await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','typing',{timeout:5000});
+ const jump=async(p:number)=>section.evaluate((el,progress)=>{
+  const top=el.getBoundingClientRect().top+scrollY;
+  scrollTo({top:top+(el.getBoundingClientRect().height-innerHeight)*progress,behavior:'instant'});
+ },p);
+ await jump(0);
  await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','pending');
- const pendingRule=await blocks.nth(1).evaluate(el=>({
-  border:getComputedStyle(el).borderBottomColor,
-  scale:getComputedStyle(el,'::after').transform,
-  progress:Number(el.style.getPropertyValue('--sx-work-rule')||'0')
- }));
- expect(pendingRule.progress).toBe(0);
- expect(pendingRule.border).toBe('rgba(0, 0, 0, 0)');
- expect(pendingRule.scale).toMatch(/^matrix\(0[, ]/);
- await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','line',{timeout:6500});
- await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','pending');
- await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','holding',{timeout:2500});
- const pauseStart=await section.evaluate(el=>Number(el.dataset.workStageIndex));
- expect(pauseStart).toBe(0);
- await page.waitForTimeout(750);
- await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','pending');
- await expect(blocks.nth(1)).toHaveAttribute('data-work-stage-state','typing',{timeout:4000});
- const firstRule=await blocks.nth(0).evaluate(el=>({
-  progress:Number(el.style.getPropertyValue('--sx-work-rule')),
-  scale:getComputedStyle(el,'::after').transform
- }));
- expect(firstRule.progress).toBe(1);
- expect(firstRule.scale).toMatch(/^matrix\(1[, ]/);
- await expect(blocks.nth(0)).toHaveAttribute('data-work-stage-state','complete');
- for(let index=1;index<5;index++){
-  await expect(blocks.nth(index)).toHaveAttribute('data-work-stage-state','line',{timeout:6500});
-  if(index<4){
-   await expect(blocks.nth(index+1)).toHaveAttribute('data-work-stage-state','pending');
-   await expect(blocks.nth(index)).toHaveAttribute('data-work-stage-state','holding',{timeout:2000});
-   await page.waitForTimeout(700);
-   await expect(blocks.nth(index+1)).toHaveAttribute('data-work-stage-state','pending');
-   await expect(blocks.nth(index+1)).toHaveAttribute('data-work-stage-state','typing',{timeout:5000});
-  }
- }
- await expect.poll(()=>section.getAttribute('data-work-reveal-progress'),{timeout:3500}).toBe('1');
+ await expect.poll(async()=>blocks.nth(1).locator('a').first().getAttribute('aria-hidden')).toBe('true');
+ await jump(.49);
+ await expect.poll(async()=>Number(await section.getAttribute('data-work-reveal-progress'))).toBeGreaterThan(.48);
+ expect(await blocks.nth(0).evaluate(el=>Number(el.style.getPropertyValue('--sx-work-rule')))).toBe(1);
+ await jump(1);
  await expect(section.locator('[data-work-stage-state="complete"]')).toHaveCount(5);
+ await expect.poll(async()=>blocks.last().locator('a').first().getAttribute('aria-hidden')).toBeNull();
+ await jump(0);
+ await expect(section.locator('[data-work-stage-state="pending"]')).toHaveCount(5);
+ await expect.poll(async()=>blocks.last().locator('a').first().getAttribute('aria-hidden')).toBe('true');
 });
 
 test('mobile reader can skip photo hold, and case pages have no portrait delay',async({page})=>{
