@@ -13,3 +13,5 @@ media-originals/
 reports/quality/
 playwright-report/
 test-results/
+# Next.js generates next-env.d.ts on every dev/build/typegen; never track it.
+next-env.d.ts
