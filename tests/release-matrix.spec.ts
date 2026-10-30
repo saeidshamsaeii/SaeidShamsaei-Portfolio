@@ -67,26 +67,28 @@ test('three-line hero composition preserves line breaks on small and large scree
  }
 });
 
-test('all case-study evidence links have visible labels and safe external targets',async({page})=>{
+test('project summaries replace README links; only two sites have public links',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  for(const id of ['gartal','factory','digirezhim','petiwoo']){
   await page.goto('/work/'+id+'/',{waitUntil:'domcontentloaded'});
   await expect(page.locator('.sx-v10-case-section')).toHaveCount(6);
-  const references=page.locator('.sx-v10-reference-list a');
-  expect(await references.count()).toBeGreaterThan(0);
-  const items=await references.evaluateAll(elements=>elements.map(link=>({
-   href:(link as HTMLAnchorElement).href,
-   label:(link.textContent||'').trim(),
-   target:(link as HTMLAnchorElement).target,
-   rel:(link as HTMLAnchorElement).rel
-  })));
-  for(const ref of items){
-   expect(ref.href).toMatch(/^https:\/\//);
-   expect(ref.label.length).toBeGreaterThan(3);
-   expect(ref.target).toBe('_blank');
-   expect(ref.rel).toContain('noopener');
-   expect(ref.rel).toContain('noreferrer');
-  }
+  await expect(page.locator('.sx-v10-reference-list a')).toHaveCount(0);
+  const summary=page.getByRole('button',{name:/READ PROJECT SUMMARY/});
+  await summary.click();
+  const modal=page.locator('.sx-v32-project-modal');
+  await expect(modal).toBeVisible();
+  await expect(modal.getByRole('heading',{name:'THE CHALLENGE'})).toBeVisible();
+  await expect(modal.getByRole('heading',{name:'THE APPROACH'})).toBeVisible();
+  await expect(modal.locator('img')).toHaveCount(0);
+  const live=id==='digirezhim'?'https://digirezhim.ir':id==='petiwoo'?'https://petiwoo.ir':null;
+  const link=modal.getByRole('link',{name:/VISIT .* WEBSITE/});
+  if(live){
+   await expect(link).toHaveAttribute('href',live);
+   await expect(link).toHaveAttribute('target','_blank');
+   await expect(link).toHaveAttribute('rel',/noopener/);
+  }else await expect(link).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(modal).not.toBeVisible();
  }
 });
 
