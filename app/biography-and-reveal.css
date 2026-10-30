@@ -63,10 +63,19 @@
 /* Keep all content accessible and visible for users choosing reduced motion. */
 @media(prefers-reduced-motion:reduce){.sx-v18-site .sx-v30-case-slide .sx-v30-case-notes,.sx-v18-site .sx-v30-case-slide .sx-v30-case-footer{visibility:visible!important}}
 
-/* The biography is ONE reading frame, not several scroll-driven word stops. */
-.sx-v18-site #about.sx-v33-biography .sx-word-reveal [data-reveal-word]{
- opacity:1!important;clip-path:none!important;transform:none!important;
+/* The section stays a single frame, but its words reveal in sequence.
+   Never force opacity/clip-path: WordReveal must own those properties. */
+@media (scripting:enabled) and (prefers-reduced-motion:no-preference){
+ .sx-v18-site #about.sx-v33-biography:has(.sx-v33-bio-copy[data-reveal-complete="false"]) .sx-v33-about-facts,
+ .sx-v18-site #about.sx-v33-biography:has(.sx-v33-bio-copy[data-reveal-complete="false"]) .sx-v33-specialties{
+  opacity:0;transform:translateY(10px);visibility:hidden;
+ }
+ .sx-v18-site #about.sx-v33-biography .sx-v33-about-facts,
+ .sx-v18-site #about.sx-v33-biography .sx-v33-specialties{
+  transition:opacity .3s ease,transform .3s ease;
+ }
 }
-.sx-v18-site #about.sx-v33-biography .sx-word-reveal [data-reveal-line]{
- opacity:1!important;clip-path:none!important;transform:none!important;
+@media (prefers-reduced-motion:reduce){
+ .sx-v18-site #about .sx-v33-about-facts,
+ .sx-v18-site #about .sx-v33-specialties{opacity:1!important;visibility:visible!important;transform:none!important}
 }
