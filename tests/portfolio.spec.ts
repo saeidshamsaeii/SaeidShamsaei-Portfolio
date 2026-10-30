@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 const ids=['gartal','factory','digirezhim','petiwoo'] as const;
 
-test('full portfolio presents four image-free chapters, each with three editorial scenes',async({page})=>{
+test('full portfolio presents four art-directed chapters, each with three editorial scenes',async({page})=>{
  const errors:string[]=[];
  page.on('pageerror',error=>errors.push(error.message));
  await page.emulateMedia({reducedMotion:'reduce'});
@@ -24,7 +24,11 @@ test('full portfolio presents four image-free chapters, each with three editoria
   await expect(section.locator('.sx-v14-editorial-copy')).toHaveCount(3);
   await expect(section).toHaveAttribute('data-horizontal-chapter','');
   await expect(section.locator('.sx-v14-editorial-copy>p.sx-word-reveal')).toHaveCount(3);
-  await expect(section.locator('img')).toHaveCount(0);
+  const art=section.locator('[data-frame-index="0"] .sx-v35-project-art img');
+  await expect(art).toHaveCount(1);
+  await expect(art).toHaveAttribute('src','/assets/projects/'+id+'.webp');
+  await expect(art).toHaveAttribute('loading','lazy');
+  await expect(section.locator('[data-frame-index="1"] img,[data-frame-index="2"] img')).toHaveCount(0);
   await expect(section.locator('.sx-source-app')).toHaveCount(0);
   await expect(section.locator('.sx-v14-ending-actions')).toHaveCount(1);
   await expect(section.getByRole('link',{name:/FULL CASE STUDY/i})).toHaveAttribute('href','/work/'+id+'/');
