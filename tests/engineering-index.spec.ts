@@ -22,18 +22,20 @@ test('project and technical discipline filters really change visible evidence',a
  await expect(page.locator('.sx-ei-decision')).toHaveCount(12);
 });
 
-test('source registers link to actual repo paths and disclose non-verified runtime facts',async({page})=>{
+test('engineering records provide image-free project summary dialogs',async({page})=>{
  await page.goto('/engineering/',{waitUntil:'domcontentloaded'});
  for(const id of ['gartal','factory','digirezhim','petiwoo']){
   const record=page.locator('#evidence-'+id);
   await expect(record).toHaveCount(1);
   await expect(record.locator('.sx-ei-decision')).toHaveCount(3);
-  await expect(record.locator('.sx-ei-unknown')).toContainText('Not independently verified');
-  const urls=await record.locator('.sx-ei-source-list a').evaluateAll(
-   anchors=>anchors.map(a=>(a as HTMLAnchorElement).href));
-  expect(urls.length).toBeGreaterThanOrEqual(3);
-  expect(urls.every(url=>url.startsWith('https://github.com/saeidshamsaeii/'))).toBe(true);
-  expect(urls.every(url=>/\/blob\/[0-9a-f]{40}\//.test(url))).toBe(true);
+  await expect(record.locator('.sx-ei-source-list a')).toHaveCount(0);
+  await record.getByRole('button',{name:'OPEN PROJECT SUMMARY'}).click();
+  const modal=record.locator('dialog.sx-v32-project-modal');
+  await expect(modal).toBeVisible();
+  await expect(modal).toContainText('VERIFIED SCOPE');
+  await expect(modal.locator('img')).toHaveCount(0);
+  await modal.getByRole('button',{name:/CLOSE/}).click();
+  await expect(modal).not.toBeVisible();
  }
 });
 
@@ -43,7 +45,7 @@ test('cinematic landing and each case route have a direct evidence-first shortcu
  await expect(page.locator('header.sx-v18-header nav a[href="/engineering/"]')).toHaveText('Engineering');
  await expect(page.locator('#work-index a[href="/engineering/#evidence-factory"]')).toHaveCount(1);
  await page.goto('/work/factory/',{waitUntil:'domcontentloaded'});
- await expect(page.getByRole('link',{name:/INSPECT ARCHITECTURE DECISIONS/})).toHaveAttribute('href','/engineering/#evidence-factory');
+ await expect(page.locator('.case-nav a[href="/engineering/#evidence-factory"]')).toHaveCount(1);
 });
 
 test('mobile evidence reading route fits the viewport',async({browser})=>{
