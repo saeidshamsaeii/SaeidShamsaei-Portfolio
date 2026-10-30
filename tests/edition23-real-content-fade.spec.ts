@@ -37,10 +37,10 @@ test('the work directory explains verifiable product functions without abstract 
  for(const id of ['gartal','factory','digirezhim','petiwoo']){
   await expect(page.locator('#project-'+id+' .sx-v14-editorial-copy')).toHaveCount(3);
  }
- await expect(page.locator('#project-gartal .sx-v14-editorial-copy')).toContainText('Next.js');
- await expect(page.locator('#project-factory .sx-v14-editorial-copy')).toContainText('Worker');
- await expect(page.locator('#project-digirezhim .sx-v14-editorial-copy')).toContainText('clinical nutrition');
- await expect(page.locator('#project-petiwoo .sx-v14-editorial-copy')).toContainText('Zustand');
+ await expect(page.locator('#project-gartal')).toContainText('Next.js');
+ await expect(page.locator('#project-factory')).toContainText('Worker');
+ await expect(page.locator('#project-digirezhim')).toContainText('clinical nutrition');
+ await expect(page.locator('#project-petiwoo')).toContainText('Zustand');
 });
 
 test('remaining gold accents in the engineering records are rendered white',async({page})=>{
