@@ -24,6 +24,24 @@ substitute fictional dashboards or invented customers for actual product evidenc
 - Keep the index `noindex` until owner approves a real HTTPS production domain.
 - Preserve actual repository reference SHAs and avoid fictitious business metrics.
 
+## Owner-only final verification, added October 30, 2026
+
+A SHA-pinned acceptance runner now exists at `scripts/final-quality.mjs` and is
+exposed as `npm run qa:final`. It runs TypeScript, source tests, Next static
+export, the CSS audit, the image audit and Playwright against the actual
+exported site. The result is a local, ignored JSON evidence report under
+`reports/quality/`; any failed or untested engineering gate blocks release.
+
+The additional `tests/release-matrix.spec.ts` checks six routes across phone,
+tablet and desktop viewports, portrait decoding, the three separate hero lines,
+source links and reduced-motion navigation.
+
+**Present status: NOT APPROVED.** These tests have been added, not executed
+against a real Next.js installation at the final commit. The GitHub branch
+still lacks a lockfile. Independent visual owner signoff, WCAG testing, field
+performance and actual HTTPS publication remain separate acceptance gates.
+No Worker CI/preview or scheduled build has been enabled.
+
 ## Required acceptance before a defensible 10/10
 
 | Gate | Evidence required | Current evidence |
