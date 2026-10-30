@@ -79,3 +79,7 @@
  .sx-v18-site #about .sx-v33-about-facts,
  .sx-v18-site #about .sx-v33-specialties{opacity:1!important;visibility:visible!important;transform:none!important}
 }
+
+/* Preserve the approved pure-black editorial surface across all three project scenes.
+   Variation comes from each scene's typography, spacing and composition. */
+.sx-v18-site .sx-v14-story .sx-v14-scene{background:#000!important;color:#fff!important}
