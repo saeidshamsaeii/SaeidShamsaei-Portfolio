@@ -105,8 +105,7 @@ test('Next-generated declarations stay untracked and owner QA can provision Chro
  const tsconfig=JSON.parse(read('tsconfig.json'));
  const runner=read('scripts/final-quality.mjs');
  assert.match(ignore,/^next-env\.d\.ts$/m);
- assert.equal(fs.existsSync(path.join(root,'next-env.d.ts')),false,
-  'generated Next.js declaration should not be checked into the repository');
+ // It may exist after next typegen, but must never be committed.
  assert.ok(pkg.scripts.typecheck.includes('next typegen'));
  assert.ok(tsconfig.include.includes('next-env.d.ts'));
  assert.ok(tsconfig.include.includes('.next/dev/types/**/*.ts'));
