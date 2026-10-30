@@ -23,7 +23,9 @@ test('individual paragraphs complete no later than their own viewport midpoint',
  await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:6000});
  await page.keyboard.press('Escape');
- const paragraph=page.locator('.sx-v10-case-section .sx-v13-paragraph p.sx-v20-ordered').nth(1);
+ const chapter=page.locator('.sx-v31-deep-item').first();
+ await chapter.locator('summary').click();
+ const paragraph=chapter.locator('.sx-v31-deep-content>p.sx-v20-ordered').nth(1);
  await paragraph.evaluate(el=>{
   const rect=el.getBoundingClientRect();
   window.scrollTo({top:window.scrollY+rect.top+rect.height/2-innerHeight/2,behavior:'instant'});
@@ -52,7 +54,7 @@ test('last visible contact details are not left hidden at the bottom of the docu
 test('old gold case labels and source links are explicitly white',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.sx-v10-case-cover .sx-v10-counter')).toHaveCSS('color','rgb(255, 255, 255)');
+ await expect(page.locator('.sx-v31-case-cover h1')).toHaveCSS('color','rgb(255, 255, 255)');
  await page.goto('/engineering/',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.sx-ei .sx-ei-file-links a').first()).toHaveCSS('color','rgb(255, 255, 255)');
+ await expect(page.locator('.sx-ei .sx-ei-hero h1')).toHaveCSS('color','rgb(255, 255, 255)');
 });
