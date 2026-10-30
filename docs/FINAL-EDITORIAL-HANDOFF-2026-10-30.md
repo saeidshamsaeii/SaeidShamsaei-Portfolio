@@ -61,3 +61,10 @@ git status --short
 - If neither installed browser launches, QA fails with a specific local-browser diagnostic. Obtain or repair Chrome or Edge through your usual trusted installation channel rather than retrying the blocked Playwright CDN. Never bypass the missing-browser failure by marking tests PASS.
 - Once the owner pulls this commit, use `npm run qa:final`. Do not restore the old generated-file stash unless explicitly needed, because it predates the clean Next.js generated-type policy. Review `reports/quality/acceptance-<sha>.json` for exact SHA-pinned results.
 - A passed browser suite still requires a visual review and owner-approved HTTPS production domain before `NEXT_PUBLIC_SITE_READY=true`.
+
+## Owner QA browser run after CDN workaround
+- The owner ran `qa:final` at `ab9a0f8`: all eight non-browser gates passed and installed Chrome launched successfully.
+- The browser suite began and reached test 83 of 97 before the `spawnSync` 14-minute timeout. **Browser E2E failed / incomplete**. No launch approval is inferred from 8/9.
+- The captured output confirms two obsolete Playwright selectors: `#project-gartal-origin` (the current scene is `#project-gartal-slide-2`) and `.sx-v18-case-details` (now `details.sx-v31-deep-item`). Other outdated single-scene counts were found in legacy tests and updated without deleting coverage.
+- `qa:final` now streams E2E progress, maintains non-zero failure semantics and permits up to 30 minutes for the 97-test suite on the owner's low-resource Windows machine. Chrome/Edge fallback remains intact.
+- Re-run only via the manual owner command `npm run qa:final` after pulling main. If functional tests fail, preserve the actual per-test error messages, screenshots and traces in `test-results/` instead of assuming they are only selector issues.
