@@ -66,7 +66,11 @@ function scrollDestination(stop:Stop){
  // Selected Work is a single black, viewport-height editorial frame.
  // Stop at its actual TOP, not at the last row's centerline: otherwise the
  // headline and first project are pushed above the visible reading frame.
- if(stop.element.id==='work-index')return top;
+ if(stop.element.id==='work-index'){
+  // Traverse the entire sticky scroll runway. The five row reveals now
+  // advance with scroll position in BOTH directions, not with wall time.
+  return top+Math.max(0,box.height-window.innerHeight);
+ }
  if(stop.element.id==='about'){
   // A short one-screen biography stops at its TOP. On small/zoomed screens
   // that require extra height, visit the BOTTOM instead of halting halfway.
