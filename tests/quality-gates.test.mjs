@@ -72,3 +72,29 @@ test('GARTAL case study uses current Next.js source, not superseded Python WSGI'
  assert.match(evidence,/app\/api\/leads\/route\.ts/);
  assert.doesNotMatch(evidence,/content\.py/);
 });
+
+test('manual acceptance has exact-SHA evidence and does not run from Worker',()=>{
+ const pkg=JSON.parse(read('package.json'));
+ const runner=read('scripts/final-quality.mjs');
+ const ignore=read('.gitignore');
+ assert.equal(pkg.scripts['qa:final'],'node scripts/final-quality.mjs');
+ assert.match(runner,/gitSha:sha/);
+ assert.match(runner,/result:gates\.every\(g=>g\.status==='PASS'\)/);
+ assert.match(runner,/package-lock\.json/);
+ assert.match(runner,/browser-e2e/);
+ assert.match(runner,/NOT_TESTED/);
+ assert.match(ignore,/reports\/quality\//);
+ assert.match(ignore,/test-results\//);
+});
+
+test('dead mock imagery and GSAP dependencies are not part of the active website',()=>{
+ const pkg=JSON.parse(read('package.json'));
+ const files=['SourceProductPreview.tsx','ResponsiveMedia.tsx','SceneVisual.tsx'];
+ for(const file of files)
+  assert.equal(fs.existsSync(path.join(root,'components',file)),false,
+   file+' is obsolete and should not be reintroduced');
+ assert.equal(pkg.dependencies.gsap,undefined);
+ assert.equal(pkg.dependencies['@gsap/react'],undefined);
+ const live=read('components/PortfolioExperience.tsx');
+ assert.doesNotMatch(live,/SourceProductPreview|ResponsiveMedia|SceneVisual/);
+});
