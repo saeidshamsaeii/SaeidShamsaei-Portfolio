@@ -102,6 +102,9 @@ export function SelectedWorkIndex(){
     stage.style.setProperty('--sx-work-rule',String(draw));
    }
    host.dataset.workRevealProgress=String(runningElapsed/TOTAL_MS);
+   // Completion is time-driven, so a reader who has not scrolled does not
+   // need to trigger another scroll event for the exit calculation.
+   if(runningElapsed>=TOTAL_MS)window.dispatchEvent(new Event('sx-work-reading-complete'));
    // WordReveal receives the current stage only. No upcoming row can type
    // while the previous rule is drawing or the reader is on its 2s hold.
    host.dispatchEvent(new Event('sx-work-progress'));
@@ -164,9 +167,14 @@ export function SelectedWorkIndex(){
   const renderExit=()=>{
    exitFrame=0;
    const rect=host.getBoundingClientRect();
-   const distance=Math.max(130,Math.min(260,window.innerHeight*.32));
-   const progress=reduced.matches?0:
-    Math.max(0,Math.min(1,-rect.top/distance));
+   // Keep the entire index fully legible during its five-stage typing and
+   // two-second reading holds. Fade only once the finished scene has
+   // actually departed beyond the reading area, never at its first scroll.
+   const completed=Number(host.dataset.workRevealProgress||0)>=.999;
+   const distance=Math.max(140,Math.min(280,window.innerHeight*.30));
+   const departureThreshold=window.innerHeight*.62;
+   const progress=reduced.matches||!completed?0:
+    Math.max(0,Math.min(1,(departureThreshold-rect.bottom)/distance));
    host.style.setProperty('--sx-work-exit',String(progress));
   };
   const requestExit=()=>{
@@ -174,11 +182,13 @@ export function SelectedWorkIndex(){
   };
   window.addEventListener('scroll',requestExit,{passive:true});
   window.addEventListener('resize',requestExit);
+  window.addEventListener('sx-work-reading-complete',requestExit);
   reduced.addEventListener('change',requestExit);
   requestExit();
   return()=>{
    window.removeEventListener('scroll',requestExit);
    window.removeEventListener('resize',requestExit);
+   window.removeEventListener('sx-work-reading-complete',requestExit);
    reduced.removeEventListener('change',requestExit);
    if(exitFrame)cancelAnimationFrame(exitFrame);
    host.style.removeProperty('--sx-work-exit');
