@@ -1,0 +1,30 @@
+/* Biography directly after photographic hero: editorial, no image cards. */
+.sx-v18-site .sx-v33-biography{background:#fff!important;color:#000!important}
+.sx-v18-site .sx-v33-biography .sx-v18-about-inner{max-width:1200px}
+.sx-v18-site .sx-v33-about-eyebrow{display:block;font-size:11px;letter-spacing:.13em;margin-bottom:clamp(20px,4vh,48px);color:#4d4d4d}
+.sx-v18-site .sx-v33-biography #sx-profile-title{white-space:pre-line;letter-spacing:-.075em!important;line-height:1.04!important}
+.sx-v18-site .sx-v33-bio-copy{max-width:850px;font-size:clamp(17px,2.1vw,27px);line-height:1.5;margin-top:clamp(20px,3vh,38px)}
+.sx-v18-site .sx-v33-about-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 34px;margin-block:clamp(25px,6vh,70px);padding-block:25px;border-block:1px solid #bbb;width:100%}
+.sx-v18-site .sx-v33-about-facts>div{display:flex;flex-direction:column;gap:6px}
+.sx-v18-site .sx-v33-about-facts span{font:600 10px/1.4 Arial,sans-serif;letter-spacing:.12em;color:#666}
+.sx-v18-site .sx-v33-about-facts strong{font-size:clamp(16px,2vw,25px);font-weight:600;letter-spacing:-.03em}
+.sx-v18-site .sx-v33-about-facts small{font-size:12px;line-height:1.5;color:#555}
+@media(max-width:760px){.sx-v18-site .sx-v33-about-facts{grid-template-columns:1fr 1fr;gap:26px 15px}.sx-v18-site .sx-v33-about-facts strong{font-size:15px}}
+/* No notes / separators / next-step copy until this slide's real WordReveal is finished.
+   This fixes early bottom text shown before the actual heading at localhost:3200. */
+@media(scripting:enabled) and (prefers-reduced-motion:no-preference){
+ .sx-v18-site .sx-v30-case-slide[data-frame-state="upcoming"] .sx-v30-case-meta,
+ .sx-v18-site .sx-v30-case-slide[data-frame-state="upcoming"] .sx-v30-case-eyebrow,
+ .sx-v18-site .sx-v30-case-slide[data-frame-state="upcoming"] .sx-v30-case-notes,
+ .sx-v18-site .sx-v30-case-slide[data-frame-state="upcoming"] .sx-v30-case-footer,
+ .sx-v18-site .sx-v30-case-slide[data-tour-awaiting="true"] .sx-v30-case-notes,
+ .sx-v18-site .sx-v30-case-slide[data-tour-awaiting="true"] .sx-v30-case-footer{
+  visibility:hidden!important;
+ }
+ .sx-v18-site .sx-v30-case-slide:has(.sx-v30-case-copy>.sx-word-reveal[data-reveal-complete="false"]) .sx-v30-case-notes,
+ .sx-v18-site .sx-v30-case-slide:has(.sx-v30-case-copy>.sx-word-reveal[data-reveal-complete="false"]) .sx-v30-case-footer{
+  visibility:hidden!important;
+ }
+}
+/* Keep all content accessible and visible for users choosing reduced motion. */
+@media(prefers-reduced-motion:reduce){.sx-v18-site .sx-v30-case-slide .sx-v30-case-notes,.sx-v18-site .sx-v30-case-slide .sx-v30-case-footer{visibility:visible!important}}
