@@ -69,7 +69,7 @@ test('reduced-motion reveals all copy and disables scripted auto-scroll',async({
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sx-v18-loader')).toHaveCount(0,{timeout:5000});
  await expect(page.locator('html')).not.toHaveAttribute('data-portfolio-tour','playing');
- await expect(page.locator('#project-gartal .sx-v14-editorial-copy')).toHaveCount(1);
+ await expect(page.locator('#project-gartal .sx-v14-editorial-copy')).toHaveCount(3);
  const word=page.locator('#project-gartal .sx-v14-editorial-copy [data-reveal-word]').first();
  await expect(word).toHaveCSS('opacity','1');
 });
