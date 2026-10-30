@@ -111,11 +111,13 @@ export function SelectedWorkIndex(){
   let frame=0;
   const measure=()=>{
    frame=0;
-   const style=getComputedStyle(host);
-   const space=window.innerHeight-parseFloat(style.paddingTop||'0')-
-    parseFloat(style.paddingBottom||'0');
+   const pin=host.querySelector<HTMLElement>('.sx-v35-work-pin')!;
+   const style=getComputedStyle(pin);
+   const pad=parseFloat(style.paddingTop||'0')+parseFloat(style.paddingBottom||'0');
+   const space=window.innerHeight-pad;
    const required=rows.reduce((total,row)=>total+row.scrollHeight,0);
    const tall=required>space+4;
+   host.style.setProperty('--sx-work-overflow',Math.max(0,required-space+12)+'px');
    if(host.dataset.workOversize!==(tall?'true':'false'))
     host.dataset.workOversize=tall?'true':'false';
   };
