@@ -64,6 +64,10 @@ test('project artwork loads its high-resolution source without stretching or cro
    await expect(art).toHaveCount(1);
    await expect(art).toHaveAttribute('src','/assets/hires/project-'+id+'.webp');
    await expect(art).toHaveCSS('object-fit','contain');
+   // Lazy sources need a real intersection before their pixels are decoded.
+   await art.scrollIntoViewIfNeeded();
+   await expect.poll(()=>art.evaluate(el=>(el as HTMLImageElement).naturalWidth),
+    {timeout:12000}).toBeGreaterThanOrEqual(1000);
    const image=await art.evaluate(node=>{
     const img=node as HTMLImageElement;
     return {naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,
