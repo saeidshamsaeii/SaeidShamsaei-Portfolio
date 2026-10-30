@@ -51,7 +51,7 @@ test('GARTAL home scenes and case chapters retain ordered real-word typography',
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const chapter=page.locator('#project-gartal');
  await expect(chapter.locator('.sx-v30-case-slide')).toHaveCount(3);
- await expect(chapter.locator('.sx-v30-case-copy h3 .sx-word-reveal')).toHaveCount(3);
+ await expect(chapter.locator('.sx-v30-case-copy h3.sx-word-reveal')).toHaveCount(3);
  await page.goto('/work/gartal/',{waitUntil:'domcontentloaded'});
  const first=page.locator('.sx-v31-deep-item').first();
  await first.locator('summary').click();
