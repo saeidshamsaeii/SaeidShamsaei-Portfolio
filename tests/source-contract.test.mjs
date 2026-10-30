@@ -293,7 +293,7 @@ test('Edition 23 has grounded project copy, a blurred photo seam, no legacy gold
  const engineering=read('app/engineering.css');
  assert.match(stories,/GARTAL-SITE uses Next\.js service routes/);
  assert.match(stories,/Windows Worker/);
- assert.match(stories,/clinical nutrition records/);
+ assert.match(stories,/[Cc]linical nutrition workflows/);
  assert.match(stories,/Zustand/);
  assert.match(directory,/Service pages · project requests/);
  assert.match(directory,/Doctor workspace · nutrition rules/);
