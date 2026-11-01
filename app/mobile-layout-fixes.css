@@ -1,0 +1,67 @@
+/* Keep the typed editor inside its actual grid row on compact screens.
+   The previous min-content grid row grew past the editor's clipped body. */
+@media(max-width:760px){
+ .sx-v18-site .sx-linux-editor-body{
+  grid-template-rows:minmax(0,1fr);
+  min-height:0;
+ }
+ .sx-v18-site .sx-linux-code{
+  min-height:0;
+  height:100%;
+  overflow-x:auto;
+  overflow-y:auto;
+  pointer-events:auto;
+  scrollbar-width:thin;
+ }
+ .sx-v18-site .sx-linux-editor-body{
+  font-size:clamp(8px,2.35vw,10px);
+ }
+ .sx-v18-site .sx-linux-workspace{
+  height:50svh;
+  bottom:2svh;
+ }
+
+ /* Project photographs have their own row above the reading surface. */
+ .sx-v18-site .sx-v11-horizontal-chapter .sx-v30-case-slide--with-art{
+  justify-content:flex-start!important;
+ }
+ .sx-v18-site .sx-v30-case-slide--with-art .sx-v30-case-meta{order:0;}
+ .sx-v18-site .sx-v30-case-slide--with-art .sx-v35-project-art{
+  position:relative!important;
+  inset:auto!important;
+  order:1;
+  flex:none;
+  width:100%!important;
+  height:clamp(108px,23svh,190px)!important;
+  opacity:1!important;
+  -webkit-mask-image:none!important;
+  mask-image:none!important;
+ }
+ .sx-v18-site .sx-v30-case-slide--with-art .sx-v35-project-art img{
+  object-fit:contain!important;
+  object-position:center!important;
+  filter:grayscale(1) contrast(1.07) brightness(.92)!important;
+ }
+ .sx-v18-site .sx-v11-horizontal-chapter .sx-v30-case-slide--with-art .sx-v30-case-copy{
+  order:2;
+  margin:0!important;
+ }
+ .sx-v18-site .sx-v30-case-slide--with-art .sx-v30-case-footer{
+  order:3;
+  margin-top:auto!important;
+ }
+}
+@media(max-width:760px) and (prefers-reduced-motion:reduce){
+ .sx-v18-site .sx-linux-scene{height:clamp(390px,52svh,470px);}
+ .sx-v18-site .sx-linux-workspace{
+  inset:12px 10px 10px;
+  width:auto;
+  height:auto;
+  max-height:none;
+ }
+}
+@media(max-width:760px) and (max-height:660px){
+ .sx-v18-site .sx-v30-case-slide--with-art .sx-v35-project-art{
+  height:clamp(75px,15svh,100px)!important;
+ }
+}

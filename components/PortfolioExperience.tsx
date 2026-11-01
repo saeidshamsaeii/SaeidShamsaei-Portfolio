@@ -8,6 +8,7 @@ import {SelectedWorkIndex} from '@/components/SelectedWorkIndex';
 import {HorizontalCaseChapter} from '@/components/HorizontalCaseChapter';
 import {GuidedTour} from '@/components/GuidedTour';
 import {WordReveal} from '@/components/WordReveal';
+import {capabilityAreas,technologies} from '@/data/expertise';
 import {projects,publicContact} from '@/data/portfolio';
 
 export default function PortfolioExperience(){
@@ -155,7 +156,7 @@ export default function PortfolioExperience(){
   <GuidedTour active={loaded&&introHoldFinished&&tour} onExit={()=>setTour(false)}/>
   <a className="skip-link" href="#work-index">Skip to work</a>
   <header className="sx-header sx-v18-header">
-   <Link className="sx-v18-brand" href="#intro" aria-label="Back to start">SAEID SHAMSAEI.</Link>
+   <Link className="sx-v18-brand" href="#intro" aria-label="Back to start"><img className="sx-brand-icon" src="/favicon-96.png" width={28} height={28} alt=""/>SAEID SHAMSAEI.</Link>
    <nav aria-label="Primary navigation">
     <a href="#work-index">Work</a>
     <a href="#about">About</a>
@@ -169,7 +170,7 @@ export default function PortfolioExperience(){
     id="about" data-tour-stop data-tour-label="About Saeid" data-tour-duration="12"
     data-tour-pace=".72" data-tour-hold="biography" aria-labelledby="sx-profile-title">
     <div className="sx-v18-about-inner">
-     <span className="sx-v33-about-eyebrow">THE PERSON BEHIND THE WORK / 2001 — PRESENT</span>
+     <span className="sx-v33-about-eyebrow">THE PERSON BEHIND THE WORK</span>
      <div className="sx-v33-bio-grid">
       <div className="sx-v33-bio-primary">
        <WordReveal as="h2" id="sx-profile-title" text={"ARCHITECTURE.\nPRODUCT.\nPEOPLE."}/>
@@ -182,7 +183,14 @@ export default function PortfolioExperience(){
         <div><span>EXPERIENCE</span><strong>5 YEARS</strong></div>
         <div><span>EDUCATION</span><strong>B.E. COMPUTER ENGINEERING</strong><small>Babol Noshirvani University of Technology</small></div>
        </div>
-       <div className="sx-v33-specialties">SaaS Architecture <span>·</span> Product Leadership <span>·</span> AI-assisted Delivery</div>
+      </div>
+     </div>
+     <div className="sx-v33-capabilities" id="about-capabilities" aria-labelledby="sx-v33-capabilities-title"
+      data-tour-stop data-tour-label="Capabilities and technologies" data-tour-duration="8" data-tour-pace=".9">
+      <h3 id="sx-v33-capabilities-title">Capabilities &amp; technologies</h3>
+      <div className="sx-v33-capability-groups">
+       <div><h4>Areas of leadership</h4><ul role="list">{capabilityAreas.map(item=><li key={item}>{item}</li>)}</ul></div>
+       <div><h4>Technologies</h4><ul role="list">{technologies.map(item=><li key={item}>{item}</li>)}</ul></div>
       </div>
      </div>
     </div>

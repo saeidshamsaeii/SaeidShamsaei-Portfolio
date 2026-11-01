@@ -2,10 +2,10 @@
 .sx-v18-site #about.sx-v33-biography{
  box-sizing:border-box!important;
  min-height:calc(100svh - var(--sx-intro-header-height,72px))!important;
- height:calc(100svh - var(--sx-intro-header-height,72px))!important;
+ height:auto!important;
  max-height:none!important;
  padding:clamp(18px,3svh,36px) clamp(18px,5vw,88px)!important;
- display:flex!important;align-items:center!important;overflow:hidden!important;
+ display:flex!important;align-items:center!important;overflow:visible!important;
  background:#fff!important;color:#000!important;
 }
 .sx-v18-site #about.sx-v33-biography .sx-v18-about-inner{
@@ -25,19 +25,27 @@
 .sx-v18-site #about .sx-v33-about-facts span{font:600 10px/1.4 Arial,sans-serif;letter-spacing:.1em;color:#555}
 .sx-v18-site #about .sx-v33-about-facts strong{font-size:clamp(14px,1.35vw,20px);line-height:1.3;letter-spacing:-.03em}
 .sx-v18-site #about .sx-v33-about-facts small{font-size:11px;line-height:1.35}
-.sx-v18-site #about .sx-v33-specialties{font-size:clamp(11px,1vw,14px);line-height:1.5;letter-spacing:.02em}
-.sx-v18-site #about .sx-v33-specialties span{padding:0 7px;color:#888}
+.sx-v18-site #about .sx-v33-capabilities{width:100%;border-top:1px solid #aaa;padding-top:clamp(15px,2svh,24px)}
+.sx-v18-site #about .sx-v33-capabilities h3{font:700 clamp(12px,1.05vw,15px)/1.3 Arial,sans-serif;letter-spacing:.11em;text-transform:uppercase;margin:0 0 clamp(16px,2svh,25px)}
+.sx-v18-site #about .sx-v33-capability-groups{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(24px,4vw,70px)}
+.sx-v18-site #about .sx-v33-capability-groups>div{min-width:0}
+.sx-v18-site #about .sx-v33-capability-groups h4{font:600 10px/1.4 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#555;margin:0 0 12px}
+.sx-v18-site #about .sx-v33-capability-groups ul{list-style:none;display:flex;flex-wrap:wrap;gap:7px;margin:0;padding:0}
+.sx-v18-site #about .sx-v33-capability-groups li{border:1px solid #ccc;background:#f7f7f7;padding:6px 9px;font-size:clamp(11px,.95vw,13px);line-height:1.35;overflow-wrap:anywhere}
 @media(max-width:900px){
  .sx-v18-site #about.sx-v33-biography{height:auto!important;min-height:calc(100svh - var(--sx-intro-header-height,72px))!important;overflow:visible!important;padding-block:clamp(35px,6svh,75px)!important}
  .sx-v18-site .sx-v33-bio-grid{grid-template-columns:1fr;gap:clamp(25px,4svh,46px)}
  .sx-v18-site #about #sx-profile-title{font-size:clamp(46px,9vw,78px)!important}
  .sx-v18-site #about .sx-v33-about-facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .sx-v18-site #about .sx-v33-capability-groups{gap:25px}
 }
 @media(max-width:560px){
  .sx-v18-site #about.sx-v33-biography{padding:32px 20px!important}
  .sx-v18-site #about #sx-profile-title{font-size:clamp(39px,11vw,62px)!important}
  .sx-v18-site #about .sx-v18-about-summary{font-size:clamp(17px,4.3vw,21px)!important}
  .sx-v18-site #about .sx-v33-about-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sx-v18-site #about .sx-v33-capability-groups{grid-template-columns:1fr;gap:24px}
+ .sx-v18-site #about .sx-v33-capability-groups li{font-size:12px}
 }
 @media(max-height:690px) and (min-width:901px){
  .sx-v18-site #about.sx-v33-biography{height:auto!important;min-height:calc(100svh - var(--sx-intro-header-height,72px))!important;overflow:visible!important}
@@ -66,18 +74,15 @@
 /* The section stays a single frame, but its words reveal in sequence.
    Never force opacity/clip-path: WordReveal must own those properties. */
 @media (scripting:enabled) and (prefers-reduced-motion:no-preference){
- .sx-v18-site #about.sx-v33-biography:has(.sx-v33-bio-copy[data-reveal-complete="false"]) .sx-v33-about-facts,
- .sx-v18-site #about.sx-v33-biography:has(.sx-v33-bio-copy[data-reveal-complete="false"]) .sx-v33-specialties{
+ .sx-v18-site #about.sx-v33-biography:has(.sx-v33-bio-copy[data-reveal-complete="false"]) .sx-v33-about-facts{
   opacity:0;transform:translateY(10px);visibility:hidden;
  }
- .sx-v18-site #about.sx-v33-biography .sx-v33-about-facts,
- .sx-v18-site #about.sx-v33-biography .sx-v33-specialties{
+ .sx-v18-site #about.sx-v33-biography .sx-v33-about-facts{
   transition:opacity .3s ease,transform .3s ease;
  }
 }
 @media (prefers-reduced-motion:reduce){
- .sx-v18-site #about .sx-v33-about-facts,
- .sx-v18-site #about .sx-v33-specialties{opacity:1!important;visibility:visible!important;transform:none!important}
+ .sx-v18-site #about .sx-v33-about-facts{opacity:1!important;visibility:visible!important;transform:none!important}
 }
 
 /* Preserve the approved pure-black editorial surface across all three project scenes.

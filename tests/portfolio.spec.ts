@@ -11,12 +11,12 @@ test('full portfolio presents four art-directed chapters, each with three editor
  await expect(page.locator('#intro .sx-v19-photo-background')).toHaveCount(1);
  await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveCSS('object-fit','cover');
  await expect(page.locator('#intro h1')).toHaveCount(1);
- await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
  await expect(page.locator('#work-index .sx-v18-index-entry')).toHaveCount(4);
  await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
  await expect(page.locator('#top img')).toHaveCount(0);
  await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
- await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
  for(const id of ids){
   const section=page.locator('#project-'+id);
@@ -180,5 +180,5 @@ test('public contact links and original owner portrait remain intact',async({pag
   'https://www.linkedin.com/in/saeidshamsaei/',
   'https://t.me/sd_shms'
  ]);
- await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
 });

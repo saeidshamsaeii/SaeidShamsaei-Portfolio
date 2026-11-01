@@ -6,10 +6,11 @@ with the owner-supplied portrait, a restrained opening, three code-led scenes,
 an ordered **Selected Work** index, four horizontal project chapters,
 four detailed case studies and a searchable Engineering Index.
 
-> **Delivery status — October 29, 2026:** Source implementation exists on
-> GitHub `main`. This is **not** proof of a successful build, browser QA,
-> manual Worker sync, live deployment or production acceptance. Publication
-> is deliberately **not approved** until the explicit release gate is met.
+> **Delivery status — October 31, 2026:** The static portfolio is live at
+> `https://saeidshamsaei.com/` on the isolated VPS release path. Local
+> TypeScript, source tests and the production build passed for the current
+> published source. Lighthouse SEO scored 100 on the audited routes; desktop
+> performance still needs optimization.
 
 ## Explore the authored routes
 
@@ -89,6 +90,11 @@ per-project metadata, sitemap and robots. Otherwise, robots disallows crawlers,
 page metadata is noindex and the sitemap is empty. A GitHub push is **not**
 publication.
 
+For the approved live domain, build with
+`NEXT_PUBLIC_SITE_URL=https://saeidshamsaei.com` and
+`NEXT_PUBLIC_SITE_READY=true`. The published sitemap is
+`https://saeidshamsaei.com/sitemap.xml`; `robots.txt` advertises it.
+
 The Next.js application uses static export with `trailingSlash:true`.
 A verified deployment needs a tested domain, TLS, correct static route
 rewrites, 404 handling and real browser captures.
@@ -103,12 +109,11 @@ rewrites, 404 handling and real browser captures.
 - `npm run qa:css`: read-only report on cumulative historical CSS debt.
 - `docs/README-HISTORY-2026.md`: historical notes, not current release claims.
 
-### Outstanding quality gates
+### Outstanding quality work
 
-The source has not been browser-verified in this GitHub editing session;
-automated test results, actual screenshots, text zoom, page performance,
-accessibility review and end-to-end verification are pending. No new client,
-sales, uptime, Lighthouse or clinical metrics are implied.
+Desktop performance, accessibility findings and a browser console 404 still
+need follow-up. Mobile performance and Search Console indexing should be
+checked separately. No client, sales, uptime or clinical metrics are implied.
 
 The older sequential CSS layers are kept until comparing screenshots across
 all major breakpoints; deleting them blindly could break the approved

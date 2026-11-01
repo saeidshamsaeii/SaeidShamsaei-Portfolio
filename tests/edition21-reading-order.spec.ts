@@ -8,7 +8,7 @@ test('hero contains the restored personal statement and appears beside the real 
  await expect(intro.getByRole('heading',{level:1})).toContainText('SHAMSAEI');
  await expect(intro.locator('.sx-v18-cover-lead')).toContainText('I make complex digital systems');
  await expect(intro.locator('.sx-v18-cover-lead')).toContainText('feel considered, useful and human.');
- await expect(intro.locator('.sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(intro.locator('.sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
 });
 
 test('the first-screen statement becomes readable before automatic scroll leaves the opening',async({page})=>{

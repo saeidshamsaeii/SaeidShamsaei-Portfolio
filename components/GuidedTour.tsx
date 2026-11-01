@@ -72,9 +72,12 @@ function scrollDestination(stop:Stop){
   return top+Math.max(0,box.height-window.innerHeight);
  }
  if(stop.element.id==='about'){
-  // A short one-screen biography stops at its TOP. On small/zoomed screens
-  // that require extra height, visit the BOTTOM instead of halting halfway.
-  return top+Math.max(0,box.height-window.innerHeight);
+  // Read the biography first; the capability list inside it has its own stop.
+  return top;
+ }
+ if(stop.element.id==='about-capabilities'){
+  // Center the second part of the same biography on shorter screens.
+  return top-Math.max(70,(window.innerHeight-box.height)/2);
  }
  // A case-study cover is the opening reading frame, even when its height
  // is a little shorter than the visual viewport below navigation.

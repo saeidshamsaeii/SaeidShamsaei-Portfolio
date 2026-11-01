@@ -19,7 +19,7 @@ One coherent product, not three separate styles and not a replica of their prote
 - Typography: one modern sans family + one mono or letterspaced utility style. Display 88–132px desktop (fluid), 46–64px phone. Text 15–18px desktop, 14–16px phone; text line-height 1.45–1.65.
 - Shapes: squared or 2–4px radius, nearly invisible 1px separators. No pill badges everywhere, neon borders, giant decorative SS watermark, glows, shake motion, or ornate diagrams.
 - Keep the authentic existing small gold `/assets/hires/logo.webp` in intro/nav/end; never replace it with an invented monogram.
-- Photography: use the owner-approved `public/assets/hires/portrait.webp` currently versioned in main; keep face/identity unchanged, sunglasses and approved black suit. Office environment is atmosphere behind the subject, not a distracting second focal point. Maintain appropriate alt text.
+- Photography: use the owner-approved `public/assets/hires/portrait-office.webp`; keep the subject and office setting intact. Maintain appropriate alt text. The former transparent portrait is removed from the current site.
 
 ### 3. Storyboard — one natural vertical journey
 
@@ -83,7 +83,7 @@ One choreographed motion system, not a collection of competing animations:
 - `components/CaseStudy.tsx`: retain complete accessible detail pages; move technical density off homepage.
 - `data/portfolio.ts`: preserve honest factual project descriptions and the four exact contact channels.
 - `app/layout.tsx`: consolidate accumulated stylesheet imports. The existing cascade currently contains more than ten design CSS files. Replace overrides with a small token/layout/motion structure **after** screenshot comparison.
-- `public/assets/hires/portrait.webp`: preserve exact approved owner image; never replace the face.
+- `public/assets/hires/portrait-office.webp`: preserve the approved office portrait and its face.
 - New single `docs/FINAL-DESIGN-ARCHITECTURE.md` (this file) is the baseline for implementation; do not adjust design direction opportunistically.
 
 ### 8. Testable acceptance criteria

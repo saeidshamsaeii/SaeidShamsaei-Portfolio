@@ -1,11 +1,11 @@
 {
   "portrait": {
-    "width": 1122,
-    "height": 1402,
+    "width": 900,
+    "height": 1125,
     "variants": [
       {
-        "width": 1122,
-        "webp": "/assets/hires/portrait.webp"
+        "width": 900,
+        "webp": "/assets/hires/portrait-office.webp"
       }
     ]
   },

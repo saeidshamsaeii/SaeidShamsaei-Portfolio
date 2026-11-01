@@ -121,17 +121,19 @@ test('five distinct scroll-pinned editorial scenes preserve source-backed contex
  assert.ok(read('components/GuidedTour.tsx').includes('scriptedScroll=state.start+(state.end-state.start)*fraction'));
 
 });
-test('personal portrait is preserved and public-facing case narrative is English',()=>{
+test('owner portrait is used and public-facing case narrative is English',()=>{
  const homepage=read('components/PortfolioExperience.tsx');
  const bio=read('data/portfolio.ts');
  const cases=read('data/caseNarratives.ts');
  assert.equal((homepage.match(/src="\/assets\/hires\/portrait\.webp"/g)||[]).length,0);
  const cover=read('components/SignatureOpening.tsx');
- assert.equal((cover.match(/src="\/assets\/hires\/portrait\.webp"/g)||[]).length,1);
+ assert.equal((cover.match(/src="\/assets\/hires\/portrait-office\.webp"/g)||[]).length,1);
  assert.match(homepage,/SignatureOpening/);
  assert.match(homepage,/SelectedWorkIndex/);
  assert.match(read('app/layout.tsx'),/edition16\.css/);
- assert.ok(fs.statSync(path.join(root,'public/assets/hires/portrait.webp')).size>1000);
+ assert.ok(fs.statSync(path.join(root,'public/assets/hires/portrait-office.webp')).size>1000);
+ assert.equal(fs.existsSync(path.join(root,'public/assets/hires/portrait.webp')),false);
+ assert.equal(fs.existsSync(path.join(root,'public/assets/saeid-shamsaei-transparent-2026.webp')),false);
  assert.match(bio,/ageYears:\s*25/);
  assert.match(bio,/yearsOfExperience:\s*5/);
  assert.doesNotMatch(cases,/[\u0600-\u06ff]/);

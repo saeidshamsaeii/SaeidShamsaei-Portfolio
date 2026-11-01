@@ -13,7 +13,7 @@ export function SignatureOpening({ready=false}:{ready?:boolean}){
   data-tour-stop data-tour-label="Introducing Saeid" data-tour-duration="13" data-tour-pace=".77"
   aria-labelledby="sx-v16-name">
   <div className="sx-v19-photo-background">
-   <img src="/assets/hires/portrait.webp" width={1122} height={1402}
+   <img src="/assets/hires/portrait-office.webp" width={900} height={1125}
     alt="Portrait of Saeid Shamsaei" decoding="async" fetchPriority="high"/>
   </div>
   <div className="sx-v19-cover-content">

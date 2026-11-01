@@ -23,7 +23,7 @@ test('the opening photo softly blurs and fades to black at its bottom without a 
  expect(computed.imageMask).toContain('linear-gradient');
  expect(computed.introBorder).toBe('0px');
  expect(computed.nextBorder).toBe('0px');
- await expect(photo.locator('img')).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(photo.locator('img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
 });
 
 test('the work directory explains verifiable product functions without abstract slogans',async({page})=>{

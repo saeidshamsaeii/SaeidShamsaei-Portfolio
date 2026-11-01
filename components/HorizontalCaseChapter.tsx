@@ -93,7 +93,7 @@ export function HorizontalCaseChapter({project,index}:{project:Project;index:num
     {story.beats.map((beat,slideIndex)=>
      <article key={slideIndex}
       id={'project-'+project.id+'-slide-'+(slideIndex+1)}
-      className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+beat.mode+' sx-v30-case-slide'}
+      className={'sx-v11-slide sx-v14-scene sx-v14-scene--'+beat.mode+' sx-v30-case-slide'+(slideIndex===0?' sx-v30-case-slide--with-art':'')}
       data-frame-index={slideIndex} data-frame-state={slideIndex===0?'active':'upcoming'}
       data-tour-stop data-tour-hold="horizontal-frame"
       data-tour-label={project.brand+' / '+beat.eyebrow}

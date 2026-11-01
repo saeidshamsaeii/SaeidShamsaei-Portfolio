@@ -74,8 +74,8 @@ test('reduced-motion reveals all copy and disables scripted auto-scroll',async({
  await expect(word).toHaveCSS('opacity','1');
 });
 
-test('original owner image hash is unchanged',()=>{
- const file=readFileSync(join(process.cwd(),'public','assets','hires','portrait.webp'));
+test('approved office portrait source hash is unchanged',()=>{
+ const file=readFileSync(join(process.cwd(),'public','assets','hires','portrait-office.webp'));
  expect(createHash('sha256').update(file).digest('hex'))
-  .toBe('34c4d0509db4e2cb0f1e0c48716cb60286f92c8342c254e007074781dcadec70');
+  .toBe('3623fd550df32561fffd5b899566dcfb49fdab8b6c430bc135c0890693bc9101');
 });

@@ -15,7 +15,7 @@ test('owner portrait is native-scale, correctly framed and monochrome',async({pa
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const image=page.locator('#intro .sx-v19-photo-background img');
- await expect(image).toHaveAttribute('src','/assets/hires/portrait.webp');
+ await expect(image).toHaveAttribute('src','/assets/hires/portrait-office.webp');
  await expect(image).toHaveCSS('object-fit','cover');
  await expect(image).toHaveCSS('object-position','50% 0%');
  await expect(image).toHaveCSS('filter',/grayscale\(1\)/);
