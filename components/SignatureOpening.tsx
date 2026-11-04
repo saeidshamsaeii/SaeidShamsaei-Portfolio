@@ -2,19 +2,14 @@
 import Link from 'next/link';
 import {WordReveal} from '@/components/WordReveal';
 
-/**
- * Full-bleed, owner-supplied grayscale portrait, positioned higher and
- * entirely unframed. Large type lives in the left negative-space region;
- * the photo remains crisp and visible on the right, never washed out.
- */
+/** The cutout portrait is presentation-only; the office portrait owns SEO metadata. */
 export function SignatureOpening({ready=false}:{ready?:boolean}){
  return <section id="intro" className="sx-v16-cover sx-v18-cover sx-v19-cover"
   data-mobile-photo-phase="photo"
   data-tour-stop data-tour-label="Introducing Saeid" data-tour-duration="13" data-tour-pace=".77"
   aria-labelledby="sx-v16-name">
   <div className="sx-v19-photo-background">
-   <img src="/assets/hires/portrait-office.webp" width={900} height={1125}
-    alt="Portrait of Saeid Shamsaei" decoding="async" fetchPriority="high"/>
+   <div className="sx-v19-portrait-art" aria-hidden="true"/>
   </div>
   <div className="sx-v19-cover-content">
    <h1 id="sx-v16-name">

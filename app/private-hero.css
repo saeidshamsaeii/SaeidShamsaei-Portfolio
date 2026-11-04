@@ -1,0 +1,20 @@
+/* Presentation-only portrait. Keep the office portrait in SEO metadata. */
+.sx-v18-site #intro .sx-v19-photo-background .sx-v19-portrait-art{
+ position:absolute;
+ inset:0;
+ background-image:url('/assets/hires/portrait-hero-private.webp');
+ background-repeat:no-repeat;
+ background-position:center top;
+ background-size:contain;
+ filter:none;
+ -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 48%,rgba(0,0,0,.95) 60%,rgba(0,0,0,.56) 78%,transparent 100%);
+ mask-image:linear-gradient(to bottom,#000 0%,#000 48%,rgba(0,0,0,.95) 60%,rgba(0,0,0,.56) 78%,transparent 100%);
+}
+@media(max-width:760px){
+ .sx-v18-site #intro .sx-v19-photo-background .sx-v19-portrait-art{
+  background-size:cover;
+  background-position:center 9%;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 59%,rgba(0,0,0,.94) 75%,rgba(0,0,0,.6) 90%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0%,#000 59%,rgba(0,0,0,.94) 75%,rgba(0,0,0,.6) 90%,transparent 100%);
+ }
+}

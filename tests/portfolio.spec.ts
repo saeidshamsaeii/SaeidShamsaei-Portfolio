@@ -9,14 +9,14 @@ test('full portfolio presents four art-directed chapters, each with three editor
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','en');
  await expect(page.locator('#intro .sx-v19-photo-background')).toHaveCount(1);
- await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveCSS('object-fit','cover');
+ await expect(page.locator('#intro .sx-v19-portrait-art')).toHaveCSS('background-size','contain');
  await expect(page.locator('#intro h1')).toHaveCount(1);
- await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
+ await expect(page.locator('#intro .sx-v19-portrait-art')).toHaveCSS('background-image',/portrait-hero-private\.webp/);
  await expect(page.locator('#work-index .sx-v18-index-entry')).toHaveCount(4);
  await expect(page.locator('#top .sx-linux-editor')).toHaveCount(1);
  await expect(page.locator('#top img')).toHaveCount(0);
  await expect(page.locator('#top .sx-v8-hero-slide')).toHaveCount(3);
- await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
+ await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveCount(0);
  await expect(page.locator('.sx-guided-tour')).toHaveCount(0);
  for(const id of ids){
   const section=page.locator('#project-'+id);
@@ -167,7 +167,7 @@ test('reduced-motion readers receive full text and no automatic movement',async(
  const style=await word.evaluate(el=>({opacity:getComputedStyle(el).opacity,transform:getComputedStyle(el).transform}));
  expect(style.opacity).toBe('1');
  expect(style.transform).toBe('none');
- await expect(page.locator('#intro .sx-v19-photo-background img')).toBeVisible();
+ await expect(page.locator('#intro .sx-v19-portrait-art')).toBeVisible();
 });
 
 test('public contact links and original owner portrait remain intact',async({page})=>{
@@ -180,5 +180,5 @@ test('public contact links and original owner portrait remain intact',async({pag
   'https://www.linkedin.com/in/saeidshamsaei/',
   'https://t.me/sd_shms'
  ]);
- await expect(page.locator('#intro .sx-v19-photo-background img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
+ await expect(page.locator('#intro .sx-v19-portrait-art')).toHaveCSS('background-image',/portrait-hero-private\.webp/);
 });

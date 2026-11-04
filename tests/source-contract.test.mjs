@@ -127,7 +127,10 @@ test('owner portrait is used and public-facing case narrative is English',()=>{
  const cases=read('data/caseNarratives.ts');
  assert.equal((homepage.match(/src="\/assets\/hires\/portrait\.webp"/g)||[]).length,0);
  const cover=read('components/SignatureOpening.tsx');
- assert.equal((cover.match(/src="\/assets\/hires\/portrait-office\.webp"/g)||[]).length,1);
+ assert.doesNotMatch(cover,/portrait-office\.webp|<img/);
+ assert.match(read('app/private-hero.css'),/portrait-hero-private\.webp/);
+ assert.ok(fs.statSync(path.join(root,'public/assets/hires/portrait-hero-private.webp')).size>1000);
+ assert.match(read('app/layout.tsx'),/previewPortrait='\/assets\/hires\/portrait-office\.webp'/);
  assert.match(homepage,/SignatureOpening/);
  assert.match(homepage,/SelectedWorkIndex/);
  assert.match(read('app/layout.tsx'),/edition16\.css/);

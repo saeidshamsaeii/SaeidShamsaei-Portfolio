@@ -7,7 +7,7 @@ test('the opening photo softly blurs and fades to black at its bottom without a 
  const computed=await photo.evaluate(el=>{
   const blurred=getComputedStyle(el,'::before');
   const gradient=getComputedStyle(el,'::after');
-  const image=getComputedStyle(el.querySelector('img')!);
+  const image=getComputedStyle(el.querySelector('.sx-v19-portrait-art')!);
   return {
    backdrop:blurred.backdropFilter||blurred.getPropertyValue('-webkit-backdrop-filter'),
    mask:blurred.maskImage||blurred.getPropertyValue('-webkit-mask-image'),
@@ -23,7 +23,7 @@ test('the opening photo softly blurs and fades to black at its bottom without a 
  expect(computed.imageMask).toContain('linear-gradient');
  expect(computed.introBorder).toBe('0px');
  expect(computed.nextBorder).toBe('0px');
- await expect(photo.locator('img')).toHaveAttribute('src','/assets/hires/portrait-office.webp');
+ await expect(photo.locator('.sx-v19-portrait-art')).toHaveCSS('background-image',/portrait-hero-private\.webp/);
 });
 
 test('the work directory explains verifiable product functions without abstract slogans',async({page})=>{

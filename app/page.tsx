@@ -1,5 +1,6 @@
 import PortfolioExperience from '@/components/PortfolioExperience';
 import {siteApproved,siteOrigin} from '@/lib/siteRelease';
+import './private-hero.css';
 
 const pageIdentity={
  '@context':'https://schema.org',

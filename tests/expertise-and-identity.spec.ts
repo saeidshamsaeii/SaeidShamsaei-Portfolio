@@ -25,7 +25,7 @@ for(const width of [390,1440]){
   });
   expect(bounds.inside).toBe(true);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
-  expect(await page.locator('#intro img').evaluate((image:HTMLImageElement)=>image.complete&&image.naturalWidth>0)).toBe(true);
+  expect(await page.locator('#intro .sx-v19-portrait-art').evaluate(el=>getComputedStyle(el).backgroundImage.includes('portrait-hero-private.webp'))).toBe(true);
   expect(await page.locator('body').innerText()).not.toMatch(/[\u0600-\u06ff]/);
  });
 }

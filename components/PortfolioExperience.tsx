@@ -82,14 +82,15 @@ export default function PortfolioExperience(){
   let released=false;
   let photoTimerStarted=false;
   let timer=0, imageTimeout=0;
-  const image=cover.querySelector<HTMLImageElement>('.sx-v19-photo-background img');
+  const image=new Image();
+  image.src='/assets/hires/portrait-hero-private.webp';
   const release=(manual:boolean)=>{
    if(released)return;
    released=true;
    window.clearTimeout(timer);
    window.clearTimeout(imageTimeout);
-   image?.removeEventListener('load',startHold);
-   image?.removeEventListener('error',startHold);
+   image.removeEventListener('load',startHold);
+   image.removeEventListener('error',startHold);
    // Remove all pause-only input listeners as soon as the hold ends.
    window.removeEventListener('wheel',onManual);
    window.removeEventListener('touchmove',onManual);
@@ -131,7 +132,7 @@ export default function PortfolioExperience(){
   document.addEventListener('pointerdown',onNavigation);
   // The image may arrive after the Hello overlay on a slow mobile network.
   // Hold for 2s of actual photo visibility, without trapping a failed image.
-  if(!image||image.complete)startHold();
+  if(image.complete)startHold();
   else{
    image.addEventListener('load',startHold,{once:true});
    image.addEventListener('error',startHold,{once:true});
@@ -140,8 +141,8 @@ export default function PortfolioExperience(){
   return()=>{
    window.clearTimeout(timer);
    window.clearTimeout(imageTimeout);
-   image?.removeEventListener('load',startHold);
-   image?.removeEventListener('error',startHold);
+   image.removeEventListener('load',startHold);
+   image.removeEventListener('error',startHold);
    window.removeEventListener('wheel',onManual);
    window.removeEventListener('touchmove',onManual);
    window.removeEventListener('keydown',onKey);
