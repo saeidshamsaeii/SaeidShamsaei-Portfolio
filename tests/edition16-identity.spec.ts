@@ -11,14 +11,15 @@ test('Hello... still leads and the automatic story is invisible after welcome',a
  await expect(page.locator('html')).toHaveAttribute('data-portfolio-tour','playing',{timeout:5000});
 });
 
-test('owner portrait is correctly framed and retains the supplied colors',async({page})=>{
+test('owner portrait is monochrome with a soft edge gradient',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const image=page.locator('#intro .sx-v19-portrait-art');
  await expect(image).toHaveCSS('background-image',/portrait-hero-private\.webp/);
  await expect(image).toHaveCSS('background-size','contain');
  await expect(image).toHaveCSS('background-position','50% 0%');
- await expect(image).toHaveCSS('filter','none');
+ await expect(image).toHaveCSS('filter','grayscale(1)');
+ await expect(image).toHaveCSS('mask-image',/radial-gradient/);
  await expect(image).toHaveCSS('transform','none');
  await expect(page.locator('#intro figure')).toHaveCount(0);
 });

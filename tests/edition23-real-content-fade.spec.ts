@@ -20,7 +20,7 @@ test('the opening photo softly blurs and fades to black at its bottom without a 
  expect(computed.backdrop).toMatch(/blur\((?:12|15)px\)/);
  expect(computed.mask).toContain('linear-gradient');
  expect(computed.grad).toMatch(/linear-gradient/);
- expect(computed.imageMask).toContain('linear-gradient');
+ expect(computed.imageMask).toContain('radial-gradient');
  expect(computed.introBorder).toBe('0px');
  expect(computed.nextBorder).toBe('0px');
  await expect(photo.locator('.sx-v19-portrait-art')).toHaveCSS('background-image',/portrait-hero-private\.webp/);
